@@ -753,6 +753,7 @@ let DATA=[],HIST=[],NID=1000,editId=null,activeFilter=null,mTipo='classico',sTip
 
 // ── STORAGE ──
 function sv(){localStorage.setItem(SK,JSON.stringify(DATA))}
+function svSH(){localStorage.setItem(SK_SH,JSON.stringify(SH_DATA))}
 function svH(){localStorage.setItem(HK,JSON.stringify(HIST))}
 function addH(msg){HIST.unshift({ts:new Date().toLocaleString('pt-BR'),msg});if(HIST.length>300)HIST.pop();svH()}
 
