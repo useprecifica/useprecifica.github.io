@@ -752,8 +752,8 @@ function autoFillCusto(){
 let DATA=[],HIST=[],NID=1000,editId=null,activeFilter=null,mTipo='classico',sTipo='classico';
 
 // ── STORAGE ──
-function sv(){localStorage.setItem(SK,JSON.stringify(DATA))}
-function svSH(){localStorage.setItem(SK_SH,JSON.stringify(SH_DATA))}
+function sv(){localStorage.setItem(SK,JSON.stringify(DATA));scheduleSyncUp();}
+function svSH(){localStorage.setItem(SK_SH,JSON.stringify(SH_DATA));scheduleSyncUp();}
 function svH(){localStorage.setItem(HK,JSON.stringify(HIST))}
 function addH(msg){HIST.unshift({ts:new Date().toLocaleString('pt-BR'),msg});if(HIST.length>300)HIST.pop();svH()}
 
@@ -957,7 +957,10 @@ async function pushMLup(){
     desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||'',
     tag_full:!!(a.tags&&a.tags.full),tag_oferta:!!(a.tags&&a.tags.oferta),tag_pub:!!(a.tags&&a.tags.pub)
   };});
-  if(rows.length)await SB.from('anuncios').insert(rows).catch(function(e){console.error(e);});
+  if(rows.length){
+    const {error}=await SB.from('anuncios').insert(rows);
+    if(error)console.error('pushML error:',error.message);
+  }
 }
 
 async function pushSHup(){
@@ -968,7 +971,10 @@ async function pushSHup(){
     ant:a.ant||6,frete:a.frete||0,outros:a.outros||0,
     desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||''
   };});
-  if(rows.length)await SB.from('anuncios_shopee').insert(rows).catch(function(e){console.error(e);});
+  if(rows.length){
+    const {error}=await SB.from('anuncios_shopee').insert(rows);
+    if(error)console.error('pushSH error:',error.message);
+  }
 }
 
 async function syncUp(silent){
@@ -998,21 +1004,15 @@ async function desconectar(){
 }
 
 // Override sv() to also sync after save
-const sv_orig=sv;
-function sv(){sv_orig();if(SB&&SB_USER)clearTimeout(sv._t),sv._t=setTimeout(()=>syncUp(true),800);}
-const svSH_orig=svSH;
-function svSH(){svSH_orig();if(SB&&SB_USER)clearTimeout(svSH._t),svSH._t=setTimeout(()=>syncUp(true),800);}
-
-// Override addH to also save hist to Supabase
-const addH_orig=addH;
-function addH(msg){
-  addH_orig(msg);
-  if(SB&&SB_USER){
-    SB.from('historico').insert({user_id:'00000000-0000-0000-0000-000000000001',msg}).catch(()=>{});
-  }
+// Auto-sync after saves (no hoisting issues - uses arrow functions captured at runtime)
+let _syncTimer=null;
+function scheduleSyncUp(){
+  if(!SB||!SB_USER)return;
+  clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(function(){syncUp(true);},1000);
 }
 
-// Load config into form fields when config tab opens
+
 function loadCfgFields(){
   const urlEl=document.getElementById('cfg-url');
   const keyEl=document.getElementById('cfg-key');
