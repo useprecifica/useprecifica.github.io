@@ -904,86 +904,88 @@ async function syncDown(){
   if(!SB||!SB_USER)return;
   setSyncStatus('syncing');
   try{
-    const [
-      {data:an,error:e1},
-      {data:sh,error:e2},
-      {data:hi,error:e3}
-    ]=await Promise.all([
-      SB.from('anuncios').select('*').eq('user_id',SB_USER.id).order('created_at'),
-      SB.from('anuncios_shopee').select('*').eq('user_id',SB_USER.id).order('created_at'),
-      SB.from('historico').select('*').eq('user_id',SB_USER.id).order('created_at',{ascending:false}).limit(200)
-    ]);
-    if(e1){console.error('ML fetch error:',e1);}
-    if(e2){console.error('Shopee fetch error:',e2);}
-    // ML data
-    if(an&&an.length>0){
-      DATA=an.map(a=>({
+    var uid='00000000-0000-0000-0000-000000000001';
+    // ML
+    var r1=await SB.from('anuncios').select('*').eq('user_id',uid).order('created_at');
+    if(!r1.error&&r1.data&&r1.data.length>0){
+      DATA=r1.data.map(function(a){return{
         id:a.id,cod:a.cod||'',nome:a.nome||'',tipo:a.tipo||'classico',
         preco:+a.preco||0,precoD:+a.preco_d||0,custo:+a.custo||0,
         com:+a.com||11.5,ant:+a.ant||4.2,frete:+a.frete||0,ajml:+a.aj_ml||0,
         descPct:+a.desc_pct||5,descMax:+a.desc_max||10,imp:+a.imp||10,
         obs:a.obs||'',tags:{full:!!a.tag_full,oferta:!!a.tag_oferta,pub:!!a.tag_pub}
-      }));
+      };});
       NID=999999;
+      localStorage.setItem(SK,JSON.stringify(DATA));
+    } else if(!r1.error){
+      await pushMLup();
     }
-    // Shopee data
-    if(e2){
-      console.warn('Shopee table error (run supabase_schema.sql):',e2.message);
-    } else if(sh&&sh.length>0){
-      SH_DATA=sh.map(a=>({
+    // Shopee
+    var r2=await SB.from('anuncios_shopee').select('*').eq('user_id',uid).order('created_at');
+    if(r2.error){
+      console.warn('anuncios_shopee missing - run supabase_schema.sql');
+    } else if(r2.data&&r2.data.length>0){
+      SH_DATA=r2.data.map(function(a){return{
         id:a.id,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
         preco:+a.preco||0,precoD:+a.preco_d||0,custo:+a.custo||0,
         ant:+a.ant||6,frete:+a.frete||0,outros:+a.outros||0,
         descPct:+a.desc_pct||5,descMax:+a.desc_max||10,imp:+a.imp||10,obs:a.obs||''
-      }));
+      };});
       SH_NID=999999;
       localStorage.setItem(SK_SH,JSON.stringify(SH_DATA));
+    } else {
+      await pushSHup();
     }
-    // First time ML? Push all local data up
-    if(!e1&&(!an||an.length===0)){
-      await syncUp(true);
-    } else if(!e1&&an){
-      localStorage.setItem(SK,JSON.stringify(DATA));
-    }
-    if(hi)HIST=hi.map(h=>({ts:new Date(h.created_at).toLocaleString('pt-BR'),msg:h.msg}));
+    // History
+    var r3=await SB.from('historico').select('*').eq('user_id',uid).order('created_at',{ascending:false}).limit(200);
+    if(!r3.error&&r3.data)HIST=r3.data.map(function(h){return{ts:new Date(h.created_at).toLocaleString('pt-BR'),msg:h.msg};});
     setSyncStatus('connected');
     updateCfgCard();
     renderDash();
-    if(document.getElementById('p-anuncios')?.style.display!=='none')renderAnuncios();
-    if(document.getElementById('p-shopee')?.style.display!=='none')renderShopee();
-  }catch(e){console.error('syncDown error:',e);setSyncStatus('error')}
+    if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios();
+    if(document.getElementById('p-shopee').style.display!=='none')renderShopee();
+  }catch(e){console.error('syncDown:',e);setSyncStatus('error');}
 }
 
-async function syncUp(silent=false){
+async function pushMLup(){
+  var uid='00000000-0000-0000-0000-000000000001';
+  var rows=DATA.map(function(a){return{
+    user_id:uid,cod:a.cod||'',nome:a.nome||'',tipo:a.tipo||'classico',
+    preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,
+    com:a.com||11.5,ant:a.ant||4.2,frete:a.frete||0,aj_ml:a.ajml||0,
+    desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||'',
+    tag_full:!!(a.tags&&a.tags.full),tag_oferta:!!(a.tags&&a.tags.oferta),tag_pub:!!(a.tags&&a.tags.pub)
+  };});
+  if(rows.length)await SB.from('anuncios').insert(rows).catch(function(e){console.error(e);});
+}
+
+async function pushSHup(){
+  var uid='00000000-0000-0000-0000-000000000001';
+  var rows=SH_DATA.map(function(a){return{
+    user_id:uid,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
+    preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,
+    ant:a.ant||6,frete:a.frete||0,outros:a.outros||0,
+    desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||''
+  };});
+  if(rows.length)await SB.from('anuncios_shopee').insert(rows).catch(function(e){console.error(e);});
+}
+
+async function syncUp(silent){
   if(!SB||!SB_USER)return;
   if(!silent)setSyncStatus('syncing');
   try{
-    // ML anuncios
-    await SB.from('anuncios').delete().eq('user_id',SB_USER.id);
-    const rows=DATA.map(a=>({
-      user_id:'00000000-0000-0000-0000-000000000001',cod:a.cod||'',nome:a.nome||'',tipo:a.tipo||'classico',
-      preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,
-      com:a.com||11.5,ant:a.ant||4.2,frete:a.frete||0,aj_ml:a.ajml||0,
-      desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,
-      obs:a.obs||'',tag_full:!!(a.tags?.full),tag_oferta:!!(a.tags?.oferta),tag_pub:!!(a.tags?.pub)
-    }));
-    if(rows.length>0)await SB.from('anuncios').insert(rows);
-    // Shopee anuncios
-    // Shopee table (may not exist yet if schema not updated)
+    var uid='00000000-0000-0000-0000-000000000001';
+    await SB.from('anuncios').delete().eq('user_id',uid);
+    await pushMLup();
     try{
-      await SB.from('anuncios_shopee').delete().eq('user_id',SB_USER.id);
-      const shRows=SH_DATA.map(a=>({
-      user_id:'00000000-0000-0000-0000-000000000001',cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
-      preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,
-      ant:a.ant||6,frete:a.frete||0,outros:a.outros||0,
-      desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||''
-    }));
-      if(shRows.length>0)await SB.from('anuncios_shopee').insert(shRows);
-    }catch(shErr){console.warn('Shopee table not found - run schema SQL:',shErr);}
+      await SB.from('anuncios_shopee').delete().eq('user_id',uid);
+      await pushSHup();
+    }catch(e2){console.warn('Shopee sync skip:',e2.message);}
     setSyncStatus('connected');
-    if(!silent)showCfgStatus('Dados ML e Shopee sincronizados!','ok');
-  }catch(e){console.error('syncUp error:',e);setSyncStatus('error')}
+    if(!silent)showCfgStatus('Sincronizado!','ok');
+  }catch(e){console.error('syncUp:',e);setSyncStatus('error');}
 }
+
 
 async function desconectar(){
   if(!confirm('Desconectar do Supabase? Os dados continuarão salvos localmente.'))return;
@@ -1291,22 +1293,25 @@ function calcLive(){
 }
 
 function salvar(){
-  const f=getForm()
-  if(!f.nome.trim())return alert('Informe o nome do produto')
+  var f=getForm();
+  if(!f.nome.trim())return alert('Informe o nome do produto');
   if(editId){
-    const old=DATA.find(a=>String(a.id)===String(editId))
-    const ch=Object.keys(f).filter(k=>String(old[k])!==String(f[k])).map(k=>`${k}:${old[k]}→${f[k]}`).join(', ')
-    Object.assign(old,f);sv()
-    if(ch)addH(`Editado: ${f.nome} (${f.cod}) — ${ch}`)
+    var old=DATA.find(function(a){return String(a.id)===String(editId);});
+    if(!old)return;
+    var savedTags=old.tags||{full:false,oferta:false,pub:false};
+    Object.assign(old,f);
+    old.tags=savedTags;
+    sv();
+    addH('Editado: '+f.nome+' ('+f.cod+')');
   } else {
-    DATA.push({...f,id:NID++,tags:{full:false,oferta:false,pub:false}});sv()
-    addH(`Novo: ${f.nome} (${f.cod}) [${f.tipo}]`)
-    // Re-open to allow tag editing
-    const newId=DATA[DATA.length-1].id
-    closeModal();openModal(newId);return
+    var novo=Object.assign({},f,{id:NID++,tags:{full:false,oferta:false,pub:false}});
+    DATA.push(novo);sv();
+    addH('Novo: '+f.nome+' ('+f.cod+') ['+f.tipo+']');
+    var newId=DATA[DATA.length-1].id;
+    closeModal();openModal(newId);return;
   }
-  closeModal();renderDash()
-  if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios()
+  closeModal();renderDash();
+  if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios();
 }
 
 function deletar(){
