@@ -400,6 +400,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div class="card" id="ins-tags"></div>
     <div class="card" id="ins-tipo-an"></div>
   </div>
+  <div class="card" id="ins-shopee-linhas"></div>
   <div class="card" id="ins-criticos" style="display:none"></div>
 </div>
 
@@ -1095,7 +1096,8 @@ function renderDash(){
     <div class="met click" onclick="filterAndGo('oportunidade')"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:var(--gr)">${opp.length}</div><div class="met-sub">margem ≥ 25%</div></div>`
 
   const sorted=[...todos].sort((a,b)=>b.margem-a.margem)
-  const mkR=(list,cls)=>list.map(a=>`<div class="ri" onclick="openModal(${a.id})">
+  window._dashData=todos;
+  const mkR=(list,cls)=>list.map(a=>`<div class="ri" data-id="${a.id}" onclick="openModalById(this.dataset.id)" style="cursor:pointer">
     <div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
     <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
   </div>`).join('')
@@ -1108,7 +1110,7 @@ function renderDash(){
 
   const co=todos.filter(a=>a.obs?.trim())
   document.getElementById('dash-acoes').innerHTML=`<div class="card-title">Lembretes</div>`+
-    (co.length?co.slice(0,6).map(a=>`<div class="ri" onclick="openModal(${a.id})">
+    (co.length?co.slice(0,6).map(a=>`<div class="ri" data-id="${a.id}" onclick="openModalById(this.dataset.id)" style="cursor:pointer">
       <div><div class="ir-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
       <div style="font-size:12px;color:var(--t2);text-align:right;max-width:150px;margin-left:8px">${a.obs}</div>
     </div>`).join(''):'<div class="empty" style="padding:18px">Nenhum lembrete</div>')
@@ -1242,9 +1244,9 @@ function openModal(id){
   if(mt){
     if(a){
       const tg=a.tags||{}
-      mt.innerHTML=`<button class="tag-btn ${tg.full?'on-full':''}" onclick="toggleTag(${a.id},'full')">📦 Full ML</button>
-        <button class="tag-btn ${tg.oferta?'on-oferta':''}" onclick="toggleTag(${a.id},'oferta')">⚡ Oferta relâmpago</button>
-        <button class="tag-btn ${tg.pub?'on-pub':''}" onclick="toggleTag(${a.id},'pub')">📢 Publicidade</button>`
+      mt.innerHTML=`<button class="tag-btn ${tg.full?'on-full':''}" data-id="${a.id}" data-tag="full" onclick="toggleTagBtn(this)">📦 Full ML</button>
+        <button class="tag-btn ${tg.oferta?'on-oferta':''}" data-id="${a.id}" data-tag="oferta" onclick="toggleTagBtn(this)">⚡ Oferta relâmpago</button>
+        <button class="tag-btn ${tg.pub?'on-pub':''}" data-id="${a.id}" data-tag="pub" onclick="toggleTagBtn(this)">📢 Publicidade</button>`
     } else {
       mt.innerHTML='<span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>'
     }
@@ -1292,7 +1294,7 @@ function salvar(){
   const f=getForm()
   if(!f.nome.trim())return alert('Informe o nome do produto')
   if(editId){
-    const old=DATA.find(a=>a.id===editId)
+    const old=DATA.find(a=>String(a.id)===String(editId))
     const ch=Object.keys(f).filter(k=>String(old[k])!==String(f[k])).map(k=>`${k}:${old[k]}→${f[k]}`).join(', ')
     Object.assign(old,f);sv()
     if(ch)addH(`Editado: ${f.nome} (${f.cod}) — ${ch}`)
@@ -1317,6 +1319,11 @@ function deletar(){
   if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios()
 }
 
+function toggleTagBtn(btn){
+  const id=btn.dataset.id;
+  const tag=btn.dataset.tag;
+  toggleTag(id,tag);
+}
 function toggleTag(id,tag){
   const a=DATA.find(x=>String(x.id)===String(id));if(!a)return
   if(!a.tags)a.tags={full:false,oferta:false,pub:false}
@@ -1325,9 +1332,9 @@ function toggleTag(id,tag){
   const mt=document.getElementById('modal-tags')
   if(mt){
     const tg=a.tags
-    mt.innerHTML=`<button class="tag-btn ${tg.full?'on-full':''}" onclick="toggleTag(${id},'full')">📦 Full ML</button>
-      <button class="tag-btn ${tg.oferta?'on-oferta':''}" onclick="toggleTag(${id},'oferta')">⚡ Oferta relâmpago</button>
-      <button class="tag-btn ${tg.pub?'on-pub':''}" onclick="toggleTag(${id},'pub')">📢 Publicidade</button>`
+    mt.innerHTML=`<button class="tag-btn ${tg.full?'on-full':''}" data-id="${id}" data-tag="full" onclick="toggleTagBtn(this)">📦 Full ML</button>
+      <button class="tag-btn ${tg.oferta?'on-oferta':''}" data-id="${id}" data-tag="oferta" onclick="toggleTagBtn(this)">⚡ Oferta relâmpago</button>
+      <button class="tag-btn ${tg.pub?'on-pub':''}" data-id="${id}" data-tag="pub" onclick="toggleTagBtn(this)">📢 Publicidade</button>`
   }
   if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios()
 }
@@ -1497,13 +1504,28 @@ function renderInsights(){
     <div class="met click" onclick="filterAndGo('cupom')"><div class="met-label" style="color:var(--am)">Cupons a retirar</div><div class="met-val" style="color:${cup.length?'var(--am)':'var(--t)'}">${cup.length}</div><div class="met-sub">nos lembretes</div></div>
     <div class="met click" onclick="filterAndGo('inativo')"><div class="met-label">Inativos</div><div class="met-val">${ina.length}</div><div class="met-sub">nos lembretes</div></div>`
 
+  // Shopee stats for insights
+  const shTodos=SH_DATA.map(a=>({...a,...calcSH(a)}));
+  const shAvg=shTodos.length?shTodos.reduce((s,a)=>s+a.margem,0)/shTodos.length:0;
+  const shOk=shTodos.filter(a=>a.margem>=16);
+  const shCrit=shTodos.filter(a=>a.margem<10);
+
   const ir=document.getElementById('ins-resumo')
-  if(ir)ir.innerHTML=`<div class="card-title">Resumo</div>
-    <p style="font-size:14px;color:var(--t2);line-height:1.8">
-      <strong style="color:var(--t)">${todos.length} anúncios</strong> · <strong style="color:var(--gr)">${ok.length} (${(ok.length/todos.length*100).toFixed(0)}%) saudáveis</strong> · margem média <strong style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</strong>
-      ${crit.length?`<br><strong style="color:var(--rd)">${crit.length} abaixo de 10%</strong> — revisão necessária.`:''}
-      ${prm.length===0?'<br>Todos os anúncios são Clássico. Premium pode aumentar conversão em produtos acima de R$300.':''}
-    </p>`
+  if(ir)ir.innerHTML=`<div class="card-title">Resumo geral</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="background:var(--sur2);border-radius:var(--rs);padding:12px">
+        <div style="font-size:11px;color:var(--t3);margin-bottom:4px">MERCADO LIVRE</div>
+        <div style="font-size:14px;font-weight:500">${todos.length} anúncios · ${ok.length} saudáveis</div>
+        <div style="font-size:13px;color:${avg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${avg.toFixed(1)}%</div>
+        ${crit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${crit.length} críticos abaixo de 10%</div>`:''}
+      </div>
+      <div style="background:var(--pu-bg);border-radius:var(--rs);padding:12px;border:1px solid var(--pu-bd)">
+        <div style="font-size:11px;color:var(--pu);margin-bottom:4px">SHOPEE</div>
+        <div style="font-size:14px;font-weight:500">${shTodos.length} anúncios · ${shOk.length} saudáveis</div>
+        <div style="font-size:13px;color:${shAvg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${shAvg.toFixed(1)}%</div>
+        ${shCrit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${shCrit.length} críticos abaixo de 10%</div>`:''}
+      </div>
+    </div>`
 
   const tc={};todos.forEach(a=>{const t=a.nome.split(/\s+/).slice(0,3).join(' ');tc[t]=(tc[t]||0)+1})
   const tt=document.getElementById('ins-tipos')
@@ -1537,6 +1559,14 @@ function renderInsights(){
       <div style="margin-top:10px;font-size:13px;color:var(--t2)">Premium vale a pena em produtos acima de R$300 onde parcelamento aumenta conversão.</div>`
   }
 
+  const shLCard=document.getElementById('ins-shopee-linhas');
+  if(shLCard){
+    const shLinha={};
+    shTodos.forEach(function(a){var t=a.nome.split(' ').slice(0,2).join(' ');if(!shLinha[t])shLinha[t]=[];shLinha[t].push(a.margem);});
+    const shLinhas=Object.entries(shLinha).map(function(e){return{t:e[0],avg:e[1].reduce(function(s,v){return s+v;},0)/e[1].length,n:e[1].length};}).sort(function(a,b){return b.avg-a.avg;});
+    shLCard.innerHTML='<div class="card-title" style="color:var(--pu)">Shopee — margem por linha</div>'+
+      shLinhas.slice(0,8).map(function(x){return'<div class="ir"><div><div class="ir-name">'+x.t+'</div><div class="ir-sub">'+x.n+' anúncio'+(x.n>1?'s':'')+'</div></div><span class="badge '+(x.avg>=16?'b-ok':'b-nok')+'">'+x.avg.toFixed(1)+'%</span></div>';}).join('');
+  }
   const ci=document.getElementById('ins-criticos')
   if(ci){
     if(crit.length){ci.style.display='';ci.innerHTML=`<div class="card-title" style="color:var(--rd)">Críticos — abaixo de 10%</div>`+
@@ -1556,6 +1586,14 @@ function renderHist(){
 
 
 
+function openModalById(id){
+  const a=DATA.find(x=>String(x.id)===String(id));
+  if(a)openModal(a.id);
+}
+function openShopeeModalById(id){
+  const a=SH_DATA.find(x=>String(x.id)===String(id));
+  if(a)openShopeeModal(a.id);
+}
 // ── CATÁLOGO DE CUSTOS UI ──
 let _custos=null;
 function getCustosObj(){
@@ -1986,6 +2024,7 @@ load();loadShopee();initSupabase().then(()=>renderDash())
     <div class="field"><label>Preço c/ desc (R$)</label><input id="sh-f-precoD" type="number" step=".01" inputmode="decimal" placeholder="0 = mesmo" oninput="shCalcLive()"></div>
   </div>
   <div class="fsep">Taxas Shopee</div>
+  <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">Taxa automática: até R$80→20%+R$4 / até R$200→14%+R$20 / acima→14%+R$26</div>
   <div class="fg3">
     <div class="field"><label>Comissão Shopee (%)</label><input id="sh-f-com" type="number" step=".1" value="14" inputmode="decimal" oninput="shCalcLive()"></div>
     <div class="field"><label>Antecipação + Camp (%)</label><input id="sh-f-ant" type="number" step=".1" value="6" inputmode="decimal" oninput="shCalcLive()"></div>
