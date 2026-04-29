@@ -1780,46 +1780,32 @@ function shCalcLive(){
 }
 
 function calcSugSH(a){
-  // Find price where margem = 20% using Shopee tiered formula
-  // lucro = pv - custo - taxaShopee(pv) - desc - imp - frete - outros
-  // Since taxaShopee has tiers, solve numerically
-  const alvo=20;
+  // Sugestão de preço Shopee para margem de 20%
+  // lucro = pv - custo - taxaShopee(pv) - descPct*pv - imp*pv - frete - outros
+  // taxaShopee(pv) = pv*rate + fixed (por faixa)
+  const alvo=0.20;
   const custo=+a.custo||0,frete=+a.frete||0,outros=+a.outros||0;
-  const descPct=(+a.descPct||5)/100,descMax=+a.descMax||10;
-  const imp=(+a.imp||10)/100;
-  // Try each tier
+  const descPct=(+a.descPct||5)/100,imp=(+a.imp||10)/100;
   const tiers=[
-    {min:0,max:79.99,f:pv=>pv*0.20+4},
-    {min:80,max:99.99,f:pv=>pv*0.14+16},
-    {min:100,max:199.99,f:pv=>pv*0.14+20},
-    {min:200,max:99999,f:pv=>pv*0.14+26}
+    {max:79.99, rate:0.20, fixed:4},
+    {max:99.99, rate:0.14, fixed:16},
+    {max:199.99,rate:0.14, fixed:20},
+    {max:99999, rate:0.14, fixed:26}
   ];
-  for(const tier of tiers){
-    // In this tier: lucro = pv - custo - (pv*rate+fixed) - desc - pv*imp
-    // desc = min(descPct*pv, descMax)
-    // Assume desc = descMax (cap hit) first:
-    // lucro = pv*(1-rate-imp) - fixed - custo - descMax - frete - outros
-    // alvo/100 * pv = pv*(1-rate-imp) - fixed - custo - descMax - frete - outros
-    // pv*(alvo/100 - 1 + rate + imp) = -fixed - custo - descMax - frete - outros
-    // pv = (custo + descMax + frete + outros + fixed) / (1 - rate - imp - alvo/100)
-    let rate, fixed;
-    if(tier.max<=79.99){rate=0.20;fixed=4;}
-    else if(tier.max<=99.99){rate=0.14;fixed=16;}
-    else if(tier.max<=199.99){rate=0.14;fixed=20;}
-    else{rate=0.14;fixed=26;}
-    const denom=1-rate-imp-alvo/100;
+  for(var i=0;i<tiers.length;i++){
+    var t=tiers[i];
+    // pv*(1 - rate - imp - alvo - descPct) = custo + fixed + frete + outros
+    var denom=1-t.rate-imp-alvo-descPct;
     if(denom<=0.01)continue;
-    const pv=(custo+descMax+frete+outros+fixed)/denom;
-    if(pv>=tier.min&&pv<=tier.max){
-      if(!isFinite(pv)||pv<=0)continue;
-      const pvEff=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
+    var pv=(custo+t.fixed+frete+outros)/denom;
+    if(pv>0&&pv<=t.max){
+      var pvEff=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
       if(pv<=pvEff)return null;
-      return{pv:Math.ceil(pv*10)/10,margem:alvo};
+      return{pv:Math.ceil(pv*10)/10,margem:20};
     }
   }
   return null;
 }
-
 function shAplicarSug(pv){
   const fi=document.getElementById('sh-f-preco');
   const fd=document.getElementById('sh-f-precoD');
@@ -2032,7 +2018,7 @@ load();loadShopee();initSupabase().then(()=>renderDash())
   <div class="fsep">Taxas Shopee</div>
   <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">Taxa automática: até R$80→20%+R$4 / até R$200→14%+R$20 / acima→14%+R$26</div>
   <div class="fg3">
-    <div class="field"><label>Comissão Shopee (%)</label><input id="sh-f-com" type="number" step=".1" value="14" inputmode="decimal" oninput="shCalcLive()"></div>
+    
     <div class="field"><label>Antecipação + Camp (%)</label><input id="sh-f-ant" type="number" step=".1" value="6" inputmode="decimal" oninput="shCalcLive()"></div>
     <div class="field"><label>Imposto (%)</label><input id="sh-f-imp" type="number" step=".1" value="10" inputmode="decimal" oninput="shCalcLive()"></div>
   </div>
