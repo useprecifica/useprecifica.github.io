@@ -404,6 +404,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div class="card" id="ins-tags"></div>
     <div class="card" id="ins-tipo-an"></div>
   </div>
+  <div class="card" id="ins-ml2-linhas"></div>
   <div class="card" id="ins-shopee-linhas"></div>
   <div class="card" id="ins-criticos" style="display:none"></div>
 </div>
@@ -505,6 +506,12 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <button class="btn" id="ml2-btn-back" onclick="clearFilter2()" style="display:none">← Voltar</button>
       <button class="btn btn-p" style="background:var(--gr);border-color:var(--gr)" onclick="openModal2()">+ Novo</button>
     </div>
+  </div>
+  <div id="ml2-alerts"></div>
+  <div class="metrics" id="ml2-metrics" style="margin-bottom:16px"></div>
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card"><div class="card-title">Melhores margens</div><div id="ml2-top"></div></div>
+    <div class="card"><div class="card-title">Piores margens</div><div id="ml2-bot"></div></div>
   </div>
   <div id="ml2-filter-bar">
     <div class="fbar">
@@ -1603,6 +1610,12 @@ function renderInsights(){
     <div class="met click" onclick="filterAndGo('cupom')"><div class="met-label" style="color:var(--am)">Cupons a retirar</div><div class="met-val" style="color:${cup.length?'var(--am)':'var(--t)'}">${cup.length}</div><div class="met-sub">nos lembretes</div></div>
     <div class="met click" onclick="filterAndGo('inativo')"><div class="met-label">Inativos</div><div class="met-val">${ina.length}</div><div class="met-sub">nos lembretes</div></div>`
 
+  // ML2 stats for insights
+  const ml2Todos=DATA2.map(function(a){return Object.assign({},a,calcML2(a));});
+  const ml2Avg=ml2Todos.length?ml2Todos.reduce(function(s,a){return s+a.margem;},0)/ml2Todos.length:0;
+  const ml2Ok=ml2Todos.filter(function(a){return a.margem>=16;});
+  const ml2Crit=ml2Todos.filter(function(a){return a.margem<10;});
+
   // Shopee stats for insights
   const shTodos=SH_DATA.map(a=>({...a,...calcSH(a)}));
   const shAvg=shTodos.length?shTodos.reduce((s,a)=>s+a.margem,0)/shTodos.length:0;
@@ -1611,18 +1624,24 @@ function renderInsights(){
 
   const ir=document.getElementById('ins-resumo')
   if(ir)ir.innerHTML=`<div class="card-title">Resumo geral</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
       <div style="background:var(--sur2);border-radius:var(--rs);padding:12px">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:4px">MERCADO LIVRE</div>
+        <div style="font-size:11px;color:var(--t3);margin-bottom:4px">ML — CONTA 1</div>
         <div style="font-size:14px;font-weight:500">${todos.length} anúncios · ${ok.length} saudáveis</div>
         <div style="font-size:13px;color:${avg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${avg.toFixed(1)}%</div>
-        ${crit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${crit.length} críticos abaixo de 10%</div>`:''}
+        ${crit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${crit.length} críticos</div>`:''}
+      </div>
+      <div style="background:var(--gr-bg);border-radius:var(--rs);padding:12px;border:1px solid var(--gr-bd)">
+        <div style="font-size:11px;color:var(--gr);margin-bottom:4px">ML — CONTA 2</div>
+        <div style="font-size:14px;font-weight:500">${ml2Todos.length} anúncios · ${ml2Ok.length} saudáveis</div>
+        <div style="font-size:13px;color:${ml2Avg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${ml2Avg.toFixed(1)}%</div>
+        ${ml2Crit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${ml2Crit.length} críticos</div>`:''}
       </div>
       <div style="background:var(--pu-bg);border-radius:var(--rs);padding:12px;border:1px solid var(--pu-bd)">
         <div style="font-size:11px;color:var(--pu);margin-bottom:4px">SHOPEE</div>
         <div style="font-size:14px;font-weight:500">${shTodos.length} anúncios · ${shOk.length} saudáveis</div>
         <div style="font-size:13px;color:${shAvg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${shAvg.toFixed(1)}%</div>
-        ${shCrit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${shCrit.length} críticos abaixo de 10%</div>`:''}
+        ${shCrit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${shCrit.length} críticos</div>`:''}
       </div>
     </div>`
 
@@ -1658,6 +1677,15 @@ function renderInsights(){
       <div style="margin-top:10px;font-size:13px;color:var(--t2)">Premium vale a pena em produtos acima de R$300 onde parcelamento aumenta conversão.</div>`
   }
 
+  // ML2 margem por linha
+  const ml2LCard=document.getElementById('ins-ml2-linhas');
+  if(ml2LCard){
+    const ml2Linha={};
+    ml2Todos.forEach(function(a){var t=a.nome.split(' ').slice(0,2).join(' ');if(!ml2Linha[t])ml2Linha[t]=[];ml2Linha[t].push(a.margem);});
+    const ml2Linhas=Object.entries(ml2Linha).map(function(e){return{t:e[0],avg:e[1].reduce(function(s,v){return s+v;},0)/e[1].length,n:e[1].length};}).sort(function(a,b){return b.avg-a.avg;});
+    ml2LCard.innerHTML='<div class="card-title" style="color:var(--gr)">ML Conta 2 — margem por linha</div>'+
+      ml2Linhas.slice(0,8).map(function(x){return'<div class="ir"><div><div class="ir-name">'+x.t+'</div><div class="ir-sub">'+x.n+' anúncio'+(x.n>1?'s':'')+'</div></div><span class="badge '+(x.avg>=16?'b-ok':'b-nok')+'">'+x.avg.toFixed(1)+'%</span></div>';}).join('');
+  }
   const shLCard=document.getElementById('ins-shopee-linhas');
   if(shLCard){
     const shLinha={};
@@ -1666,11 +1694,24 @@ function renderInsights(){
     shLCard.innerHTML='<div class="card-title" style="color:var(--pu)">Shopee — margem por linha</div>'+
       shLinhas.slice(0,8).map(function(x){return'<div class="ir"><div><div class="ir-name">'+x.t+'</div><div class="ir-sub">'+x.n+' anúncio'+(x.n>1?'s':'')+'</div></div><span class="badge '+(x.avg>=16?'b-ok':'b-nok')+'">'+x.avg.toFixed(1)+'%</span></div>';}).join('');
   }
-  const ci=document.getElementById('ins-criticos')
+  const ci=document.getElementById('ins-criticos');
   if(ci){
-    if(crit.length){ci.style.display='';ci.innerHTML=`<div class="card-title" style="color:var(--rd)">Críticos — abaixo de 10%</div>`+
-      crit.map(a=>`<div class="ir" onclick="openModal(${a.id})" style="cursor:pointer"><div><div class="ir-name">${a.nome}</div><div class="ir-sub">${a.cod}</div></div><span class="badge b-nok">${a.margem.toFixed(1)}%</span></div>`).join('')
-    } else ci.style.display='none'
+    const allCrit=[
+      ...crit.map(a=>({...a,plat:'ML1'})),
+      ...ml2Crit.map(a=>({...a,plat:'ML2'})),
+      ...shCrit.map(a=>({...a,plat:'Shopee'}))
+    ];
+    if(allCrit.length){
+      ci.style.display='';
+      ci.innerHTML='<div class="card-title" style="color:var(--rd)">Críticos — abaixo de 10% (todas as contas)</div>'+
+        allCrit.map(function(a){
+          var onclick=a.plat==='ML1'?'openModalById(\''+a.id+'\')':(a.plat==='ML2'?'openModal2(\''+a.id+'\')':'openShopeeModalById(\''+a.id+'\')')
+          var cls=a.plat==='ML1'?'b-info':(a.plat==='ML2'?'b-ok':'b-prm');
+          return '<div class="ir" style="cursor:pointer" onclick="'+onclick+'">'+
+            '<div><div class="ir-name">'+a.nome+' <span class="badge '+cls+'" style="font-size:9px">'+a.plat+'</span></div><div class="ir-sub">'+a.cod+'</div></div>'+
+            '<span class="badge b-nok">'+a.margem.toFixed(1)+'%</span></div>';
+        }).join('');
+    } else ci.style.display='none';
   }
 }
 
@@ -2114,18 +2155,52 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ════════════════════════════════════════
 
 function renderML2(){
-  window._ml2Lista=DATA2.map(function(a){return Object.assign({},a,calcML2(a));});
-  var lista=window._ml2Lista;
+  var todos=DATA2.map(function(a){return Object.assign({},a,calcML2(a));});
+  var avg=todos.length?todos.reduce(function(s,a){return s+a.margem;},0)/todos.length:0;
+  var ok2=todos.filter(function(a){return a.margem>=16;});
+  var nok2=todos.filter(function(a){return a.margem<16;});
+  var crit2=todos.filter(function(a){return a.margem<10;});
+  var opp2=todos.filter(function(a){return a.margem>=25;});
+
+  // Alerts
+  var alEl=document.getElementById('ml2-alerts');
+  if(alEl){
+    var al=[];
+    if(crit2.length)al.push('<div class="alert al-rd"><span>⚠</span><span><strong>'+crit2.length+' anúncio'+(crit2.length>1?'s':'')+' com margem abaixo de 10%</strong></span></div>');
+    if(!crit2.length&&avg>=18)al.push('<div class="alert al-bl"><span>✓</span><span>Conta 2 saudável — margem média '+avg.toFixed(1)+'%</span></div>');
+    alEl.innerHTML=al.join('');
+  }
+
+  // Metrics
+  var dm2=document.getElementById('ml2-metrics');
+  if(dm2)dm2.innerHTML=
+    '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
+    '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
+    '<div class="met"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub">'+crit2.length+' críticos</div></div>'+
+    '<div class="met"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:var(--gr)">'+opp2.length+'</div><div class="met-sub">margem ≥25%</div></div>';
+
+  // Top/bot
+  var sorted2=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
+  function mkR2(list,cls){return list.map(function(a){
+    return '<div class="ri" data-id="'+a.id+'" onclick="openModal2(this.dataset.id)" style="cursor:pointer">'+
+      '<div><div class="ri-name">'+a.nome+'</div><div class="ri-cod">'+a.cod+'</div></div>'+
+      '<div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';
+  }).join('');}
+  var t=document.getElementById('ml2-top'); if(t)t.innerHTML=mkR2(sorted2.slice(0,5),'b-ok');
+  var b=document.getElementById('ml2-bot'); if(b)b.innerHTML=mkR2(sorted2.slice(-5).reverse(),'b-nok');
+
+  // Filter for table
   var q=(document.getElementById('ml2-busca')?.value||'').toLowerCase();
   var st=document.getElementById('ml2-fstatus')?.value||'';
   var cl=document.getElementById('ml2-fclass')?.value||'';
-  lista=lista.filter(function(a){
+  var lista=todos.filter(function(a){
     if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
     if(cl&&(a.tipo||'classico')!==cl)return false;
     return true;
   });
+  window._ml2Lista=lista;
   var sub=document.getElementById('ml2-sub');
   if(sub)sub.textContent=lista.length+' de '+DATA2.length+' anúncios';
   
