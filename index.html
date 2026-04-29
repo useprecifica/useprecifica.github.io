@@ -1316,13 +1316,21 @@ function salvar(){
 }
 
 function deletar(){
-  if(!editId)return
-  const a=DATA.find(x=>x.id===editId)
-  if(!confirm(`Remover "${a?.nome}"?`))return
-  DATA=DATA.filter(x=>x.id!==editId);sv()
-  addH(`Removido: ${a?.nome} (${a?.cod})`)
-  closeModal();renderDash()
-  if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios()
+  if(!editId)return;
+  const a=DATA.find(x=>String(x.id)===String(editId));
+  if(!a)return;
+  if(!confirm('Remover "'+a.nome+'"?'))return;
+  // Also delete from Supabase
+  if(SB&&SB_USER){
+    SB.from('anuncios').delete().eq('id',String(editId)).then(function(r){
+      if(r.error)console.error('Delete ML error:',r.error.message);
+    });
+  }
+  DATA=DATA.filter(x=>String(x.id)!==String(editId));
+  localStorage.setItem(SK,JSON.stringify(DATA));
+  addH('Removido: '+a.nome+' ('+a.cod+')');
+  closeModal();renderDash();
+  if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios();
 }
 
 function toggleTagBtn(btn){
@@ -1860,9 +1868,17 @@ function salvarShopee(){
 function deletarShopee(){
   if(!shEditId)return;
   const a=SH_DATA.find(x=>String(x.id)===String(shEditId));
-  if(!confirm(`Remover "${a?.nome}" da Shopee?`))return;
-  SH_DATA=SH_DATA.filter(x=>x.id!==shEditId);svSH();
-  addH(`[Shopee] Removido: ${a?.nome}`);
+  if(!a)return;
+  if(!confirm('Remover "'+a.nome+'" da Shopee?'))return;
+  // Also delete from Supabase
+  if(SB&&SB_USER){
+    SB.from('anuncios_shopee').delete().eq('id',String(shEditId)).then(function(r){
+      if(r.error)console.error('Delete Shopee error:',r.error.message);
+    });
+  }
+  SH_DATA=SH_DATA.filter(x=>String(x.id)!==String(shEditId));
+  localStorage.setItem(SK_SH,JSON.stringify(SH_DATA));
+  addH('[Shopee] Removido: '+a.nome);
   closeShopeeModal();renderShopee();
 }
 
