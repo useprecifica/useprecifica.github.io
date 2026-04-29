@@ -1771,11 +1771,18 @@ function shCalcLive(){
   const r=calcSH(f),ok=r.margem>=16;
   document.getElementById('sh-m-result').style.display='';
   document.getElementById('sh-rb-pv').textContent=fmt(r.pv);
-  document.getElementById('sh-rb-desc').textContent=fmt(r.taxa);
   document.getElementById('sh-rb-luc').textContent=fmt(r.lucro);
   document.getElementById('sh-rb-luc').style.color=ok?'var(--gr)':'var(--rd)';
   document.getElementById('sh-rb-mar').textContent=r.margem.toFixed(2)+'%';
   document.getElementById('sh-rb-mar').style.color=ok?'var(--gr)':'var(--rd)';
+  document.getElementById('sh-rb-custo').textContent=fmt(r.custo);
+  document.getElementById('sh-rb-taxa').textContent=fmt(r.taxa);
+  document.getElementById('sh-rb-taxa').style.color='var(--pu)';
+  document.getElementById('sh-rb-desc').textContent=fmt(r.desc);
+  document.getElementById('sh-rb-imp').textContent=fmt(r.imp);
+  var frEl=document.getElementById('sh-rb-frete');
+  var frRow=document.getElementById('sh-rb-frete-row');
+  if(frEl&&frRow){var tf=r.frete+r.outros;frRow.style.display=tf>0?'':'none';frEl.textContent=fmt(tf);}
   // Suggestion
   const sugEl=document.getElementById('sh-m-sug');
   if(sugEl&&!ok){
@@ -2011,11 +2018,20 @@ load();loadShopee();initSupabase().then(()=>renderDash())
     <div class="modal-title" id="sh-m-title">Novo anúncio Shopee</div>
     <button class="modal-x" onclick="closeShopeeModal()">×</button>
   </div>
-  <div id="sh-m-result" class="rbox" style="display:none">
-    <div><div class="rbox-label">Preço efetivo</div><div class="rbox-val" id="sh-rb-pv">—</div></div>
-    <div><div class="rbox-label">Taxa Shopee</div><div class="rbox-val" id="sh-rb-desc">—</div></div>
-    <div><div class="rbox-label">Lucro líquido</div><div class="rbox-val" id="sh-rb-luc">—</div></div>
-    <div><div class="rbox-label">Margem</div><div class="rbox-val" id="sh-rb-mar">—</div></div>
+  <div id="sh-m-result" style="display:none;margin-bottom:12px">
+    <div class="rbox" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
+      <div><div class="rbox-label">Preço efetivo</div><div class="rbox-val" id="sh-rb-pv">—</div></div>
+      <div><div class="rbox-label">Lucro líquido</div><div class="rbox-val" id="sh-rb-luc">—</div></div>
+      <div><div class="rbox-label">Margem</div><div class="rbox-val" id="sh-rb-mar">—</div></div>
+    </div>
+    <div style="background:var(--sur2);border-radius:var(--rs);padding:10px 13px;font-size:12px">
+      <div style="font-weight:600;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Composição dos custos</div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo do produto</span><span id="sh-rb-custo">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Taxa Shopee (comissão + antec + camp)</span><span id="sh-rb-taxa">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Desconto cupom</span><span id="sh-rb-desc">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Imposto (${html[html.find('id="sh-f-imp"'):html.find('id="sh-f-imp"')+60].split('value="')[1].split('"')[0] if 'id="sh-f-imp"' in html else '10'}%)</span><span id="sh-rb-imp">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0" id="sh-rb-frete-row"><span style="color:var(--t2)">Frete + outros</span><span id="sh-rb-frete">—</span></div>
+    </div>
   </div>
   <div id="sh-m-sug" style="display:none;font-size:13px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--rs);padding:9px 12px;margin-bottom:12px"></div>
   <div class="fg2">
