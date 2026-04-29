@@ -2132,26 +2132,38 @@ function renderML2(){
   function tipoBadge(t){return t==='premium'?'<span class="badge b-prm">Premium</span>':'<span class="badge b-cls">Clássico</span>';}
   
   window._ml2Lista=lista;
-  document.getElementById('ml2-tbl-body').innerHTML=lista.length
-    ?lista.map(function(a,i){
-      var ok=a.margem>=16;
-      var tagsHtml=mkTags(a.tags);
-      return '<tr data-idx="'+i+'" class="ml2-row" style="cursor:pointer">'+
-        '<td style="font-family:var(--mono);font-size:11px;color:var(--t3)" onclick="event.stopPropagation();copiarCod(''+a.cod+'')" title="Copiar">'+a.cod+'</td>'+
-        '<td style="font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis">'+a.nome+(tagsHtml?'<br><span style="display:inline-flex;gap:3px;margin-top:2px">'+tagsHtml+'</span>':'')+'</td>'+
-        '<td>'+tipoBadge(a.tipo||'classico')+'</td>'+
-        '<td onclick="event.stopPropagation()"><input class="tbl-inp" type="number" step=".01" value="'++(a.precoD>0?a.precoD:a.preco).toFixed(2)+'" data-idx="'+i+'" data-field="precoD" style="width:82px"></td>'+
-        '<td onclick="event.stopPropagation()"><input class="tbl-inp" type="number" step=".01" value="'++(a.custo).toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:72px"></td>'+
-        '<td onclick="event.stopPropagation()"><input class="tbl-inp" type="number" step=".01" value="'++(a.frete).toFixed(2)+'" data-idx="'+i+'" data-field="frete" style="width:70px"></td>'+
-        '<td style="color:var(--t2)">'+fmt(a.desc)+'</td>'+
-        '<td style="font-weight:500;color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</td>'+
-        '<td><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
-          '<div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div></td>'+
-        '<td style="font-size:12px;color:var(--t2);max-width:120px">'+(a.obs?'<span style="font-style:italic">'+a.obs+'</span>':'—')+'</td>'+
-        '<td><button class="btn-sm ml2-edit-btn" data-idx="'+i+'">Editar</button></td>'+
-      '</tr>';
-    }).join('')
-    :'<tr><td colspan="11"><div class="empty">Nenhum resultado</div></td></tr>';
+  var _tb2=document.getElementById('ml2-tbl-body');
+  _tb2.innerHTML='';
+  if(!lista.length){
+    _tb2.innerHTML='<tr><td colspan="11"><div class="empty">Nenhum resultado</div></td></tr>';
+  } else { lista.forEach(function(a,i){
+    var ok=a.margem>=16;
+    var th=mkTags(a.tags);
+    var badge=a.tipo==='premium'?'<span class="badge b-prm">Premium</span>':'<span class="badge b-cls">Clássico</span>';
+    var tr=document.createElement('tr');
+    tr.className='ml2-row'; tr.dataset.idx=i; tr.style.cursor='pointer';
+    var cells=[
+      '<span class="ml2-cod" title="Copiar">'+a.cod+'</span>',
+      a.nome+(th?'<br>'+th:'')+badge,
+      '<input class="tbl-inp" type="number" step=".01" value="'++(a.precoD>0?a.precoD:a.preco).toFixed(2)+'" data-idx="'+i+'" data-field="precoD" style="width:82px">',
+      '<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:72px">',
+      '<input class="tbl-inp" type="number" step=".01" value="'+a.frete.toFixed(2)+'" data-idx="'+i+'" data-field="frete" style="width:70px">',
+      fmt(a.desc),
+      fmt(a.lucro),
+      '<span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+';"></div></div>',
+      a.obs?('<em>'+a.obs+'</em>'):'—',
+      '<button class="btn-sm">Editar</button>'
+    ];
+    var styles=['font-family:var(--mono);font-size:11px;color:var(--t3)','font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis','','','','color:var(--t2)','font-weight:500;color:'+(ok?'var(--gr)':'var(--rd)'),'','font-size:12px;color:var(--t2)',''];
+    cells.forEach(function(c,ci){
+      var td=document.createElement('td');
+      td.innerHTML=c;
+      if(styles[ci])td.style.cssText=styles[ci];
+      if(ci>=2&&ci<=4)td.onclick=function(e){e.stopPropagation();};
+      tr.appendChild(td);
+    });
+    _tb2.appendChild(tr);
+  }); }
 
   // Event delegation
   var tb=document.getElementById('ml2-tbl-body');
