@@ -2141,27 +2141,33 @@ function renderML2(){
     var th=mkTags(a.tags);
     var badge=a.tipo==='premium'?'<span class="badge b-prm">Premium</span>':'<span class="badge b-cls">Clássico</span>';
     var tr=document.createElement('tr');
-    tr.className='ml2-row'; tr.dataset.idx=i; tr.style.cursor='pointer';
-    var cells=[
-      '<span class="ml2-cod" title="Copiar">'+a.cod+'</span>',
-      a.nome+(th?'<br>'+th:'')+badge,
-      '<input class="tbl-inp" type="number" step=".01" value="'++(a.precoD>0?a.precoD:a.preco).toFixed(2)+'" data-idx="'+i+'" data-field="precoD" style="width:82px">',
-      '<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:72px">',
-      '<input class="tbl-inp" type="number" step=".01" value="'+a.frete.toFixed(2)+'" data-idx="'+i+'" data-field="frete" style="width:70px">',
-      fmt(a.desc),
-      fmt(a.lucro),
-      '<span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+';"></div></div>',
-      a.obs?('<em>'+a.obs+'</em>'):'—',
-      '<button class="btn-sm">Editar</button>'
-    ];
-    var styles=['font-family:var(--mono);font-size:11px;color:var(--t3)','font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis','','','','color:var(--t2)','font-weight:500;color:'+(ok?'var(--gr)':'var(--rd)'),'','font-size:12px;color:var(--t2)',''];
-    cells.forEach(function(c,ci){
-      var td=document.createElement('td');
-      td.innerHTML=c;
-      if(styles[ci])td.style.cssText=styles[ci];
-      if(ci>=2&&ci<=4)td.onclick=function(e){e.stopPropagation();};
-      tr.appendChild(td);
-    });
+    var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
+    var okCl=ok?'var(--gr)':'var(--rd)';
+    var okBadge=ok?'b-ok':'b-nok';
+    var c0=document.createElement('td');
+    c0.textContent=a.cod; c0.title='Copiar'; c0.className='ml2-cod';
+    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
+    var c1=document.createElement('td');
+    c1.innerHTML=a.nome+(th?'<br>'+th:'')+badge;
+    c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
+    var c2=document.createElement('td');
+    c2.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+pv2+'" data-idx="'+i+'" data-field="precoD" style="width:82px">';
+    c2.onclick=function(e){e.stopPropagation();};
+    var c3=document.createElement('td');
+    c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:72px">';
+    c3.onclick=function(e){e.stopPropagation();};
+    var c4=document.createElement('td');
+    c4.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.frete.toFixed(2)+'" data-idx="'+i+'" data-field="frete" style="width:70px">';
+    c4.onclick=function(e){e.stopPropagation();};
+    var c5=document.createElement('td'); c5.textContent=fmt(a.desc); c5.style.color='var(--t2)';
+    var c6=document.createElement('td'); c6.textContent=fmt(a.lucro); c6.style.cssText='font-weight:500;color:'+okCl;
+    var c7=document.createElement('td');
+    c7.innerHTML='<span class="badge '+okBadge+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+okCl+'"></div></div>';
+    var c8=document.createElement('td'); c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
+    c8.innerHTML=a.obs?('<em>'+a.obs+'</em>'):'—';
+    var c9=document.createElement('td');
+    c9.innerHTML='<button class="btn-sm">Editar</button>';
+    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
     _tb2.appendChild(tr);
   }); }
 
