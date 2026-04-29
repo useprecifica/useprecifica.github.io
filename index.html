@@ -2216,6 +2216,9 @@ function renderML2(){
     var th=mkTags(a.tags);
     var badge=a.tipo==='premium'?'<span class="badge b-prm">Premium</span>':'<span class="badge b-cls">Clássico</span>';
     var tr=document.createElement('tr');
+    tr.className='ml2-row';
+    tr.dataset.idx=String(i);
+    tr.style.cursor='pointer';
     var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
     var okCl=ok?'var(--gr)':'var(--rd)';
     var okBadge=ok?'b-ok':'b-nok';
