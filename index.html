@@ -1746,16 +1746,16 @@ function calcSH(a){
   const pv=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
   const preco=+a.preco||pv;
   const custo=+a.custo||0;
-  const taxa=taxaShopee(pv);       // ALL-IN: comissão + antecipação + camp
-  const antec=(+a.ant||6)/100*pv;  // antecipação separada para exibição
-  const comissao=taxa-antec;        // comissão pura da plataforma
+  const taxa=taxaShopee(pv);        // Comissão Shopee (fórmula escalonada)
+  const antec=(+a.ant||6)/100*pv;   // Antecipação + camp (% separado)
   const frete=+a.frete||0;
   const outros=+a.outros||0;
   const rawDesc=(+a.descPct||5)/100*preco;
   const desc=Math.min(rawDesc,+a.descMax||999);
   const imp=(+a.imp||10)/100*pv;
-  const lucro=pv-custo-taxa-frete-outros-desc-imp;
-  return{pv,preco,custo,taxa,comissao,antec,frete,outros,desc,imp,lucro,margem:pv>0?lucro/pv*100:0}
+  const totalTaxa=taxa+antec;        // total descontado pela plataforma
+  const lucro=pv-custo-totalTaxa-frete-outros-desc-imp;
+  return{pv,preco,custo,taxa,antec,totalTaxa,frete,outros,desc,imp,lucro,margem:pv>0?lucro/pv*100:0}
 }
 
 function shAutoFill(){
@@ -1777,11 +1777,11 @@ function shCalcLive(){
   document.getElementById('sh-rb-mar').textContent=r.margem.toFixed(2)+'%';
   document.getElementById('sh-rb-mar').style.color=ok?'var(--gr)':'var(--rd)';
   document.getElementById('sh-rb-custo').textContent=fmt(r.custo);
-  document.getElementById('sh-rb-comissao').textContent=fmt(r.comissao);
+  document.getElementById('sh-rb-comissao').textContent=fmt(r.taxa);
   document.getElementById('sh-rb-antec').textContent=fmt(r.antec);
   var antLbl=document.getElementById('sh-lbl-ant');
   if(antLbl)antLbl.textContent=(+shGetForm().ant||6);
-  document.getElementById('sh-rb-taxa').textContent=fmt(r.taxa);
+  document.getElementById('sh-rb-taxa').textContent=fmt(r.totalTaxa);
   document.getElementById('sh-rb-taxa').style.color='var(--pu)';
   document.getElementById('sh-rb-desc').textContent=fmt(r.desc);
   document.getElementById('sh-rb-imp').textContent=fmt(r.imp);
@@ -1815,7 +1815,8 @@ function calcSugSH(a){
   for(var i=0;i<tiers.length;i++){
     var t=tiers[i];
     // pv*(1 - rate - imp - alvo - descPct) = custo + fixed + frete + outros
-    var denom=1-t.rate-imp-alvo-descPct;
+    var antPct=(+a.ant||6)/100;
+    var denom=1-t.rate-antPct-imp-alvo-descPct;
     if(denom<=0.01)continue;
     var pv=(custo+t.fixed+frete+outros)/denom;
     if(pv>0&&pv<=t.max){
@@ -1956,7 +1957,7 @@ function renderShopee(){
         <td>${fmt(a.preco)}</td>
         <td><input class="tbl-inp" type="number" value="${+(a.precoD>0?a.precoD:a.preco).toFixed(2)}" data-idx="${i}" data-field="precoD" style="width:80px"></td>
         <td><input class="tbl-inp" type="number" value="${+a.custo.toFixed(2)}" data-idx="${i}" data-field="custo" style="width:72px"></td>
-        <td style="color:var(--t2)" title="Taxa Shopee escalonada">${fmt(a.taxa)}</td>
+        <td style="color:var(--t2)" title="Taxa Shopee total (comissão + antecipação)">${fmt(a.totalTaxa)}</td>
         <td><input class="tbl-inp" type="number" value="${+a.frete.toFixed(2)}" data-idx="${i}" data-field="frete" style="width:65px"></td>
         <td style="color:var(--t2)">${fmt(a.desc)}</td>
         <td style="font-weight:500;color:${ok?'var(--gr)':'var(--rd)'}">${fmt(a.lucro)}</td>
