@@ -240,7 +240,11 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   </button>
   <button class="ni" data-tab="anuncios" onclick="goTab('anuncios')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    Mercado Livre
+    ML — Conta 1
+  </button>
+  <button class="ni" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    ML — Conta 2
   </button>
   <button class="ni" data-tab="shopee" onclick="goTab('shopee')" style="color:var(--pu)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -493,6 +497,30 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <tbody id="custos-body"></tbody></table>
   </div>
 </div>
+<!-- ML2 -->
+<div id="p-ml2" style="display:none">
+  <div class="ph">
+    <div><div class="ph-title" id="ml2-title" style="color:var(--gr)">ML — Conta 2</div><div class="ph-sub" id="ml2-sub"></div></div>
+    <div class="ph-actions">
+      <button class="btn" id="ml2-btn-back" onclick="clearFilter2()" style="display:none">← Voltar</button>
+      <button class="btn btn-p" style="background:var(--gr);border-color:var(--gr)" onclick="openModal2()">+ Novo</button>
+    </div>
+  </div>
+  <div id="ml2-filter-bar">
+    <div class="fbar">
+      <input id="ml2-busca" placeholder="Buscar nome ou código..." oninput="renderML2()">
+      <select id="ml2-fstatus" onchange="renderML2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
+      <select id="ml2-fclass" onchange="renderML2()"><option value="">Clássico + Premium</option><option value="classico">Clássico</option><option value="premium">Premium</option></select>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table class="tbl"><thead><tr>
+      <th>Código</th><th>Produto</th><th>Tipo</th><th>Preço</th><th>Custo</th><th>Frete</th><th>Desc</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
+    </tr></thead><tbody id="ml2-tbl-body"></tbody></table>
+  </div>
+  <div class="mob" id="ml2-mob-cards" style="display:none"></div>
+</div>
+
 <!-- HISTÓRICO -->
 <div id="p-hist" style="display:none">
   <div class="ph"><div><div class="ph-title">Histórico</div><div class="ph-sub" id="hist-sub"></div></div></div>
@@ -509,7 +537,11 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   </button>
   <button class="nb" data-tab="anuncios" onclick="goTab('anuncios')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML
+    ML 1
+  </button>
+  <button class="nb" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    ML 2
   </button>
   <button class="nb" data-tab="sim" onclick="goTab('sim')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
@@ -633,7 +665,7 @@ function getCusto(nome){
   return null;
 }
 
-const SK='pfy1',HK='pfy1h';
+const SK='pfy1',HK='pfy1h',SK2='pfy2';
 const SEED=[
 {cod:'4585262697',nome:'Coluna Áustria',preco:500,precoD:392.10,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,tags:{full:false,oferta:false,pub:false},obs:''},
 {cod:'4585298353',nome:'ABJ Áustria',preco:290,precoD:237.40,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,tags:{full:true,oferta:false,pub:false},obs:'FULL ML'},
@@ -739,6 +771,36 @@ const SEED=[
 {cod:'4508238534',nome:'ABJ Áustria Preto',preco:300,precoD:267.40,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,tags:{full:false,oferta:false,pub:false},obs:'oportunidade'},
 ];
 
+const SEED_ML2=[
+  {cod:'6250952784',nome:'ABJ Mine',preco:99.9,precoD:94.3,custo:37.29,com:11.5,ant:4.2,frete:17.05,ajml:0,descPct:5,descMax:4.72,imp:10,obs:'SUBIR PREÇO CHEIO',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4480368643',nome:'ABJ Soft',preco:127.4,precoD:78.4,custo:32.0,com:11.5,ant:4.2,frete:8.55,ajml:0,descPct:5,descMax:3.92,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4502044451',nome:'ABJ Mine',preco:99.9,precoD:90.69,custo:37.29,com:11.5,ant:4.2,frete:14.15,ajml:2.43,descPct:5,descMax:4.53,imp:10,obs:'SUBIR PREÇO CHEIO',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6414341858',nome:'Coluna Ipanema',preco:430.0,precoD:376.2,custo:106.78,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'TESTE ATÉ 05/04',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4520850393',nome:'Coluna Ipanema',preco:374.9,precoD:357.1,custo:106.78,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4504230485',nome:'ABJ Áustria',preco:179.9,precoD:147.51,custo:64.15,com:11.5,ant:4.2,frete:21.05,ajml:0,descPct:5,descMax:7.38,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4506274513',nome:'Coluna Áustria',preco:350.0,precoD:332.24,custo:121.91,com:11.5,ant:4.2,frete:39.75,ajml:7.13,descPct:5,descMax:10,imp:10,obs:'OPORTUNIDADE',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4506297023',nome:'Coluna Floripa',preco:309.9,precoD:294.2,custo:117.02,com:11.5,ant:4.2,frete:28.35,ajml:6.3,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4510811525',nome:'ABJ Sky',preco:289.9,precoD:249.97,custo:106.41,com:11.5,ant:4.2,frete:30.75,ajml:6.14,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4510919315',nome:'Coluna Áustria',preco:378.5,precoD:340.65,custo:121.9,com:11.5,ant:4.2,frete:26.25,ajml:0,descPct:5,descMax:10,imp:10,obs:'OPORTUNIDADE',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4515756023',nome:'Coluna Ipanema',preco:315.5,precoD:299.52,custo:106.78,com:11.5,ant:4.2,frete:49.35,ajml:6.49,descPct:5,descMax:10,imp:10,obs:'OPORTUNIDADE',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4523669033',nome:'ABJ Wood',preco:310.0,precoD:287.4,custo:106.41,com:11.5,ant:4.2,frete:49.35,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6250745552',nome:'ABJ Mine',preco:109.9,precoD:97.3,custo:37.29,com:11.5,ant:4.2,frete:18.0,ajml:0,descPct:5,descMax:4.87,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6398515622',nome:'ABJ Áustria',preco:174.5,precoD:145.96,custo:64.15,com:11.5,ant:4.2,frete:24.65,ajml:4.51,descPct:5,descMax:7.3,imp:10,obs:'TIRAR DESCONTO',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6410359128',nome:'Coluna Áustria',preco:427.0,precoD:318.1,custo:121.9,com:11.5,ant:4.2,frete:39.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'OPORTUNIDADE',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6414298296',nome:'ABJ Mine',preco:99.9,precoD:99.9,custo:37.29,com:11.5,ant:4.2,frete:17.05,ajml:0,descPct:5,descMax:5.0,imp:10,obs:'SUBIR PREÇO CHEIO',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6414802356',nome:'ABJ Sky',preco:299.0,precoD:278.07,custo:106.41,com:11.5,ant:4.2,frete:28.35,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6432646488',nome:'ABJ Áustria',preco:199.0,precoD:179.1,custo:64.15,com:11.5,ant:4.2,frete:27.75,ajml:0,descPct:5,descMax:8.96,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6433021926',nome:'Kit 2 ABJ Áustria',preco:380.0,precoD:359.49,custo:128.3,com:11.5,ant:4.2,frete:28.35,ajml:3.55,descPct:5,descMax:10,imp:10,obs:'OPORTUNIDADE',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6437558034',nome:'Coluna Áustria',preco:394.5,precoD:297.1,custo:121.9,com:11.5,ant:4.2,frete:26.25,ajml:6.74,descPct:5,descMax:10,imp:10,obs:'OPORTUNIDADE',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4542163409',nome:'Kit 2 ABJ Áustria',preco:350.0,precoD:297.0,custo:128.3,com:11.5,ant:4.2,frete:28.35,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4573468289',nome:'Coluna Áustria',preco:389.9,precoD:351.7,custo:121.9,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4582227893',nome:'Coluna Ipanema',preco:429.9,precoD:342.1,custo:106.78,com:11.5,ant:4.2,frete:44.05,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6487924802',nome:'Vaso China Vietnamita',preco:590.0,precoD:467.4,custo:219.0,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6500796670',nome:'Porta Guardanapo',preco:30.0,precoD:24.9,custo:6.0,com:11.5,ant:4.2,frete:6.85,ajml:0,descPct:5,descMax:1.25,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6481131996',nome:'ABJ Slim',preco:150.0,precoD:124.3,custo:43.25,com:11.5,ant:4.2,frete:23.65,ajml:0,descPct:5,descMax:6.22,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}}
+];
+
+
 // ── AUTO-FILL ──
 function autoFillCusto(){
   const nome=document.getElementById('f-nome')?.value||'';
@@ -750,6 +812,7 @@ function autoFillCusto(){
 
 // ── STATE ──
 let DATA=[],HIST=[],NID=1000,editId=null,activeFilter=null,mTipo='classico',sTipo='classico';
+let DATA2=[],NID2=9000,editId2=null,activeFilter2=null;
 
 // ── STORAGE ──
 function sv(){localStorage.setItem(SK,JSON.stringify(DATA));scheduleSyncUp();}
@@ -977,6 +1040,20 @@ async function pushSHup(){
   }
 }
 
+async function pushML2up(){
+  var uid='00000000-0000-0000-0000-000000000001';
+  var rows=DATA2.map(function(a){return{
+    user_id:uid,cod:a.cod||'',nome:a.nome||'',tipo:a.tipo||'classico',
+    preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,
+    com:a.com||11.5,ant:a.ant||4.2,frete:a.frete||0,aj_ml:a.ajml||0,
+    desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||'',
+    tag_full:!!(a.tags&&a.tags.full),tag_oferta:!!(a.tags&&a.tags.oferta),tag_pub:!!(a.tags&&a.tags.pub)
+  };});
+  if(rows.length){
+    var r=await SB.from('anuncios_ml2').insert(rows);
+    if(r.error)console.error('pushML2 error:',r.error.message);
+  }
+}
 async function syncUp(silent){
   if(!SB||!SB_USER)return;
   if(!silent)setSyncStatus('syncing');
@@ -988,6 +1065,10 @@ async function syncUp(silent){
       await SB.from('anuncios_shopee').delete().eq('user_id',uid);
       await pushSHup();
     }catch(e2){console.warn('Shopee sync skip:',e2.message);}
+    try{
+      await SB.from('anuncios_ml2').delete().eq('user_id',uid);
+      await pushML2up();
+    }catch(e3){console.warn('ML2 sync skip:',e3.message);}
     setSyncStatus('connected');
     if(!silent)showCfgStatus('Sincronizado!','ok');
   }catch(e){console.error('syncUp:',e);setSyncStatus('error');}
@@ -1025,7 +1106,7 @@ function loadCfgFields(){
 
 function goTab(t){
   document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('active',el.dataset.tab===t))
-  ;['dash','anuncios','sim','insights','hist','config','shopee','custos'].forEach(p=>{
+  ;['dash','anuncios','sim','insights','hist','config','shopee','custos','ml2'].forEach(p=>{
     document.getElementById('p-'+p).style.display=p===t?'':'none'
   })
   if(t==='dash')renderDash()
@@ -1035,6 +1116,7 @@ function goTab(t){
   else if(t==='config')loadCfgFields()
   else if(t==='shopee')renderShopee()
   else if(t==='custos')renderCustos()
+  else if(t==='ml2'){renderML2();}
   document.querySelector('.content').scrollTop=0
 }
 
@@ -1294,6 +1376,7 @@ function calcLive(){
 }
 
 function salvar(){
+  if(_ml2ModalMode)return salvarML2();
   var f=getForm();
   if(!f.nome.trim())return alert('Informe o nome do produto');
   if(editId){
@@ -1316,6 +1399,7 @@ function salvar(){
 }
 
 function deletar(){
+  if(_ml2ModalMode)return deletarML2();
   if(!editId)return;
   const a=DATA.find(x=>String(x.id)===String(editId));
   if(!a)return;
@@ -1334,6 +1418,7 @@ function deletar(){
 }
 
 function toggleTagBtn(btn){
+  if(_ml2ModalMode){toggleTagML2(btn.dataset.id,btn.dataset.tag);return;}
   const id=btn.dataset.id;
   const tag=btn.dataset.tag;
   toggleTag(id,tag);
@@ -1736,6 +1821,16 @@ function loadShopee(){
 
 // Taxa Shopee = fórmula escalonada (comissão plataforma + antecipação + campanha)
 // Baseada na fórmula Excel do usuário
+function loadML2(){
+  try{
+    const s=localStorage.getItem(SK2);
+    if(s){DATA2=JSON.parse(s);NID2=Math.max(...DATA2.map(a=>+a.id||0),8999)+1;}
+    else{DATA2=SEED_ML2.map(function(a,i){return Object.assign({},a,{id:9000+i});});NID2=9000+DATA2.length;localStorage.setItem(SK2,JSON.stringify(DATA2));}
+    DATA2.forEach(function(a){if(!a.tags)a.tags={full:false,oferta:false,pub:false};});
+  }catch(e){DATA2=SEED_ML2.map(function(a,i){return Object.assign({},a,{id:9000+i});});NID2=9000+DATA2.length;localStorage.setItem(SK2,JSON.stringify(DATA2));}
+}
+function svML2(){localStorage.setItem(SK2,JSON.stringify(DATA2));scheduleSyncUp();}
+
 function taxaShopee(pv){
   if(pv<=79.99) return pv*0.20+4;
   if(pv<=99.99) return pv*0.14+16;
@@ -2013,7 +2108,183 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-load();loadShopee();initSupabase().then(()=>renderDash())
+
+// ════════════════════════════════════════
+// ML CONTA 2 ENGINE
+// ════════════════════════════════════════
+
+function renderML2(){
+  window._ml2Lista=DATA2.map(function(a){return Object.assign({},a,calcML2(a));});
+  var lista=window._ml2Lista;
+  var q=(document.getElementById('ml2-busca')?.value||'').toLowerCase();
+  var st=document.getElementById('ml2-fstatus')?.value||'';
+  var cl=document.getElementById('ml2-fclass')?.value||'';
+  lista=lista.filter(function(a){
+    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
+    if(st==='ok'&&a.margem<16)return false;
+    if(st==='nok'&&a.margem>=16)return false;
+    if(cl&&(a.tipo||'classico')!==cl)return false;
+    return true;
+  });
+  var sub=document.getElementById('ml2-sub');
+  if(sub)sub.textContent=lista.length+' de '+DATA2.length+' anúncios';
+  
+  function tipoBadge(t){return t==='premium'?'<span class="badge b-prm">Premium</span>':'<span class="badge b-cls">Clássico</span>';}
+  
+  window._ml2Lista=lista;
+  document.getElementById('ml2-tbl-body').innerHTML=lista.length
+    ?lista.map(function(a,i){
+      var ok=a.margem>=16;
+      var tagsHtml=mkTags(a.tags);
+      return '<tr data-idx="'+i+'" class="ml2-row" style="cursor:pointer">'+
+        '<td style="font-family:var(--mono);font-size:11px;color:var(--t3)" onclick="event.stopPropagation();copiarCod(''+a.cod+'')" title="Copiar">'+a.cod+'</td>'+
+        '<td style="font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis">'+a.nome+(tagsHtml?'<br><span style="display:inline-flex;gap:3px;margin-top:2px">'+tagsHtml+'</span>':'')+'</td>'+
+        '<td>'+tipoBadge(a.tipo||'classico')+'</td>'+
+        '<td onclick="event.stopPropagation()"><input class="tbl-inp" type="number" step=".01" value="'++(a.precoD>0?a.precoD:a.preco).toFixed(2)+'" data-idx="'+i+'" data-field="precoD" style="width:82px"></td>'+
+        '<td onclick="event.stopPropagation()"><input class="tbl-inp" type="number" step=".01" value="'++(a.custo).toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:72px"></td>'+
+        '<td onclick="event.stopPropagation()"><input class="tbl-inp" type="number" step=".01" value="'++(a.frete).toFixed(2)+'" data-idx="'+i+'" data-field="frete" style="width:70px"></td>'+
+        '<td style="color:var(--t2)">'+fmt(a.desc)+'</td>'+
+        '<td style="font-weight:500;color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</td>'+
+        '<td><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
+          '<div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div></td>'+
+        '<td style="font-size:12px;color:var(--t2);max-width:120px">'+(a.obs?'<span style="font-style:italic">'+a.obs+'</span>':'—')+'</td>'+
+        '<td><button class="btn-sm ml2-edit-btn" data-idx="'+i+'">Editar</button></td>'+
+      '</tr>';
+    }).join('')
+    :'<tr><td colspan="11"><div class="empty">Nenhum resultado</div></td></tr>';
+
+  // Event delegation
+  var tb=document.getElementById('ml2-tbl-body');
+  if(!tb._delegated){
+    tb._delegated=true;
+    tb.addEventListener('click',function(e){
+      if(e.target.tagName==='INPUT')return;
+      var row=e.target.closest('.ml2-row');
+      if(!row)return;
+      var a=window._ml2Lista[+row.dataset.idx];
+      if(a)openModal2(a.id);
+    });
+    tb.addEventListener('change',function(e){
+      if(e.target.tagName!=='INPUT')return;
+      var a=window._ml2Lista[+e.target.dataset.idx];
+      if(a&&e.target.dataset.field)inlineEditML2(a.id,e.target.dataset.field,e.target.value);
+    });
+  }
+
+  // Mobile cards
+  document.getElementById('ml2-mob-cards').innerHTML=lista.map(function(a){
+    var ok=a.margem>=16;
+    return '<div class="an-card" data-id="'+a.id+'" onclick="openModal2(this.dataset.id)" style="cursor:pointer">'+
+      '<div class="an-hdr"><div class="an-name">'+a.nome+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
+      '<div class="an-cod">'+a.cod+'</div>'+
+      '<div class="an-stats"><span>Preço: <strong>'+fmt(a.pv)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span><span>Frete: <strong>'+fmt(a.frete)+'</strong></span></div>'+
+      '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
+      (a.obs?'<div class="an-obs"><span>'+a.obs+'</span></div>':'')+
+    '</div>';
+  }).join('');
+}
+
+function calcML2(a){return calc(a);}  // same formula as ML1
+
+function inlineEditML2(id,field,val){
+  var a=DATA2.find(function(x){return String(x.id)===String(id);});if(!a)return;
+  var v=parseFloat(val)||0;if(a[field]===v)return;
+  a[field]=v;svML2();renderML2();
+}
+
+function clearFilter2(){
+  activeFilter2=null;
+  var t=document.getElementById('ml2-title');if(t)t.textContent='ML — Conta 2';
+  document.getElementById('ml2-filter-bar').style.display='';
+  document.getElementById('ml2-btn-back').style.display='none';
+  renderML2();
+}
+
+// ML2 Modal (reuses the same modal as ML1 but with different data)
+var _ml2ModalMode=false;
+function openModal2(id){
+  _ml2ModalMode=true;
+  editId2=id||null;
+  var a=id?DATA2.find(function(x){return String(x.id)===String(id);}):null;
+  document.getElementById('m-title').textContent=a?'Editar — ML Conta 2':'Novo — ML Conta 2';
+  var bd=document.getElementById('btn-del');if(bd)bd.style.display=a?'':'none';
+  mTipo=a?.tipo||'classico';
+  document.getElementById('m-cls').classList.toggle('active',mTipo==='classico');
+  document.getElementById('m-prm').classList.toggle('active',mTipo==='premium');
+  var g=function(f,v){var el=document.getElementById(f);if(el)el.value=v??'';};
+  g('f-nome',a?.nome||'');g('f-cod',a?.cod||'');
+  g('f-custo',a?.custo||'');g('f-preco',a?.preco||'');g('f-precoD',a?.precoD||'');
+  g('f-frete',a?.frete??'');g('f-ajml',a?.ajml??'');
+  g('f-com',a?.com??(mTipo==='premium'?16.5:11.5));
+  g('f-ant',a?.ant??4.2);g('f-imp',a?.imp??10);
+  g('f-descpct',a?.descPct??5);g('f-descmax',a?.descMax??10);
+  g('f-obs',a?.obs||'');
+  var mt=document.getElementById('modal-tags');
+  if(mt){
+    if(a){
+      var tg=a.tags||{};
+      mt.innerHTML='<button class="tag-btn '+(tg.full?'on-full':'')+'" data-id="'+a.id+'" data-tag="full" onclick="toggleTagBtn(this)">📦 Full ML</button>'+
+        ' <button class="tag-btn '+(tg.oferta?'on-oferta':'')+'" data-id="'+a.id+'" data-tag="oferta" onclick="toggleTagBtn(this)">⚡ Oferta relâmpago</button>'+
+        ' <button class="tag-btn '+(tg.pub?'on-pub':'')+'" data-id="'+a.id+'" data-tag="pub" onclick="toggleTagBtn(this)">📢 Publicidade</button>';
+    } else mt.innerHTML='<span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>';
+  }
+  document.getElementById('m-sug').style.display='none';
+  document.getElementById('overlay').classList.add('open');
+  calcLive();
+  setTimeout(function(){document.getElementById('f-nome').focus();},50);
+}
+
+function salvarML2(){
+  var f=getForm();
+  if(!f.nome.trim())return alert('Informe o nome do produto');
+  if(editId2){
+    var old=DATA2.find(function(a){return String(a.id)===String(editId2);});
+    if(!old)return;
+    var savedTags=old.tags||{full:false,oferta:false,pub:false};
+    Object.assign(old,f);old.tags=savedTags;svML2();
+    addH('[ML2] Editado: '+f.nome+' ('+f.cod+')');
+  } else {
+    DATA2.push(Object.assign({},f,{id:NID2++,tags:{full:false,oferta:false,pub:false}}));svML2();
+    addH('[ML2] Novo: '+f.nome);
+  }
+  _ml2ModalMode=false;editId2=null;
+  closeModal();renderML2();renderDash();
+}
+
+function deletarML2(){
+  if(!editId2)return;
+  var a=DATA2.find(function(x){return String(x.id)===String(editId2);});
+  if(!a)return;
+  if(!confirm('Remover "'+a.nome+'" da ML Conta 2?'))return;
+  if(SB&&SB_USER){
+    SB.from('anuncios_ml2').delete().eq('id',String(editId2)).then(function(r){
+      if(r.error)console.error('Delete ML2:',r.error.message);
+    });
+  }
+  DATA2=DATA2.filter(function(x){return String(x.id)!==String(editId2);});
+  localStorage.setItem(SK2,JSON.stringify(DATA2));
+  addH('[ML2] Removido: '+a.nome);
+  _ml2ModalMode=false;editId2=null;
+  closeModal();renderML2();
+}
+
+function toggleTagML2(id,tag){
+  var a=DATA2.find(function(x){return String(x.id)===String(id);});if(!a)return;
+  if(!a.tags)a.tags={full:false,oferta:false,pub:false};
+  a.tags[tag]=!a.tags[tag];svML2();
+  var mt=document.getElementById('modal-tags');
+  if(mt){
+    var tg=a.tags;
+    mt.innerHTML='<button class="tag-btn '+(tg.full?'on-full':'')+'" data-id="'+id+'" data-tag="full" onclick="toggleTagML2Btn(this)">📦 Full ML</button>'+
+      ' <button class="tag-btn '+(tg.oferta?'on-oferta':'')+'" data-id="'+id+'" data-tag="oferta" onclick="toggleTagML2Btn(this)">⚡ Oferta relâmpago</button>'+
+      ' <button class="tag-btn '+(tg.pub?'on-pub':'')+'" data-id="'+id+'" data-tag="pub" onclick="toggleTagML2Btn(this)">📢 Publicidade</button>';
+  }
+  renderML2();
+}
+function toggleTagML2Btn(btn){toggleTagML2(btn.dataset.id,btn.dataset.tag);}
+
+
+load();loadShopee();loadML2();initSupabase().then(()=>renderDash())
 </script>
 </body>
 </html>
