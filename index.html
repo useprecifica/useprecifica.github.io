@@ -1744,17 +1744,18 @@ function taxaShopee(pv){
 }
 function calcSH(a){
   const pv=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
-  const preco=+a.preco||pv; // preço sem desconto (para calcular cupom)
+  const preco=+a.preco||pv;
   const custo=+a.custo||0;
-  const taxa=taxaShopee(pv);  // ALL-IN: shopee + antecipação + camp
+  const taxa=taxaShopee(pv);       // ALL-IN: comissão + antecipação + camp
+  const antec=(+a.ant||6)/100*pv;  // antecipação separada para exibição
+  const comissao=taxa-antec;        // comissão pura da plataforma
   const frete=+a.frete||0;
   const outros=+a.outros||0;
-  // Desc calculado sobre preço SEM desconto (igual planilha)
   const rawDesc=(+a.descPct||5)/100*preco;
   const desc=Math.min(rawDesc,+a.descMax||999);
   const imp=(+a.imp||10)/100*pv;
   const lucro=pv-custo-taxa-frete-outros-desc-imp;
-  return{pv,preco,custo,taxa,frete,outros,desc,imp,lucro,margem:pv>0?lucro/pv*100:0}
+  return{pv,preco,custo,taxa,comissao,antec,frete,outros,desc,imp,lucro,margem:pv>0?lucro/pv*100:0}
 }
 
 function shAutoFill(){
@@ -1776,6 +1777,10 @@ function shCalcLive(){
   document.getElementById('sh-rb-mar').textContent=r.margem.toFixed(2)+'%';
   document.getElementById('sh-rb-mar').style.color=ok?'var(--gr)':'var(--rd)';
   document.getElementById('sh-rb-custo').textContent=fmt(r.custo);
+  document.getElementById('sh-rb-comissao').textContent=fmt(r.comissao);
+  document.getElementById('sh-rb-antec').textContent=fmt(r.antec);
+  var antLbl=document.getElementById('sh-lbl-ant');
+  if(antLbl)antLbl.textContent=(+shGetForm().ant||6);
   document.getElementById('sh-rb-taxa').textContent=fmt(r.taxa);
   document.getElementById('sh-rb-taxa').style.color='var(--pu)';
   document.getElementById('sh-rb-desc').textContent=fmt(r.desc);
@@ -2027,9 +2032,11 @@ load();loadShopee();initSupabase().then(()=>renderDash())
     <div style="background:var(--sur2);border-radius:var(--rs);padding:10px 13px;font-size:12px">
       <div style="font-weight:600;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Composição dos custos</div>
       <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo do produto</span><span id="sh-rb-custo">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Taxa Shopee (comissão + antec + camp)</span><span id="sh-rb-taxa">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Comissão Shopee</span><span id="sh-rb-comissao">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Antecipação + camp (<span id="sh-lbl-ant">6</span>%)</span><span id="sh-rb-antec">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd);font-weight:500"><span style="color:var(--pu)">Total taxa Shopee</span><span id="sh-rb-taxa">—</span></div>
       <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Desconto cupom</span><span id="sh-rb-desc">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Imposto (${html[html.find('id="sh-f-imp"'):html.find('id="sh-f-imp"')+60].split('value="')[1].split('"')[0] if 'id="sh-f-imp"' in html else '10'}%)</span><span id="sh-rb-imp">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Imposto (10%)</span><span id="sh-rb-imp">—</span></div>
       <div style="display:flex;justify-content:space-between;padding:3px 0" id="sh-rb-frete-row"><span style="color:var(--t2)">Frete + outros</span><span id="sh-rb-frete">—</span></div>
     </div>
   </div>
