@@ -899,7 +899,11 @@ async function doReset(){
 }
 async function doLogout(){
   if(SB)await SB.auth.signOut().catch(function(){});
-  SB_USER=null;DATA=[];SH_DATA=[];DATA2=[];HIST=[];
+  SB_USER=null;SB=null;
+  DATA=[];SH_DATA=[];DATA2=[];HIST=[];
+  localStorage.removeItem(SK);
+  localStorage.removeItem(SK_SH);
+  localStorage.removeItem(SK2);
   document.getElementById('app-shell').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('login-email').value='';
@@ -910,10 +914,17 @@ function showApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-shell').style.display='flex';
   initDark();
-  load();loadShopee();loadML2();
+  // Clear localStorage to avoid showing another user's cached data
+  // Each user's data comes exclusively from their Supabase account
+  localStorage.removeItem(SK);
+  localStorage.removeItem(SK_SH);
+  localStorage.removeItem(SK2);
+  DATA=[];SH_DATA=[];DATA2=[];HIST=[];
+  NID=1000;SH_NID=5000;NID2=9000;
   setSyncStatus('connected');
   updateCfgCard();
-  syncDown().then(function(){renderDash();});
+  renderDash(); // show empty state while loading
+  syncDown(); // populate from DB (or seeds if DB empty for this user)
 }
 async function initSupabase(){
   try{
