@@ -472,7 +472,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn" onclick="syncDown()">↓ Baixar do Supabase</button>
       <button class="btn" onclick="syncUp()">↑ Enviar local para Supabase</button>
-      <button class="btn btn-d" onclick="initSupabase()">Reconectar</button>
+      <button class="btn btn-d" onclick="syncDown().then(function(){showCfgStatus('Reconectado!','ok');})">Reconectar ao Supabase</button>
     </div>
   </div>
   <div class="card">
@@ -992,16 +992,31 @@ function renderShopee2(){
   lista.forEach(function(a,i){
     var ok=a.margem>=16;
     var tr=document.createElement('tr');
+    var tr=document.createElement('tr');
     tr.className='sh2-row';tr.dataset.idx=String(i);tr.style.cursor='pointer';
-    var c0=document.createElement('td');c0.textContent=a.cod;c0.className='sh2-cod';c0.title='Copiar';c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
-    var c1=document.createElement('td');c1.textContent=a.nome;c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
-    var c2=document.createElement('td');c2.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'++(a.precoD>0?a.precoD:a.preco).toFixed(2)+'" data-idx="'+i+'" data-field="precoD" style="width:80px">';c2.onclick=function(e){e.stopPropagation();};
-    var c3=document.createElement('td');c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:70px">';c3.onclick=function(e){e.stopPropagation();};
+    var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
+    var okCl2=ok?'var(--gr)':'var(--rd)';
+    var c0=document.createElement('td');
+    c0.textContent=a.cod;c0.className='sh2-cod';c0.title='Copiar';
+    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
+    var c1=document.createElement('td');
+    c1.textContent=a.nome;
+    c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
+    var c2=document.createElement('td');
+    c2.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+pv2+'" data-idx="'+i+'" data-field="precoD" style="width:80px">';
+    c2.onclick=function(e){e.stopPropagation();};
+    var c3=document.createElement('td');
+    c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:70px">';
+    c3.onclick=function(e){e.stopPropagation();};
     var c4=document.createElement('td');c4.textContent=fmt(a.taxa);c4.style.color='var(--pu)';
     var c5=document.createElement('td');c5.textContent=fmt(a.antec);c5.style.color='var(--pu)';
-    var c6=document.createElement('td');c6.textContent=fmt(a.lucro);c6.style.cssText='font-weight:500;color:'+(ok?'var(--gr)':'var(--rd)');
-    var c7=document.createElement('td');c7.innerHTML='<span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>';
-    var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';c8.innerHTML=a.obs?('<em>'+sanitize(a.obs)+'</em>'):'—';
+    var c6=document.createElement('td');c6.textContent=fmt(a.lucro);
+    c6.style.cssText='font-weight:500;color:'+okCl2;
+    var c7=document.createElement('td');
+    var okBadge2=ok?'b-ok':'b-nok';
+    c7.innerHTML='<span class="badge '+okBadge2+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+okCl2+'"></div></div>';
+    var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
+    c8.innerHTML=a.obs?('<em>'+sanitize(a.obs)+'</em>'):'—';
     var c9=document.createElement('td');c9.innerHTML='<button class="btn-sm">Editar</button>';
     [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
     tbody.appendChild(tr);
@@ -1564,7 +1579,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn" onclick="syncDown()">↓ Baixar do Supabase</button>
       <button class="btn" onclick="syncUp()">↑ Enviar local para Supabase</button>
-      <button class="btn btn-d" onclick="initSupabase()">Reconectar</button>
+      <button class="btn btn-d" onclick="syncDown().then(function(){showCfgStatus('Reconectado!','ok');})">Reconectar ao Supabase</button>
     </div>
   </div>
   <div class="card">
@@ -1941,7 +1956,6 @@ function updateCfgCard(){
 }
 
 function salvarConfig(){
-  if(!SB_USER){doLogin();return;}
   syncDown().then(function(){showCfgStatus('Reconectado e sincronizado!','ok');});
 }
 
