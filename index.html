@@ -914,41 +914,19 @@ function showApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-shell').style.display='flex';
   initDark();
-  // Clear localStorage to avoid showing another user's cached data
-  // Each user's data comes exclusively from their Supabase account
-  localStorage.removeItem(SK);
-  localStorage.removeItem(SK_SH);
-  localStorage.removeItem(SK2);
-  DATA=[];SH_DATA=[];DATA2=[];HIST=[];
-  NID=1000;SH_NID=5000;NID2=9000;
+  var lastUser=localStorage.getItem('pfy_last_user');
+  if(lastUser&&lastUser!==SB_USER.id){
+    localStorage.removeItem(SK);localStorage.removeItem(SK_SH);localStorage.removeItem(SK2);
+    DATA=[];SH_DATA=[];DATA2=[];HIST=[];NID=1000;SH_NID=5000;NID2=9000;
+  }
+  localStorage.setItem('pfy_last_user',SB_USER.id);
+  load();loadShopee();loadML2();
   setSyncStatus('connected');
   updateCfgCard();
-  renderDash(); // show empty state while loading
-  syncDown(); // populate from DB (or seeds if DB empty for this user)
+  renderDash();
+  syncDown();
 }
-async function initSupabase(){
-  try{
-    if(!SB)SB=window.supabase.createClient(SB_URL,SB_KEY);
-    var sess=await SB.auth.getSession();
-    if(sess.data&&sess.data.session&&sess.data.session.user){
-      SB_USER=sess.data.session.user;
-      showApp();
-    } else {
-      document.getElementById('login-screen').style.display='flex';
-      document.getElementById('app-shell').style.display='none';
-    }
-    SB.auth.onAuthStateChange(function(event,session){
-      if(event==='SIGNED_IN'&&session&&session.user&&!SB_USER){
-        SB_USER=session.user;showApp();
-      } else if(event==='SIGNED_OUT'){
-        SB_USER=null;
-      }
-    });
-  }catch(e){
-    console.error('initSupabase:',e);
-    document.getElementById('login-screen').style.display='flex';
-  }
-}
+
 function updateCfgCard(){
   const card=document.getElementById('cfg-sync-card');
   const info=document.getElementById('cfg-sync-info');
