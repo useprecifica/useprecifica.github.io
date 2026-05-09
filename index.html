@@ -226,898 +226,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 @media(max-width:500px){.fg2,.fg3,.fg4{grid-template-columns:1fr 1fr}.ssug-grid{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr 1fr}}
 </style>
 <script>if(localStorage.getItem("pfy_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");</script>
-</head>
-<body>
-<div class="shell">
 
-<div class="topbar">
-  <div class="brand"><div class="brand-dot"></div>Precify</div>
-  <div class="tb-sep"></div>
-  <div class="tb-sub" id="tb-sub"></div>
-  <div class="tb-right">
-    <button onclick="toggleDark()" id="dark-btn" style="font-family:var(--font);font-size:14px;background:none;border:1px solid var(--bd);border-radius:6px;padding:2px 8px;cursor:pointer;margin-right:6px;color:var(--t2)" title="Modo escuro">☀️</button>
-    
-    <div id="sync-status" style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3);cursor:pointer" onclick="goTab('config')" title="Configurar Supabase">
-      <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
-      <span id="sync-label">local</span>
-    </div>
-    <span class="badge b-nok" id="tb-urg" style="display:none;cursor:pointer" onclick="filterAndGo('urgente')"></span>
-  </div>
-</div>
-
-<div class="main">
-<nav class="sidebar">
-  <button class="ni active" data-tab="dash" onclick="goTab('dash')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Painel<span class="ni-badge" id="nb-urg" style="display:none"></span>
-  </button>
-  <button class="ni" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML — Conta 1
-  </button>
-  <button class="ni" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML — Conta 2
-  </button>
-  <button class="ni" data-tab="shopee" onclick="goTab('shopee')" style="color:var(--pu)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    Shopee
-  </button>
-  <button class="ni" data-tab="shopee2" onclick="goTab('shopee2')" style="color:#e05fc4">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    Shopee 2
-  </button>
-  <button class="ni" data-tab="sim" onclick="goTab('sim')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-    Simulador<span class="ni-new">novo</span>
-  </button>
-  <div class="sb-sep"></div>
-  <div class="sb-label">Filtrar por tag</div>
-  <button class="ni" data-tab="anuncios" onclick="filterAndGo('full')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-    Full ML
-  </button>
-  <button class="ni" data-tab="anuncios" onclick="filterAndGo('oferta')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    Oferta relâmpago
-  </button>
-  <button class="ni" data-tab="anuncios" onclick="filterAndGo('pub')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    Publicidade
-  </button>
-  <div class="sb-sep"></div>
-  <button class="ni" data-tab="insights" onclick="goTab('insights')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Insights
-  </button>
-  <button class="ni" data-tab="hist" onclick="goTab('hist')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Histórico
-  </button>
-  <button class="ni" data-tab="custos" onclick="goTab('custos')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-    Catálogo de custos
-  </button>
-  <button class="ni" data-tab="config" onclick="goTab('config')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Configurações
-  </button>
-</nav>
-
-<div class="content"><div class="ci">
-
-<!-- PAINEL -->
-<div id="p-dash">
-  <div class="ph">
-    <div><div class="ph-title">Painel</div><div class="ph-sub" id="dash-sub"></div></div>
-    <div class="ph-actions">
-      <button class="btn" onclick="goTab('sim')">Simular preço</button>
-      <button class="btn btn-p" onclick="openModal()">+ Novo anúncio</button>
-    </div>
-  </div>
-  <div id="dash-alerts"></div>
-  <div class="metrics" id="dash-metrics"></div>
-  <div class="two-col">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="dash-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="dash-bot"></div></div>
-  </div>
-  <div class="two-col">
-    <div class="card" id="dash-tipos"></div>
-    <div class="card" id="dash-acoes"></div>
-  </div>
-</div>
-
-<!-- ANÚNCIOS -->
-<div id="p-anuncios" style="display:none">
-  <div class="ph">
-    <div><div class="ph-title" id="an-title">Mercado Livre</div><div class="ph-sub" id="an-sub"></div></div>
-    <div class="ph-actions">
-      <button class="btn" id="btn-back" onclick="clearFilter()" style="display:none">← Voltar</button>
-      <button class="btn btn-p" onclick="openModal()">+ Novo</button>
-    </div>
-  </div>
-  <div id="filter-bar-wrap">
-    <div class="fbar">
-      <input id="busca" placeholder="Buscar nome ou código..." oninput="renderAnuncios()">
-      <select id="f-status" onchange="renderAnuncios()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
-      <select id="f-tipo" onchange="renderAnuncios()"><option value="">Todos os tipos</option></select>
-      <select id="f-class" onchange="renderAnuncios()"><option value="">Clássico + Premium</option><option value="classico">Clássico</option><option value="premium">Premium</option></select>
-    </div>
-  </div>
-  <div class="tbl-wrap">
-    <table class="tbl"><thead><tr>
-      <th>Código</th><th>Produto</th><th>Tipo</th><th>Preço</th><th>Custo</th><th>Frete</th><th>Desc</th><th>Lucro</th><th>Margem</th><th>Lembrete</th><th></th>
-    </tr></thead><tbody id="tbl-body"></tbody></table>
-  </div>
-  <div class="mob" id="mob-cards" style="display:none"></div>
-</div>
-
-<!-- SIMULADOR -->
-<div id="p-sim" style="display:none">
-  <div class="ph">
-    <div><div class="ph-title">Simulador</div><div class="ph-sub">Explore preços sem salvar</div></div>
-    <button class="btn" onclick="resetSim()">Limpar</button>
-  </div>
-  <div class="card">
-    <div class="card-title">Tipo de anúncio</div>
-    <div class="ttog">
-      <button class="tt active" id="sb-cls" onclick="setSimTipo('classico')">Clássico — 11,5% · sem parcelamento</button>
-      <button class="tt" id="sb-prm" onclick="setSimTipo('premium')">Premium — 16,5% · parcelamento sem juros</button>
-    </div>
-    <div class="fg3">
-      <div class="field"><label>Custo (R$)</label><input id="s-custo" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="simCalc()"></div>
-      <div class="field"><label>Peso físico (g)</label><input id="s-peso" type="number" inputmode="decimal" placeholder="Ex: 2500" oninput="simFrete()"></div>
-      <div class="field"><label>Dimensões embalagem (cm) L × C × A</label>
-        <div style="display:flex;gap:5px">
-          <input id="s-l" type="number" inputmode="decimal" placeholder="L" oninput="simFrete()" style="flex:1">
-          <input id="s-c" type="number" inputmode="decimal" placeholder="C" oninput="simFrete()" style="flex:1">
-          <input id="s-a" type="number" inputmode="decimal" placeholder="A" oninput="simFrete()" style="flex:1">
-        </div>
-      </div>
-    </div>
-    <div class="fg4">
-      <div class="field"><label>Frete estimado (R$)</label><input id="s-frete" type="number" step=".01" inputmode="decimal" placeholder="auto" oninput="simCalc()"></div>
-      <div class="field"><label>Ajuda ML frete (R$)</label><input id="s-ajml" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="simCalc()"></div>
-      <div class="field"><label>Desc cupom (%)</label><input id="s-descpct" type="number" step=".1" value="5" oninput="simCalc()"></div>
-      <div class="field"><label>Limite máx. desc (R$)</label><input id="s-descmax" type="number" step=".01" value="10" oninput="simCalc()"></div>
-    </div>
-    <div class="fg3">
-      <div class="field"><label>Antecipação (%)</label><input id="s-ant" type="number" step=".1" value="4.2" oninput="simCalc()"></div>
-      <div class="field"><label>Imposto (%)</label><input id="s-imp" type="number" step=".1" value="10" oninput="simCalc()"></div>
-      <div class="field"><label>Margem alvo (%)</label><input id="s-alvo" type="number" step=".1" value="20" oninput="simCalc()"></div>
-    </div>
-    <div id="sim-frete-note" style="display:none" class="frete-box"></div>
-  </div>
-  <div id="sim-sugs" style="display:none">
-    <div class="ssug"><div class="ssug-title">Sugestões de preço — clique para usar</div><div class="ssug-grid" id="ssug-grid"></div></div>
-  </div>
-  <div class="card" id="sim-result" style="display:none">
-    <div class="card-title">Resultado ao vivo</div>
-    <div style="margin-bottom:11px">
-      <label style="font-size:12px;font-weight:500;color:var(--t2);display:block;margin-bottom:5px">Preço de venda (R$)</label>
-      <div style="display:flex;gap:10px;align-items:center">
-        <input type="range" id="s-range" min="0" max="2000" step="1" style="flex:1" oninput="syncP('range')">
-        <input id="s-preco" type="number" step=".01" inputmode="decimal" style="width:120px;height:39px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 10px;font-size:15px;font-family:var(--font);font-weight:500;background:var(--sur);color:var(--t)" oninput="syncP('input')">
-      </div>
-    </div>
-    <div class="rbox" id="sim-nums" style="background:var(--sur2)"></div>
-  </div>
-  <div class="scols" id="sim-compare" style="display:none">
-    <div class="scol"><div class="scol-title">Clássico — 11,5%</div><div id="sc-cls"></div></div>
-    <div class="scol"><div class="scol-title">Premium — 16,5%</div><div id="sc-prm"></div></div>
-  </div>
-</div>
-
-<!-- SHOPEE 2 -->
-<div id="p-shopee2" style="display:none">
-  <div class="ph">
-    <div><div class="ph-title" style="color:#e05fc4">Shopee — Conta 2</div><div class="ph-sub" id="sh2-sub"></div></div>
-    <div class="ph-actions">
-      <button class="btn btn-p" style="background:#e05fc4;border-color:#e05fc4" onclick="openShopee2Modal()">+ Novo</button>
-    </div>
-  </div>
-  <div id="sh2-alerts"></div>
-  <div class="metrics" id="sh2-metrics" style="margin-bottom:16px"></div>
-  <div class="two-col" style="margin-bottom:12px">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="sh2-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="sh2-bot"></div></div>
-  </div>
-  <div class="fbar" style="margin-bottom:12px">
-    <input id="sh2-busca" placeholder="Buscar nome ou código..." oninput="renderShopee2()">
-    <select id="sh2-fstatus" onchange="renderShopee2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
-  </div>
-  <div class="tbl-wrap">
-    <table class="tbl"><thead><tr>
-      <th>Código</th><th>Produto</th><th>Preço</th><th>Custo</th><th>Taxa Shopee</th><th>Antecipação</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
-    </tr></thead><tbody id="sh2-tbl-body"></tbody></table>
-  </div>
-  <div class="mob" id="sh2-mob-cards" style="display:none"></div>
-</div>
-
-<!-- INSIGHTS -->
-<div id="p-insights" style="display:none">
-  <div class="ph"><div><div class="ph-title">Insights</div><div class="ph-sub">Análise da carteira</div></div></div>
-  <div class="metrics" id="ins-metrics"></div>
-  <div class="card" id="ins-resumo"></div>
-  <div class="two-col">
-    <div class="card" id="ins-tipos"></div>
-    <div class="card" id="ins-linhas"></div>
-  </div>
-  <div class="two-col">
-    <div class="card" id="ins-tags"></div>
-    <div class="card" id="ins-tipo-an"></div>
-  </div>
-  <div class="card" id="ins-ml2-linhas"></div>
-  <div class="card" id="ins-shopee-linhas"></div>
-  <div class="card" id="ins-criticos" style="display:none"></div>
-</div>
-
-<!-- CONFIG -->
-<div id="p-config" style="display:none">
-  <div class="ph"><div><div class="ph-title">Configurações</div><div class="ph-sub">Conecte ao Supabase para sincronizar entre dispositivos</div></div></div>
-  <div class="card">
-    <div class="card-title">Conexão Supabase</div>
-    <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:14px">
-      Sem Supabase, os dados ficam salvos <strong>só neste navegador</strong>. Conectando, você acessa de qualquer dispositivo e os dados ficam na nuvem.<br>
-      <span style="color:var(--t3);font-size:12px">Seus dados atuais do localStorage <strong>não serão perdidos</strong> — eles serão enviados ao Supabase na primeira conexão.</span>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-p" onclick="salvarConfig()" style="flex:1">Reconectar ao Supabase</button>
-    </div>
-    <div id="cfg-status" style="font-size:13px;padding:8px;border-radius:var(--rs);display:none"></div>
-  </div>
-  <div class="card" id="cfg-sync-card" style="display:none">
-    <div class="card-title">Sincronização</div>
-    <div id="cfg-sync-info" style="font-size:13px;color:var(--t2);margin-bottom:12px"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn" onclick="syncDown()">↓ Baixar do Supabase</button>
-      <button class="btn" onclick="syncUp()">↑ Enviar local para Supabase</button>
-      <button class="btn btn-d" onclick="syncDown().then(function(){showCfgStatus('Reconectado!','ok');})">Reconectar ao Supabase</button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">Como criar o banco de dados</div>
-    <ol style="font-size:13px;color:var(--t2);line-height:2;padding-left:18px">
-      <li>Acesse <strong>supabase.com</strong> → criar conta gratuita</li>
-      <li>Clique em <strong>New project</strong> → dê um nome → aguarde (~2 min)</li>
-      <li>No menu: <strong>SQL Editor → New query</strong></li>
-      <li>Cole o conteúdo do arquivo <code style="background:var(--sur2);padding:1px 5px;border-radius:4px">supabase_schema.sql</code> → clique em <strong>Run</strong></li>
-      <li>Vá em <strong>Settings → API</strong> e copie a <strong>Project URL</strong> e a chave <strong>anon public</strong></li>
-      <li>Cole os valores nos campos acima e clique em <strong>Salvar e conectar</strong></li>
-    </ol>
-    <div style="margin-top:12px;background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--am)">
-      <strong>Nota:</strong> As chaves ficam salvas no seu navegador (localStorage), não no código do GitHub. Cada dispositivo precisa configurar uma vez.
-    </div>
-    <ol style="display:none">
-    </ol>
-  </div>
-</div>
-
-
-<!-- SHOPEE -->
-<div id="p-shopee" style="display:none">
-  <div class="ph">
-    <div><div class="ph-title" style="color:var(--pu)">Shopee</div><div class="ph-sub" id="sh-sub"></div></div>
-    <div class="ph-actions">
-      <button class="btn" onclick="goTab('sim')">Simular</button>
-      <button class="btn btn-p" style="background:var(--pu);border-color:var(--pu)" onclick="openShopeeModal()">+ Novo</button>
-    </div>
-  </div>
-  <div id="sh-alerts"></div>
-  <div class="metrics" id="sh-metrics"></div>
-  <div class="two-col">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="sh-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="sh-bot"></div></div>
-  </div>
-  <!-- Table -->
-  <div class="card" style="padding:0;overflow:hidden">
-    <div style="padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <input id="sh-busca" class="fbar" style="flex:1;min-width:150px;margin:0;height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 10px;font-size:13px;font-family:var(--font);background:var(--sur);color:var(--t)" placeholder="Buscar...">
-      <select id="sh-fstatus" onchange="renderShopee()" style="height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 8px;font-size:12px;font-family:var(--font);background:var(--sur);color:var(--t)">
-        <option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option>
-      </select>
-    </div>
-    <div class="tbl-wrap">
-      <table class="tbl"><thead><tr>
-        <th>Código</th><th>Produto</th><th>Status</th><th>Preço s/desc</th><th>Preço c/desc</th><th>Custo</th><th>Taxa Shopee</th><th>Frete</th><th>Desconto</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
-      </tr></thead><tbody id="sh-tbl-body"></tbody></table>
-    </div>
-    <div class="mob" id="sh-mob-cards" style="display:none;padding:10px"></div>
-  </div>
-</div>
-
-
-<!-- CATÁLOGO DE CUSTOS -->
-<div id="p-custos" style="display:none">
-  <div class="ph">
-    <div><div class="ph-title">Catálogo de custos</div><div class="ph-sub">Custo padrão por produto — preenchido automaticamente ao cadastrar anúncios</div></div>
-    <button class="btn btn-p" onclick="addCusto()">+ Adicionar</button>
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table class="tbl"><thead><tr><th>Produto</th><th>Custo (R$)</th><th></th></tr></thead>
-    <tbody id="custos-body"></tbody></table>
-  </div>
-</div>
-<!-- ML2 -->
-<div id="p-ml2" style="display:none">
-  <div class="ph">
-    <div><div class="ph-title" id="ml2-title" style="color:var(--gr)">ML — Conta 2</div><div class="ph-sub" id="ml2-sub"></div></div>
-    <div class="ph-actions">
-      <button class="btn" id="ml2-btn-back" onclick="clearFilter2()" style="display:none">← Voltar</button>
-      <button class="btn btn-p" style="background:var(--gr);border-color:var(--gr)" onclick="openModal2()">+ Novo</button>
-    </div>
-  </div>
-  <div id="ml2-alerts"></div>
-  <div class="metrics" id="ml2-metrics" style="margin-bottom:16px"></div>
-  <div class="two-col" style="margin-bottom:12px">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="ml2-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="ml2-bot"></div></div>
-  </div>
-  <div id="ml2-filter-bar">
-    <div class="fbar">
-      <input id="ml2-busca" placeholder="Buscar nome ou código..." oninput="renderML2()">
-      <select id="ml2-fstatus" onchange="renderML2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
-      <select id="ml2-fclass" onchange="renderML2()"><option value="">Clássico + Premium</option><option value="classico">Clássico</option><option value="premium">Premium</option></select>
-    </div>
-  </div>
-  <div class="tbl-wrap">
-    <table class="tbl"><thead><tr>
-      <th>Código</th><th>Produto</th><th>Tipo</th><th>Preço</th><th>Custo</th><th>Frete</th><th>Desc</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
-    </tr></thead><tbody id="ml2-tbl-body"></tbody></table>
-  </div>
-  <div class="mob" id="ml2-mob-cards" style="display:none"></div>
-</div>
-
-<!-- HISTÓRICO -->
-<div id="p-hist" style="display:none">
-  <div class="ph"><div><div class="ph-title">Histórico</div><div class="ph-sub" id="hist-sub"></div></div></div>
-  <div class="card"><div id="hist-list"></div></div>
-</div>
-
-</div></div></div>
-
-<!-- BOTTOM NAV -->
-<div class="bnav">
-  <button class="nb active" data-tab="dash" onclick="goTab('dash')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Painel<span class="nb-dot" id="bn-dot" style="display:none"></span>
-  </button>
-  <button class="nb" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML 1
-  </button>
-  <button class="nb" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML 2
-  </button>
-  <button class="nb" data-tab="shopee2" onclick="goTab('shopee2')" style="color:#e05fc4">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    Shop 2
-  </button>
-  <button class="nb" data-tab="sim" onclick="goTab('sim')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-    Simular
-  </button>
-  <button class="nb" data-tab="shopee" onclick="goTab('shopee')" style="position:relative">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    Shopee
-  </button>
-  <button class="nb" data-tab="insights" onclick="goTab('insights')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Insights
-  </button>
-  <button class="nb" data-tab="hist" onclick="goTab('hist')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Histórico
-  </button>
-  <button class="nb" data-tab="config" onclick="goTab('config')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Config
-  </button>
-</div>
-</div>
-
-<!-- MODAL -->
-<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
-<div class="modal">
-  <div class="modal-hdr">
-    <div class="modal-title" id="m-title">Novo anúncio</div>
-    <button class="modal-x" onclick="closeModal()">×</button>
-  </div>
-  <div class="ttog">
-    <button class="tt active" id="m-cls" onclick="setModalTipo('classico')">Clássico — 11,5%</button>
-    <button class="tt" id="m-prm" onclick="setModalTipo('premium')">Premium — 16,5%</button>
-  </div>
-  <div class="rbox" id="m-result" style="display:none">
-    <div><div class="rbox-label">Preço efetivo</div><div class="rbox-val" id="rb-pv">—</div></div>
-    <div><div class="rbox-label">Desconto</div><div class="rbox-val" id="rb-desc">—</div></div>
-    <div><div class="rbox-label">Lucro líquido</div><div class="rbox-val" id="rb-luc">—</div></div>
-    <div><div class="rbox-label">Margem</div><div class="rbox-val" id="rb-mar">—</div></div>
-  </div>
-  <div id="m-sug" style="display:none;font-size:13px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--rs);padding:9px 12px;margin-bottom:12px"></div>
-  <div class="fg2">
-    <div class="field"><label>Nome do produto</label><input id="f-nome" placeholder="Ex: Coluna Áustria" oninput="autoFillCusto();calcLive()"></div>
-    <div class="field"><label>Código MLB</label><input id="f-cod" placeholder="MLB..." inputmode="numeric"></div>
-  </div>
-  <div class="fsep">Preços e custo</div>
-  <div class="fg3">
-    <div class="field"><label>Custo (R$)</label><input id="f-custo" type="number" step=".01" inputmode="decimal" oninput="calcLive()"></div>
-    <div class="field"><label>Preço de venda (R$)</label><input id="f-preco" type="number" step=".01" inputmode="decimal" oninput="calcLive()"></div>
-    <div class="field"><label>Preço c/ desc (R$)</label><input id="f-precoD" type="number" step=".01" inputmode="decimal" placeholder="0 = mesmo preço" oninput="calcLive()"></div>
-  </div>
-  <div class="fsep">Taxas e frete</div>
-  <div style="font-size:12px;color:var(--bl);background:var(--bl-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">Frete ML = maior valor entre peso físico e volumétrico (L×C×A÷6000). Varia por CEP, categoria e reputação.</div>
-  <div class="fg2">
-    <div class="field"><label>Frete (R$)</label><input id="f-frete" type="number" step=".01" inputmode="decimal" oninput="calcLive()"></div>
-    <div class="field"><label>Ajuda ML frete (R$)</label><input id="f-ajml" type="number" step=".01" inputmode="decimal" oninput="calcLive()"></div>
-  </div>
-  <div class="fg3">
-    <div class="field"><label>Comissão ML (%)</label><input id="f-com" type="number" step=".1" inputmode="decimal" oninput="calcLive()"></div>
-    <div class="field"><label>Antecipação (%)</label><input id="f-ant" type="number" step=".1" inputmode="decimal" oninput="calcLive()"></div>
-    <div class="field"><label>Imposto (%)</label><input id="f-imp" type="number" step=".1" inputmode="decimal" oninput="calcLive()"></div>
-  </div>
-  <div class="fg2">
-    <div class="field"><label>Desc cupom (%)</label><input id="f-descpct" type="number" step=".1" inputmode="decimal" oninput="calcLive()"></div>
-    <div class="field"><label>Limite máx. desc (R$)</label><input id="f-descmax" type="number" step=".01" inputmode="decimal" oninput="calcLive()"></div>
-  </div>
-  <div class="fsep">Lembrete e tags</div>
-  <div class="field"><label>Lembrete <span style="font-size:10px;color:var(--t3)">(não afeta métricas)</span></label><input id="f-obs" placeholder="Ex: verificar estoque, checar foto..."></div>
-  <div id="modal-tags" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-    <span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn btn-p" onclick="salvar()" style="flex:1">Salvar</button>
-    <button class="btn btn-d" id="btn-del" onclick="deletar()" style="display:none">Remover</button>
-    <button class="btn" onclick="closeModal()">Cancelar</button>
-  </div>
-</div>
-</div>
-
-<script>
-
-// ── CATÁLOGO DE CUSTOS ──
-const CUSTOS={
-  "LUMINÁRIA VIENA":112.09,"COLUNA VIENA":112.09,"LUMINÁRIA FLORIPA":117.02,"COLUNA FLORIPA":117.02,
-  "ABAJUR WELLS":52.86,"ABJ WELLS":52.86,"COLUNA WELLS":108.33,
-  "ABAJUR MINE":37.29,"ABJ MINE":37.29,
-  "ABAJUR SKY":106.41,"ABJ SKY":106.41,
-  "ABAJUR WOOD":106.41,"ABJ WOOD":106.41,
-  "KIT ÁUSTRIA ABAJUR + LUMINÁRIA":186.05,"KIT ÁUSTRIA ABJ E COL":186.05,
-  "KIT 2 ABJ ÁUSTRIA":128.30,"KIT 2 AUSTRIA":128.30,"KIT 2 ABJ AUSTRIA":128.30,
-  "KIT 2 MINE":74.58,"KIT MINE":74.58,
-  "CÚPULA 40 S/ ARO":32,"CÚPULA 40CM S/ ARO":32,"CÚPULA 40 C/ ARO":32,"CÚPULA 40CM C/ ARO":32,
-  "KIT 2 SLIM":86.50,"KIT SLIM":86.50,
-  "LUMINÁRIA MÔNACO":105.87,"COLUNA MÔNACO":105.87,
-  "KIT 2 MÔNACO":211.74,"KIT 2 MONÂCO":211.74,
-  "CÚPULA MÔNACO":30,"CÚPULA MONÂCO":30,
-  "LUMINÁRIA RIPADA":133.21,"COLUNA RIPADA":133.21,
-  "PENDENTE CÚPULA CILINDRICA":49,"PENDENTE CÚPULA CONE":48,"PENDENTE CONE SISAL":52.50,
-  "VASO ROMA 80CM":340,"BACIA M FIBRA DE VIDRO":220,"VASO VIETNAMITA 60CM DE DM":350,"VASO XINA 65":219,
-  "SUPORTE PORTA GUARDANAPO":6,"ADEGA MINIMALISTA":15,
-  "PRATELEIRA INVISÍVEL":10,"KIT 2 PRATELEIRAS INVISÍVEL":20,"KIT 3 PRATELEIRAS INVISÍVEL":20,
-  "ABAJUR SOFT":7,"ABJ SOFT":7,
-  "ADEGA QUEBRA CABEÇA":0,"ADEGA QUEBRA-CABEÇA":0,
-  "SUPORTE DE TAÇAS":0,"SUPORTE DE TAÇA":0,
-  "SUPORTE PAPEL TOALHA":5,
-  "TAMPO 35CM":10,"KIT 2 TAMPO 35CM":25,
-  "ABJ ÁUSTRIA":64.15,"ABJ AUSTRIA":64.15,"ABJ AUSTRIA PRETO":64.15,"ABJ ÁUSTRIA PRETO":64.15,
-  "COLUNA ÁUSTRIA":121.90,"COLUNA AUSTRIA":121.90,
-  "COLUNA IPANEMA":106.78,"ABJ IPANEMA":106.78,"LUMINÁRIA IPANEMA":106.78,
-  "KIT ÁUSTRIA":128.38,"KIT AUSTRIA":128.38
-};
-
-const SK='pfy1',HK='pfy1h',SK2='pfy2',SK_SH2='pfy_sh2';
-const SEED=[
-{cod:'4585262697',nome:'Coluna \u00c1ustria',preco:500,precoD:392.10,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4585298353',nome:'ABJ \u00c1ustria',preco:290,precoD:237.40,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'FULL ML',tags:{full:false,oferta:false,pub:false}},
-{cod:'3969610341',nome:'ABJ Wood',preco:309,precoD:309,custo:106.41,com:11.5,ant:4.2,frete:70.25,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oferta rel\u00e2mpago',tags:{full:false,oferta:false,pub:false}},
-{cod:'4586694161',nome:'ABJ \u00c1ustria',preco:300,precoD:209.10,custo:64.15,com:11.5,ant:4.2,frete:48.05,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6574433410',nome:'Coluna \u00c1ustria',preco:500,precoD:387.40,custo:121.90,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4586818521',nome:'ABJ \u00c1ustria',preco:260,precoD:237.07,custo:64.15,com:11.5,ant:4.2,frete:48.05,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4159251187',nome:'ABJ \u00c1ustria',preco:254.90,precoD:234.89,custo:64.15,com:11.5,ant:4.2,frete:74.95,ajml:3.92,descPct:5,descMax:10,imp:10,obs:'Retirar cupom desse produto',tags:{full:false,oferta:false,pub:false}},
-{cod:'5285285754',nome:'ABJ Slim',preco:179.90,precoD:143.95,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:4.45,descPct:5,descMax:7.20,imp:10,obs:'Subir pre\u00e7o para R$200',tags:{full:false,oferta:false,pub:false}},
-{cod:'4586801249',nome:'ABJ Mine',preco:150,precoD:107.40,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:0,descPct:5,descMax:5.37,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'3967801757',nome:'ABJ Slim',preco:174.30,precoD:147.80,custo:43.25,com:11.5,ant:4.2,frete:35.75,ajml:0,descPct:5,descMax:7.39,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4586924195',nome:'Coluna Wells',preco:450,precoD:356.47,custo:108.33,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5840057296',nome:'Coluna Wells',preco:399,precoD:344.46,custo:108.33,com:11.5,ant:4.2,frete:105.95,ajml:6.47,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4016428529',nome:'Coluna \u00c1ustria',preco:480,precoD:346.56,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:13.34,descPct:5,descMax:10,imp:10,obs:'Tirar cupom de desc desse an\u00fancio',tags:{full:false,oferta:false,pub:false}},
-{cod:'6574383306',nome:'Coluna Ipanema',preco:520,precoD:356.09,custo:106.78,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5771949280',nome:'Coluna Ipanema',preco:510,precoD:346.29,custo:106.78,com:11.5,ant:4.2,frete:65.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4415985527',nome:'Coluna M\u00f4naco',preco:490,precoD:367.75,custo:105.87,com:11.5,ant:4.2,frete:106.95,ajml:12.22,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'4587083697',nome:'Coluna Wells',preco:490,precoD:357.60,custo:108.33,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'Subir pre\u00e7o urgente',tags:{full:false,oferta:false,pub:false}},
-{cod:'5301597570',nome:'ABJ \u00c1ustria',preco:249.90,precoD:219.70,custo:64.15,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Criar cupom de desconto',tags:{full:false,oferta:false,pub:false}},
-{cod:'4417927427',nome:'Prateleira Invis\u00edvel',preco:40,precoD:40,custo:10,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4181589365',nome:'ABJ Wood',preco:299,precoD:299,custo:106.41,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'5285127764',nome:'Coluna \u00c1ustria',preco:465.50,precoD:349.70,custo:121.90,com:11.5,ant:4.2,frete:106.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4304743297',nome:'ABJ Mine',preco:130,precoD:103.79,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:4.49,descPct:5,descMax:5.19,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4329541467',nome:'C\u00fapula 40cm c/ aro',preco:78,precoD:78,custo:32,com:11.5,ant:4.2,frete:11.35,ajml:0,descPct:5,descMax:3.90,imp:10,obs:'Retirar cupom desse produto',tags:{full:false,oferta:false,pub:false}},
-{cod:'4415862431',nome:'Coluna M\u00f4naco',preco:490,precoD:372.40,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:11.76,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5310043854',nome:'Coluna \u00c1ustria',preco:450,precoD:397.10,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03 \u2014 oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4136206895',nome:'Coluna \u00c1ustria',preco:465.50,precoD:379.29,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:11.73,descPct:5,descMax:10,imp:10,obs:'Tirar cupom de desc desse an\u00fancio',tags:{full:false,oferta:false,pub:false}},
-{cod:'4176351347',nome:'Coluna \u00c1ustria',preco:509,precoD:367.50,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:14.15,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4181135515',nome:'Coluna Floripa',preco:510,precoD:324.68,custo:117.02,com:11.5,ant:4.2,frete:70.25,ajml:18.53,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'4313542027',nome:'ABJ Mine',preco:110,precoD:95.07,custo:37.29,com:11.5,ant:4.2,frete:16.62,ajml:2.94,descPct:5,descMax:4.75,imp:10,obs:'30% inativo',tags:{full:false,oferta:false,pub:false}},
-{cod:'6574792410',nome:'ABJ Mine',preco:110,precoD:99.80,custo:37.29,com:11.5,ant:4.2,frete:15.75,ajml:0,descPct:5,descMax:4.99,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4415825217',nome:'Coluna M\u00f4naco',preco:500,precoD:379.28,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:22.59,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03 \u2014 oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'5285107876',nome:'Coluna Wells',preco:450,precoD:357.93,custo:108.33,com:11.5,ant:4.2,frete:105.95,ajml:11.07,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'5771773286',nome:'Coluna \u00c1ustria',preco:540,precoD:359.10,custo:121.90,com:11.5,ant:4.2,frete:68.65,ajml:18.09,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'6160097046',nome:'Coluna Ripada',preco:510,precoD:420.50,custo:133.21,com:11.5,ant:4.2,frete:118.15,ajml:13,descPct:5,descMax:10,imp:10,obs:'30% \u2014 subir pre\u00e7o urgente',tags:{full:false,oferta:false,pub:false}},
-{cod:'6575052894',nome:'Coluna Ripada',preco:510,precoD:448.70,custo:133.21,com:11.5,ant:4.2,frete:110.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'Subir pre\u00e7o urgente',tags:{full:false,oferta:false,pub:false}},
-{cod:'3986954791',nome:'Coluna \u00c1ustria',preco:475.60,precoD:396.40,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'30% inativo',tags:{full:false,oferta:false,pub:false}},
-{cod:'6574504830',nome:'Coluna \u00c1ustria',preco:500,precoD:378.90,custo:121.90,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4159366395',nome:'Coluna \u00c1ustria',preco:578.90,precoD:370.61,custo:121.90,com:11.5,ant:4.2,frete:107.05,ajml:20.92,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'4303886101',nome:'Coluna Wells',preco:450,precoD:336.11,custo:108.33,com:11.5,ant:4.2,frete:106.95,ajml:11.38,descPct:5,descMax:10,imp:10,obs:'Subir pre\u00e7o urgente',tags:{full:false,oferta:false,pub:false}},
-{cod:'4245245257',nome:'Kit Mine',preco:200,precoD:170.72,custo:74.58,com:11.5,ant:4.2,frete:21.65,ajml:4.80,descPct:5,descMax:8.54,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4403443389',nome:'Kit Slim',preco:250,precoD:221.13,custo:86.50,com:11.5,ant:4.2,frete:30.75,ajml:6.84,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4449926971',nome:'C\u00fapula 40cm c/ aro',preco:78,precoD:78,custo:32,com:11.5,ant:4.2,frete:11.35,ajml:0,descPct:5,descMax:3.90,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5329944716',nome:'Coluna \u00c1ustria',preco:480,precoD:372.48,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:11.52,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5771892662',nome:'Kit \u00c1ustria',preco:450,precoD:336.11,custo:128.38,com:11.5,ant:4.2,frete:68.65,ajml:11.38,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5917878496',nome:'Coluna \u00c1ustria',preco:509,precoD:377.14,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:13.18,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6143566424',nome:'Coluna \u00c1ustria',preco:499,precoD:387.22,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:16.18,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'3995208115',nome:'Coluna \u00c1ustria',preco:450,precoD:353.56,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:10.94,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'4057371379',nome:'Kit \u00c1ustria ABJ e Col',preco:669,precoD:517.05,custo:186.05,com:11.5,ant:4.2,frete:91.15,ajml:15.99,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4078808005',nome:'Coluna \u00c1ustria',preco:509,precoD:362.66,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:14.63,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03 \u2014 oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4163038005',nome:'Coluna \u00c1ustria',preco:519.90,precoD:353.01,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:16.68,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4168480279',nome:'ABJ \u00c1ustria',preco:294.20,precoD:227.47,custo:64.15,com:11.5,ant:4.2,frete:70.25,ajml:11,descPct:5,descMax:10,imp:10,obs:'Tirar cupom de desc desse an\u00fancio',tags:{full:false,oferta:false,pub:false}},
-{cod:'4449847575',nome:'C\u00fapula 40cm s/ aro',preco:78,precoD:78,custo:32,com:11.5,ant:4.2,frete:10.95,ajml:0,descPct:5,descMax:3.90,imp:10,obs:'Tirar cupom de desc desse an\u00fancio',tags:{full:false,oferta:false,pub:false}},
-{cod:'5284955120',nome:'ABJ Slim',preco:179.90,precoD:148.40,custo:43.25,com:11.5,ant:4.2,frete:35.75,ajml:0,descPct:5,descMax:7.42,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5285196722',nome:'ABJ Mine',preco:120,precoD:100.28,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:3.10,descPct:5,descMax:5.01,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03',tags:{full:false,oferta:false,pub:false}},
-{cod:'5299450858',nome:'Coluna Viena',preco:490,precoD:364.95,custo:112.09,com:11.5,ant:4.2,frete:70.25,ajml:11.76,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso at\u00e9 14/03 \u2014 oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'5309928930',nome:'Coluna \u00c1ustria',preco:510,precoD:410.30,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6160232894',nome:'Coluna Ripada',preco:510,precoD:434.37,custo:133.21,com:11.5,ant:4.2,frete:118.15,ajml:13.43,descPct:5,descMax:10,imp:10,obs:'Inativo',tags:{full:false,oferta:false,pub:false}},
-{cod:'4586870457',nome:'Coluna Ripada',preco:510,precoD:434.37,custo:133.21,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6239587654',nome:'Coluna M\u00f4naco',preco:480,precoD:381.79,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4159239223',nome:'ABJ Slim',preco:169.90,precoD:145.35,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:4.50,descPct:5,descMax:7.27,imp:10,obs:'Retirar cupom desse produto',tags:{full:false,oferta:false,pub:false}},
-{cod:'4176338843',nome:'ABJ Slim',preco:199,precoD:130.43,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:6.85,descPct:5,descMax:6.52,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4278692813',nome:'ABJ Slim',preco:170,precoD:138.24,custo:43.25,com:11.5,ant:4.2,frete:21.05,ajml:4.28,descPct:5,descMax:6.91,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4288526237',nome:'Coluna \u00c1ustria',preco:519,precoD:342.33,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:17.66,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4415895369',nome:'Coluna Ripada',preco:510,precoD:435.34,custo:133.21,com:11.5,ant:4.2,frete:110.75,ajml:13.46,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4440151269',nome:'ABJ Soft',preco:170,precoD:77.22,custo:32,com:11.5,ant:4.2,frete:9.75,ajml:0,descPct:5,descMax:3.86,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5368990714',nome:'Coluna Wells',preco:509.90,precoD:387.52,custo:108.33,com:11.5,ant:4.2,frete:106.95,ajml:12.24,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5770896978',nome:'Coluna \u00c1ustria',preco:509.90,precoD:363.31,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:14.65,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'5771783852',nome:'ABJ \u00c1ustria',preco:235,precoD:203.12,custo:64.15,com:11.5,ant:4.2,frete:48.05,ajml:5.64,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5893806426',nome:'ABJ Slim',preco:169.90,precoD:143.02,custo:43.25,com:11.5,ant:4.2,frete:24.65,ajml:4.42,descPct:5,descMax:7.15,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6143550794',nome:'ABJ Mine',preco:125,precoD:117.97,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:1.72,descPct:5,descMax:5.90,imp:10,obs:'Subir pre\u00e7o urgente',tags:{full:false,oferta:false,pub:false}},
-{cod:'6291413110',nome:'Kit 2 M\u00f4naco',preco:950,precoD:750.50,custo:211.74,com:11.5,ant:4.2,frete:105.95,ajml:19.95,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4057406823',nome:'Coluna \u00c1ustria',preco:499,precoD:363.02,custo:121.90,com:11.5,ant:4.2,frete:78.65,ajml:13.59,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4304064187',nome:'Coluna Ipanema',preco:519.90,precoD:364.54,custo:106.78,com:11.5,ant:4.2,frete:70.25,ajml:15.13,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4403494643',nome:'Kit 2 ABJ \u00c1ustria',preco:450,precoD:377.53,custo:128.30,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4418027647',nome:'Prateleira Invis\u00edvel',preco:45,precoD:45,custo:15,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.25,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4440254147',nome:'ABJ Soft',preco:170,precoD:78.40,custo:32,com:11.5,ant:4.2,frete:9.75,ajml:0,descPct:5,descMax:3.92,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4463801373',nome:'Kit 3 Prateleiras Invis\u00edvel',preco:57.01,precoD:57.01,custo:20,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.85,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4483754251',nome:'C\u00fapula M\u00f4naco',preco:78,precoD:170,custo:32,com:11.5,ant:4.2,frete:44.45,ajml:0,descPct:5,descMax:8.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4492808481',nome:'ABJ Sky',preco:400,precoD:267.72,custo:106.41,com:11.5,ant:4.2,frete:30.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4492868483',nome:'Coluna \u00c1ustria',preco:500,precoD:371.90,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:17.80,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4508211147',nome:'Coluna Ripada',preco:550,precoD:522.50,custo:133.21,com:11.5,ant:4.2,frete:110.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'4508238533',nome:'ABJ \u00c1ustria',preco:300,precoD:278.11,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:1.91,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'5368901108',nome:'Coluna \u00c1ustria',preco:549.90,precoD:383.40,custo:121.90,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5864577256',nome:'Coluna \u00c1ustria',preco:509.90,precoD:369.31,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:13.46,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'5872057576',nome:'ABJ \u00c1ustria',preco:230,precoD:199.56,custo:64.15,com:11.5,ant:4.2,frete:30.75,ajml:0,descPct:5,descMax:9.98,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'5893702492',nome:'Coluna \u00c1ustria',preco:499,precoD:383.46,custo:121.90,com:11.5,ant:4.2,frete:74.95,ajml:11.86,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'5932477026',nome:'Coluna Ipanema',preco:519.90,precoD:358.06,custo:106.78,com:11.5,ant:4.2,frete:70.25,ajml:16.18,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6136495616',nome:'Tampo 35cm',preco:60,precoD:60,custo:10,com:11.5,ant:4.2,frete:8.05,ajml:0,descPct:5,descMax:3,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6136613300',nome:'Kit 2 Tampo 35cm',preco:120,precoD:120,custo:25,com:11.5,ant:4.2,frete:21.05,ajml:0,descPct:5,descMax:6,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6174853758',nome:'ABJ Soft',preco:100,precoD:95,custo:32,com:11.5,ant:4.2,frete:18.45,ajml:0,descPct:5,descMax:4.75,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6210329754',nome:'Adega Quebra-Cabe\u00e7a',preco:150,precoD:150,custo:15,com:11.5,ant:4.2,frete:20.20,ajml:0,descPct:5,descMax:7.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6210373072',nome:'Suporte de Ta\u00e7a',preco:78,precoD:34.10,custo:10,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:1.71,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6210421180',nome:'Adega Quebra-Cabe\u00e7a',preco:160,precoD:49.80,custo:15,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.49,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6210462614',nome:'Suporte de Ta\u00e7a',preco:78,precoD:32.10,custo:10,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:1.61,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6210514680',nome:'Suporte de Ta\u00e7a',preco:78,precoD:29.70,custo:10,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:1.49,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6210843608',nome:'Adega Quebra-Cabe\u00e7a',preco:170,precoD:170,custo:10,com:11.5,ant:4.2,frete:20,ajml:0,descPct:5,descMax:8.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6228947092',nome:'Adega Quebra-Cabe\u00e7a',preco:150,precoD:54.10,custo:15,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.71,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6239329598',nome:'Coluna M\u00f4naco',preco:490,precoD:384.99,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:11.91,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6291361174',nome:'Kit 2 M\u00f4naco',preco:1000,precoD:773.48,custo:201.74,com:11.5,ant:4.2,frete:105.95,ajml:36.66,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}},
-{cod:'6304420276',nome:'ABJ \u00c1ustria',preco:300,precoD:261.90,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:4.86,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'6311157122',nome:'Coluna Ipanema',preco:510,precoD:364.82,custo:106.78,com:11.5,ant:4.2,frete:105.95,ajml:14.51,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-{cod:'4508238533',nome:'ABJ \u00c1ustria Preto',preco:300,precoD:267.40,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'oportunidade',tags:{full:false,oferta:false,pub:false}}
-];
-
-const SEED_ML2=[
-  {cod:'6250952784',nome:'ABJ Mine',preco:99.90,precoD:94.30,custo:37.29,com:11.5,ant:4.2,frete:17.05,ajml:0,descPct:5,descMax:4.72,imp:10,obs:'Subir preço cheio',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4480368643',nome:'ABJ Soft',preco:127.40,precoD:78.40,custo:32.00,com:11.5,ant:4.2,frete:8.55,ajml:0,descPct:5,descMax:3.92,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4502044451',nome:'ABJ Mine',preco:99.90,precoD:90.69,custo:37.29,com:11.5,ant:4.2,frete:14.15,ajml:2.43,descPct:5,descMax:4.53,imp:10,obs:'Subir preço cheio',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6414341858',nome:'Coluna Ipanema',preco:430.00,precoD:376.20,custo:106.78,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Teste até 05/04',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4520850393',nome:'Coluna Ipanema',preco:374.90,precoD:357.10,custo:106.78,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4504230485',nome:'ABJ Áustria',preco:179.90,precoD:147.51,custo:64.15,com:11.5,ant:4.2,frete:21.05,ajml:0,descPct:5,descMax:7.38,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4506274513',nome:'Coluna Áustria',preco:350.00,precoD:332.24,custo:121.91,com:11.5,ant:4.2,frete:39.75,ajml:7.13,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4506297023',nome:'Coluna Floripa',preco:309.90,precoD:294.20,custo:117.02,com:11.5,ant:4.2,frete:28.35,ajml:6.30,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4510811525',nome:'ABJ Sky',preco:289.90,precoD:249.97,custo:106.41,com:11.5,ant:4.2,frete:30.75,ajml:6.14,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4510919315',nome:'Coluna Áustria',preco:378.50,precoD:340.65,custo:121.90,com:11.5,ant:4.2,frete:26.25,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4515756023',nome:'Coluna Ipanema',preco:315.50,precoD:299.52,custo:106.78,com:11.5,ant:4.2,frete:49.35,ajml:6.49,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4523669033',nome:'ABJ Wood',preco:310.00,precoD:287.40,custo:106.41,com:11.5,ant:4.2,frete:49.35,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6250745552',nome:'ABJ Mine',preco:109.90,precoD:97.30,custo:37.29,com:11.5,ant:4.2,frete:18.00,ajml:0,descPct:5,descMax:4.87,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6398515622',nome:'ABJ Áustria',preco:174.50,precoD:145.96,custo:64.15,com:11.5,ant:4.2,frete:24.65,ajml:4.51,descPct:5,descMax:7.30,imp:10,obs:'Tirar desconto',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6410359128',nome:'Coluna Áustria',preco:427.00,precoD:318.10,custo:121.90,com:11.5,ant:4.2,frete:39.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6414298296',nome:'ABJ Mine',preco:99.90,precoD:99.90,custo:37.29,com:11.5,ant:4.2,frete:17.05,ajml:0,descPct:5,descMax:5.00,imp:10,obs:'Subir preço cheio',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6414802356',nome:'ABJ Sky',preco:299.00,precoD:278.07,custo:106.41,com:11.5,ant:4.2,frete:28.35,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6432646488',nome:'ABJ Áustria',preco:199.00,precoD:179.10,custo:64.15,com:11.5,ant:4.2,frete:27.75,ajml:0,descPct:5,descMax:8.96,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6433021926',nome:'Kit 2 ABJ Áustria',preco:380.00,precoD:359.49,custo:128.30,com:11.5,ant:4.2,frete:28.35,ajml:3.55,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6437558034',nome:'Coluna Áustria',preco:394.50,precoD:297.10,custo:121.90,com:11.5,ant:4.2,frete:26.25,ajml:6.74,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4542163409',nome:'Kit 2 ABJ Áustria',preco:350.00,precoD:297.00,custo:128.30,com:11.5,ant:4.2,frete:28.35,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4573468289',nome:'Coluna Áustria',preco:389.90,precoD:351.70,custo:121.90,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'4582227893',nome:'Coluna Ipanema',preco:429.90,precoD:342.10,custo:106.78,com:11.5,ant:4.2,frete:44.05,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6487924802',nome:'Vaso China Vietnamita',preco:590.00,precoD:467.40,custo:219.00,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6500796670',nome:'Porta Guardanapo',preco:30.00,precoD:24.90,custo:6.00,com:11.5,ant:4.2,frete:6.85,ajml:0,descPct:5,descMax:1.25,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'6481131996',nome:'ABJ Slim',preco:150.00,precoD:124.30,custo:43.25,com:11.5,ant:4.2,frete:23.65,ajml:0,descPct:5,descMax:6.22,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}}
-];
-
-
-// ── AUTO-FILL ──
-function autoFillCusto(){
-  const nome=document.getElementById('f-nome')?.value||'';
-  const custoEl=document.getElementById('f-custo');
-  if(!custoEl||+custoEl.value>0)return; // don't overwrite
-  const c=getCusto(nome);
-  if(c!==null){custoEl.value=c;calcLive();}
-}
-
-// ── STATE ──
-let DATA=[],HIST=[],NID=1000,editId=null,activeFilter=null,mTipo='classico',sTipo='classico';
-let DATA2=[],NID2=9000,editId2=null,activeFilter2=null;
-let SH2_DATA=[],SH2_NID=7000,shEditId2=null;
-
-// ── STORAGE ──
-function sv(){localStorage.setItem(SK,JSON.stringify(DATA));scheduleSyncUp();}
-function svSH(){localStorage.setItem(SK_SH,JSON.stringify(SH_DATA));scheduleSyncUp();}
-function svH(){localStorage.setItem(HK,JSON.stringify(HIST))}
-function addH(msg){HIST.unshift({ts:new Date().toLocaleString('pt-BR'),msg});if(HIST.length>300)HIST.pop();svH()}
-
-function load(){
-  try{
-    const s=localStorage.getItem(SK);
-    if(s){DATA=JSON.parse(s);NID=Math.max(...DATA.map(a=>a.id),999)+1}
-    else{DATA=SEED.map((a,i)=>({...a,id:i+1}));NID=DATA.length+1;sv()}
-    HIST=JSON.parse(localStorage.getItem(HK)||'[]')
-  }catch(e){DATA=SEED.map((a,i)=>({...a,id:i+1}));NID=DATA.length+1;sv()}
-  // Ensure tags exist on all items
-  DATA.forEach(a=>{if(!a.tags)a.tags={full:false,oferta:false,pub:false}})
-}
-
-// ── CALC ──
-function calc(a){
-  const pv=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
-  const custo=+a.custo||0,com=(+a.com||0)/100*pv,ant=(+a.ant||0)/100*pv;
-  const frete=+a.frete||0,ajml=+a.ajml||0;
-  const desc=Math.min((+a.descPct||0)/100*pv,+a.descMax||999);
-  const imp=(+a.imp||0)/100*pv;
-  const lucro=pv-custo-com-ant-frete+ajml-desc-imp;
-  return{pv,custo,com,ant,frete,ajml,desc,imp,lucro,margem:pv>0?lucro/pv*100:0}
-}
-function sanitize(s){
-  if(!s)return'';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function fmt(v){return'R$\u00a0'+(+v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function calcSug(a){
-  const alvo=20,com=(+a.com||11.5)/100,ant=(+a.ant||4.2)/100,imp=(+a.imp||10)/100;
-  const custo=+a.custo||0,frete=+a.frete||0,ajml=+a.ajml||0;
-  const descMax=+a.descMax||10,descPct=(+a.descPct||5)/100;
-  const t=1-com-ant-imp,denom=t-alvo/100;
-  if(denom<=0.01)return null;
-  const pCap=(custo+frete-ajml+descMax)/denom;
-  const denomPct=t-descPct-alvo/100;
-  const pPct=denomPct>0.01?(custo+frete-ajml)/denomPct:null;
-  const threshold=descPct>0?descMax/descPct:9999;
-  const pv=pCap>=threshold?pCap:(pPct&&pPct>0?pPct:pCap);
-  if(!isFinite(pv)||pv<=0||pv>50000)return null;
-  // Only suggest if it's higher than current price (makes sense to raise)
-  const pvEff=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
-  if(pv<=pvEff)return null;
-  return{pv:Math.ceil(pv*10)/10,margem:alvo}
-}
-function mkTags(tags){
-  if(!tags)return'';
-  const t=[];
-  if(tags.full)t.push('<span class=\"tag tag-full\">Full</span>');
-  if(tags.oferta)t.push('<span class=\"tag tag-oferta\">Oferta</span>');
-  if(tags.pub)t.push('<span class=\"tag tag-pub\">Pub</span>');
-  return t.join(' ')
-}
-
-// ── NAVIGATION ──
-
-// ── SUPABASE ──
-let SB=null,SB_USER=null;
-
-
-function setSyncStatus(state){
-  const dot=document.getElementById('sync-dot');
-  const lbl=document.getElementById('sync-label');
-  if(!dot||!lbl)return;
-  const map={local:{c:'var(--am)',t:'local'},connecting:{c:'var(--am)',t:'conectando...'},connected:{c:'var(--gr)',t:'sincronizado'},error:{c:'var(--rd)',t:'erro'},syncing:{c:'var(--bl)',t:'sincronizando...'}};
-  const s=map[state]||map.local;
-  dot.style.background=s.c;lbl.textContent=s.t;
-}
-
-const SB_URL='https://ckqrahgkkzglqoptrvqg.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrcXJhaGdra3pnbHFvcHRydnFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTA0NDUsImV4cCI6MjA5MjQ2NjQ0NX0.zUmMQLRGa-wU2rHd9bJ7JVwL9-32awo1VgCatY8-Qr8';
-
-
-// ── DARK MODE ──
-function initDark(){
-  var saved=localStorage.getItem('pfy_theme');
-  var prefersDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
-  setDark(saved?saved==='dark':prefersDark);
-}
-function setDark(on){
-  document.documentElement.setAttribute('data-theme',on?'dark':'light');
-  localStorage.setItem('pfy_theme',on?'dark':'light');
-  var btn=document.getElementById('dark-btn');
-  if(btn)btn.textContent=on?'🌙':'☀️';
-}
-function toggleDark(){setDark(document.documentElement.getAttribute('data-theme')!=='dark');}
-
-// ════════════════════════════════════════
-// SHOPEE CONTA 2 ENGINE
-// ════════════════════════════════════════
-function renderShopee2(){
-  var todos=SH2_DATA.map(function(a){return Object.assign({},a,calcSH(a));});
-  var avg=todos.length?todos.reduce(function(s,a){return s+a.margem;},0)/todos.length:0;
-  var ok2=todos.filter(function(a){return a.margem>=16;});
-  var nok2=todos.filter(function(a){return a.margem<16;});
-  var crit2=todos.filter(function(a){return a.margem<10;});
-
-  var alEl=document.getElementById('sh2-alerts');
-  if(alEl){var al=[];
-    if(crit2.length)al.push('<div class="alert al-rd"><span>⚠</span><span><strong>'+crit2.length+' anúncio'+(crit2.length>1?'s':'')+' crítico'+(crit2.length>1?'s':'')+' abaixo de 10%</strong></span></div>');
-    alEl.innerHTML=al.join('');
-  }
-  var dm=document.getElementById('sh2-metrics');
-  if(dm)dm.innerHTML=
-    '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
-    '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
-    '<div class="met"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub">'+crit2.length+' críticos</div></div>'+
-    '<div class="met"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">'+ok2.length+'</div><div class="met-sub">saudáveis</div></div>';
-
-  var sorted=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
-  function mkR(list,cls){return list.map(function(a){return '<div class="ri" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer"><div><div class="ir-name">'+a.nome+'</div><div class="ir-sub">'+a.cod+'</div></div><div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';}).join('');}
-  var t=document.getElementById('sh2-top');if(t)t.innerHTML=mkR(sorted.slice(0,5),'b-ok');
-  var b=document.getElementById('sh2-bot');if(b)b.innerHTML=mkR(sorted.slice(-5).reverse(),'b-nok');
-
-  var q=(document.getElementById('sh2-busca')?.value||'').toLowerCase();
-  var st=document.getElementById('sh2-fstatus')?.value||'';
-  var lista=todos.filter(function(a){
-    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
-    if(st==='ok'&&a.margem<16)return false;
-    if(st==='nok'&&a.margem>=16)return false;
-    return true;
-  });
-  window._sh2Lista=lista;
-  var sub=document.getElementById('sh2-sub');
-  if(sub)sub.textContent=lista.length+' de '+SH2_DATA.length+' anúncios';
-
-  var tbody=document.getElementById('sh2-tbl-body');
-  tbody.innerHTML='';
-  if(!lista.length){tbody.innerHTML='<tr><td colspan="10"><div class="empty">Nenhum resultado</div></td></tr>';return;}
-  lista.forEach(function(a,i){
-    var ok=a.margem>=16;
-    var tr=document.createElement('tr');
-    var tr=document.createElement('tr');
-    tr.className='sh2-row';tr.dataset.idx=String(i);tr.style.cursor='pointer';
-    var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
-    var okCl2=ok?'var(--gr)':'var(--rd)';
-    var c0=document.createElement('td');
-    c0.textContent=a.cod;c0.className='sh2-cod';c0.title='Copiar';
-    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
-    var c1=document.createElement('td');
-    c1.textContent=a.nome;
-    c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
-    var c2=document.createElement('td');
-    c2.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+pv2+'" data-idx="'+i+'" data-field="precoD" style="width:80px">';
-    c2.onclick=function(e){e.stopPropagation();};
-    var c3=document.createElement('td');
-    c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:70px">';
-    c3.onclick=function(e){e.stopPropagation();};
-    var c4=document.createElement('td');c4.textContent=fmt(a.taxa);c4.style.color='var(--pu)';
-    var c5=document.createElement('td');c5.textContent=fmt(a.antec);c5.style.color='var(--pu)';
-    var c6=document.createElement('td');c6.textContent=fmt(a.lucro);
-    c6.style.cssText='font-weight:500;color:'+okCl2;
-    var c7=document.createElement('td');
-    var okBadge2=ok?'b-ok':'b-nok';
-    c7.innerHTML='<span class="badge '+okBadge2+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+okCl2+'"></div></div>';
-    var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
-    c8.innerHTML=a.obs?('<em>'+sanitize(a.obs)+'</em>'):'—';
-    var c9=document.createElement('td');c9.innerHTML='<button class="btn-sm">Editar</button>';
-    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
-    tbody.appendChild(tr);
-  });
-
-  if(!tbody._sh2delegated){
-    tbody._sh2delegated=true;
-    tbody.addEventListener('click',function(e){
-      if(e.target.tagName==='INPUT')return;
-      if(e.target.classList.contains('sh2-cod')){copiarCod(e.target.textContent.trim());return;}
-      var row=e.target.closest('.sh2-row');if(!row)return;
-      var a=window._sh2Lista[+row.dataset.idx];
-      if(a)openShopee2Modal(a.id);
-    });
-    tbody.addEventListener('change',function(e){
-      if(e.target.tagName!=='INPUT')return;
-      var a=window._sh2Lista[+e.target.dataset.idx];
-      if(a&&e.target.dataset.field){
-        a[e.target.dataset.field]=parseFloat(e.target.value)||0;
-        var orig=SH2_DATA.find(function(x){return String(x.id)===String(a.id);});
-        if(orig)orig[e.target.dataset.field]=a[e.target.dataset.field];
-        svSH2();renderShopee2();
-      }
-    });
-  }
-
-  // Mobile cards
-  document.getElementById('sh2-mob-cards').innerHTML=lista.map(function(a){
-    var ok=a.margem>=16;
-    return '<div class="an-card" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer">'+
-      '<div class="an-hdr"><div class="an-name">'+sanitize(a.nome)+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
-      '<div class="an-cod">'+a.cod+'</div>'+
-      '<div class="an-stats"><span>Preço: <strong>'+fmt(a.precoD>0?a.precoD:a.preco)+'</strong></span><span>Taxa: <strong style="color:var(--pu)">'+fmt(a.taxa)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span></div>'+
-      '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
-    '</div>';
-  }).join('');
-}
-
-var _sh2ModalMode=false;
-function openShopee2Modal(id){
-  _sh2ModalMode=true;
-  shEditId2=id||null;
-  var a=id?SH2_DATA.find(function(x){return String(x.id)===String(id);}):null;
-  // Reuse Shopee modal
-  document.getElementById('sh-m-title').textContent=a?'Editar — Shopee 2':'Novo — Shopee 2';
-  var bd=document.getElementById('sh-btn-del');if(bd)bd.style.display=a?'':'none';
-  var g=function(f,v){var el=document.getElementById(f);if(el)el.value=v??'';};
-  g('sh-f-nome',a?.nome||'');g('sh-f-cod',a?.cod||'');g('sh-f-status',a?.status||'ativo');
-  g('sh-f-preco',a?.preco||'');g('sh-f-precoD',a?.precoD||'');
-  g('sh-f-custo',a?.custo||'');g('sh-f-ant',a?.ant??6);
-  g('sh-f-frete',a?.frete||0);g('sh-f-outros',a?.outros||0);
-  g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
-  g('sh-f-imp',a?.imp??10);g('sh-f-obs',a?.obs||'');
-  document.getElementById('sh-overlay').classList.add('open');
-  shCalcLive();
-}
-
-function salvarShopee2(){
-  var f=shGetForm();
-  if(!f.nome.trim())return alert('Informe o nome do produto');
-  if(shEditId2){
-    var old=SH2_DATA.find(function(a){return String(a.id)===String(shEditId2);});
-    if(!old)return;
-    Object.assign(old,f);svSH2();
-    addH('[Shopee2] Editado: '+f.nome);
-  } else {
-    SH2_DATA.push(Object.assign({},f,{id:SH2_NID++}));svSH2();
-    addH('[Shopee2] Novo: '+f.nome);
-  }
-  _sh2ModalMode=false;shEditId2=null;
-  closeShopeeModal();renderShopee2();renderDash();
-}
-
-function deletarShopee2(){
-  if(!shEditId2)return;
-  var a=SH2_DATA.find(function(x){return String(x.id)===String(shEditId2);});
-  if(!a)return;
-  if(!confirm('Remover "'+a.nome+'" da Shopee 2?'))return;
-  SH2_DATA=SH2_DATA.filter(function(x){return String(x.id)!==String(shEditId2);});
-  localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));
-  addH('[Shopee2] Removido: '+a.nome);
-  _sh2ModalMode=false;shEditId2=null;
-  closeShopeeModal();renderShopee2();
-}
-
-async function initSupabase(){
-  try{
-    if(!SB)SB=window.supabase.createClient(SB_URL,SB_KEY);
-    SB_USER={id:'05c26431-331f-439a-a42f-4b2fdad1e618'};
-    initDark();
-    load();loadShopee();loadML2();loadShopee2();
-    setSyncStatus('connected');
-    updateCfgCard();
-    renderDash();
-    syncDown();
-  }catch(e){
-    console.error('initSupabase:',e);
-    load();loadShopee();loadML2();loadShopee2();renderDash();
-  }
-}
-<script>if(localStorage.getItem("pfy_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");</script>
 </head>
 <body>
 <div class="shell">
@@ -3121,6 +2230,180 @@ function toggleTagML2Btn(btn){toggleTagML2(btn.dataset.id,btn.dataset.tag);}
 
 
 initSupabase();
+</script
+
+// ════════════════════════════════════════
+// SHOPEE CONTA 2 ENGINE
+// ════════════════════════════════════════
+function renderShopee2(){
+  var todos=SH2_DATA.map(function(a){return Object.assign({},a,calcSH(a));});
+  var avg=todos.length?todos.reduce(function(s,a){return s+a.margem;},0)/todos.length:0;
+  var ok2=todos.filter(function(a){return a.margem>=16;});
+  var nok2=todos.filter(function(a){return a.margem<16;});
+  var crit2=todos.filter(function(a){return a.margem<10;});
+
+  var alEl=document.getElementById('sh2-alerts');
+  if(alEl){var al=[];
+    if(crit2.length)al.push('<div class="alert al-rd"><span>⚠</span><span><strong>'+crit2.length+' anúncio'+(crit2.length>1?'s':'')+' crítico'+(crit2.length>1?'s':'')+' abaixo de 10%</strong></span></div>');
+    alEl.innerHTML=al.join('');
+  }
+  var dm=document.getElementById('sh2-metrics');
+  if(dm)dm.innerHTML=
+    '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
+    '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
+    '<div class="met"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub">'+crit2.length+' críticos</div></div>'+
+    '<div class="met"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">'+ok2.length+'</div><div class="met-sub">saudáveis</div></div>';
+
+  var sorted=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
+  function mkR(list,cls){return list.map(function(a){return '<div class="ri" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer"><div><div class="ir-name">'+a.nome+'</div><div class="ir-sub">'+a.cod+'</div></div><div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';}).join('');}
+  var t=document.getElementById('sh2-top');if(t)t.innerHTML=mkR(sorted.slice(0,5),'b-ok');
+  var b=document.getElementById('sh2-bot');if(b)b.innerHTML=mkR(sorted.slice(-5).reverse(),'b-nok');
+
+  var q=(document.getElementById('sh2-busca')?.value||'').toLowerCase();
+  var st=document.getElementById('sh2-fstatus')?.value||'';
+  var lista=todos.filter(function(a){
+    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
+    if(st==='ok'&&a.margem<16)return false;
+    if(st==='nok'&&a.margem>=16)return false;
+    return true;
+  });
+  window._sh2Lista=lista;
+  var sub=document.getElementById('sh2-sub');
+  if(sub)sub.textContent=lista.length+' de '+SH2_DATA.length+' anúncios';
+
+  var tbody=document.getElementById('sh2-tbl-body');
+  tbody.innerHTML='';
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="10"><div class="empty">Nenhum resultado</div></td></tr>';return;}
+  lista.forEach(function(a,i){
+    var ok=a.margem>=16;
+    var tr=document.createElement('tr');
+    var tr=document.createElement('tr');
+    tr.className='sh2-row';tr.dataset.idx=String(i);tr.style.cursor='pointer';
+    var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
+    var okCl2=ok?'var(--gr)':'var(--rd)';
+    var c0=document.createElement('td');
+    c0.textContent=a.cod;c0.className='sh2-cod';c0.title='Copiar';
+    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
+    var c1=document.createElement('td');
+    c1.textContent=a.nome;
+    c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
+    var c2=document.createElement('td');
+    c2.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+pv2+'" data-idx="'+i+'" data-field="precoD" style="width:80px">';
+    c2.onclick=function(e){e.stopPropagation();};
+    var c3=document.createElement('td');
+    c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:70px">';
+    c3.onclick=function(e){e.stopPropagation();};
+    var c4=document.createElement('td');c4.textContent=fmt(a.taxa);c4.style.color='var(--pu)';
+    var c5=document.createElement('td');c5.textContent=fmt(a.antec);c5.style.color='var(--pu)';
+    var c6=document.createElement('td');c6.textContent=fmt(a.lucro);
+    c6.style.cssText='font-weight:500;color:'+okCl2;
+    var c7=document.createElement('td');
+    var okBadge2=ok?'b-ok':'b-nok';
+    c7.innerHTML='<span class="badge '+okBadge2+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+okCl2+'"></div></div>';
+    var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
+    c8.innerHTML=a.obs?('<em>'+sanitize(a.obs)+'</em>'):'—';
+    var c9=document.createElement('td');c9.innerHTML='<button class="btn-sm">Editar</button>';
+    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
+    tbody.appendChild(tr);
+  });
+
+  if(!tbody._sh2delegated){
+    tbody._sh2delegated=true;
+    tbody.addEventListener('click',function(e){
+      if(e.target.tagName==='INPUT')return;
+      if(e.target.classList.contains('sh2-cod')){copiarCod(e.target.textContent.trim());return;}
+      var row=e.target.closest('.sh2-row');if(!row)return;
+      var a=window._sh2Lista[+row.dataset.idx];
+      if(a)openShopee2Modal(a.id);
+    });
+    tbody.addEventListener('change',function(e){
+      if(e.target.tagName!=='INPUT')return;
+      var a=window._sh2Lista[+e.target.dataset.idx];
+      if(a&&e.target.dataset.field){
+        a[e.target.dataset.field]=parseFloat(e.target.value)||0;
+        var orig=SH2_DATA.find(function(x){return String(x.id)===String(a.id);});
+        if(orig)orig[e.target.dataset.field]=a[e.target.dataset.field];
+        svSH2();renderShopee2();
+      }
+    });
+  }
+
+  // Mobile cards
+  document.getElementById('sh2-mob-cards').innerHTML=lista.map(function(a){
+    var ok=a.margem>=16;
+    return '<div class="an-card" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer">'+
+      '<div class="an-hdr"><div class="an-name">'+sanitize(a.nome)+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
+      '<div class="an-cod">'+a.cod+'</div>'+
+      '<div class="an-stats"><span>Preço: <strong>'+fmt(a.precoD>0?a.precoD:a.preco)+'</strong></span><span>Taxa: <strong style="color:var(--pu)">'+fmt(a.taxa)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span></div>'+
+      '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+var _sh2ModalMode=false;
+function openShopee2Modal(id){
+  _sh2ModalMode=true;
+  shEditId2=id||null;
+  var a=id?SH2_DATA.find(function(x){return String(x.id)===String(id);}):null;
+  // Reuse Shopee modal
+  document.getElementById('sh-m-title').textContent=a?'Editar — Shopee 2':'Novo — Shopee 2';
+  var bd=document.getElementById('sh-btn-del');if(bd)bd.style.display=a?'':'none';
+  var g=function(f,v){var el=document.getElementById(f);if(el)el.value=v??'';};
+  g('sh-f-nome',a?.nome||'');g('sh-f-cod',a?.cod||'');g('sh-f-status',a?.status||'ativo');
+  g('sh-f-preco',a?.preco||'');g('sh-f-precoD',a?.precoD||'');
+  g('sh-f-custo',a?.custo||'');g('sh-f-ant',a?.ant??6);
+  g('sh-f-frete',a?.frete||0);g('sh-f-outros',a?.outros||0);
+  g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
+  g('sh-f-imp',a?.imp??10);g('sh-f-obs',a?.obs||'');
+  document.getElementById('sh-overlay').classList.add('open');
+  shCalcLive();
+}
+
+function salvarShopee2(){
+  var f=shGetForm();
+  if(!f.nome.trim())return alert('Informe o nome do produto');
+  if(shEditId2){
+    var old=SH2_DATA.find(function(a){return String(a.id)===String(shEditId2);});
+    if(!old)return;
+    Object.assign(old,f);svSH2();
+    addH('[Shopee2] Editado: '+f.nome);
+  } else {
+    SH2_DATA.push(Object.assign({},f,{id:SH2_NID++}));svSH2();
+    addH('[Shopee2] Novo: '+f.nome);
+  }
+  _sh2ModalMode=false;shEditId2=null;
+  closeShopeeModal();renderShopee2();renderDash();
+}
+
+function deletarShopee2(){
+  if(!shEditId2)return;
+  var a=SH2_DATA.find(function(x){return String(x.id)===String(shEditId2);});
+  if(!a)return;
+  if(!confirm('Remover "'+a.nome+'" da Shopee 2?'))return;
+  SH2_DATA=SH2_DATA.filter(function(x){return String(x.id)!==String(shEditId2);});
+  localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));
+  addH('[Shopee2] Removido: '+a.nome);
+  _sh2ModalMode=false;shEditId2=null;
+  closeShopeeModal();renderShopee2();
+}
+
+async function initSupabase(){
+  try{
+    if(!SB)SB=window.supabase.createClient(SB_URL,SB_KEY);
+    SB_USER={id:'05c26431-331f-439a-a42f-4b2fdad1e618'};
+    initDark();
+    load();loadShopee();loadML2();loadShopee2();
+    setSyncStatus('connected');
+    updateCfgCard();
+    renderDash();
+    syncDown();
+  }catch(e){
+    console.error('initSupabase:',e);
+    load();loadShopee();loadML2();loadShopee2();renderDash();
+  }
+}
+
+
 </script>
 </body>
 </html>
