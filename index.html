@@ -2550,19 +2550,28 @@ initSupabase();
     </div>
     <div style="background:var(--sur2);border-radius:var(--rs);padding:10px 13px;font-size:12px">
       <div style="font-weight:600;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Composição dos custos</div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo do produto</span><span id="sh-rb-custo">—</span></div>
-      <div style="padding:6px 0 2px;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px">TAXAS SHOPEE</div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Comissão bruta</span><span id="sh-rb-com" style="font-size:12px">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Taxa de serviço</span><span id="sh-rb-svc" style="font-size:12px">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Taxa transação + fixo</span><span id="sh-rb-trx" style="font-size:12px">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Subtotal taxas Shopee</span><span id="sh-rb-comissao" style="font-weight:600">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Shopee Antecipa (<span id="sh-lbl-ant">2.5</span>%)</span><span id="sh-rb-antec">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:2px solid var(--pu);font-weight:600"><span style="color:var(--pu)">Total descontado Shopee</span><span id="sh-rb-taxa" style="color:var(--pu)">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);background:rgba(26,122,82,.08);padding:6px 8px;border-radius:6px;margin:4px 0"><span style="color:var(--gr);font-weight:600">💰 Liberado pela Shopee</span><span id="sh-rb-renda" style="color:var(--gr);font-weight:700">—</span></div>
-      <div style="padding:6px 0 2px;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px">SEUS CUSTOS</div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Desconto cupom</span><span id="sh-rb-desc" style="font-size:12px">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)" id="sh-rb-frete-row"><span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Frete + outros</span><span id="sh-rb-frete" style="font-size:12px">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Imposto (<span id="sh-rb-imp-pct">10</span>%)</span><span id="sh-rb-imp" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo</span><span id="sh-rb-custo">—</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--bd)">
+        <span style="color:var(--pu);font-size:12px">Taxas Shopee</span>
+        <span style="display:flex;gap:10px;font-size:11px;color:var(--t3)">
+          <span>Com <span id="sh-rb-com" style="color:var(--pu)">—</span></span>
+          <span>Svc <span id="sh-rb-svc" style="color:var(--pu)">—</span></span>
+          <span>Trx <span id="sh-rb-trx" style="color:var(--pu)">—</span></span>
+        </span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Subtotal</span><span id="sh-rb-comissao" style="font-size:12px;font-weight:600">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Antecipa (<span id="sh-lbl-ant">2.5</span>%)</span><span id="sh-rb-antec" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:2px solid var(--pu);font-weight:600"><span style="color:var(--pu)">Total Shopee</span><span id="sh-rb-taxa" style="color:var(--pu)">—</span></div>
+      <div style="display:flex;justify-content:space-between;background:rgba(26,122,82,.1);padding:5px 8px;border-radius:6px;margin:4px 0;font-weight:600"><span style="color:var(--gr)">💰 Liberado pela Shopee</span><span id="sh-rb-renda" style="color:var(--gr)">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-top:1px solid var(--bd)">
+        <span style="font-size:12px;color:var(--t2)">Desc · Frete · Imp(<span id="sh-rb-imp-pct">10</span>%)</span>
+        <span style="font-size:12px;display:flex;gap:8px;color:var(--t3)">
+          <span id="sh-rb-desc">—</span>
+          <span id="sh-rb-frete">—</span>
+          <span id="sh-rb-imp">—</span>
+        </span>
+      </div>
+      <div id="sh-rb-frete-row" style="display:none"></div>
     </div>
   </div>
   <div id="sh-m-sug" style="display:none;font-size:13px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--rs);padding:9px 12px;margin-bottom:12px"></div>
@@ -2580,7 +2589,7 @@ initSupabase();
     <div class="field"><label>Preço c/ desc (R$)</label><input id="sh-f-precoD" type="number" step=".01" inputmode="decimal" placeholder="0 = mesmo" oninput="shCalcLive()"></div>
   </div>
   <div class="fsep">Taxas Shopee</div>
-  <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">Taxa real validada: ≤R$80→20%+R$4 | ≤R$100→17.5%+R$16 | ≤R$200→17%+R$20 | ≤R$500→17%+R$26</div>
+  <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">≤R$80: 20%+R$4 · ≤R$100: 17.5%+R$16 · ≤R$200: 17%+R$20 · acima: 17%+R$26</div>
   <div class="fg3">
     
     <div class="field"><label>Shopee Antecipa (%)</label><input id="sh-f-ant" type="number" step=".1" value="6" inputmode="decimal" oninput="shCalcLive()"></div>
