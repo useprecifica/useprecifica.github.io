@@ -429,7 +429,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   </div>
   <div class="tbl-wrap">
     <table class="tbl"><thead><tr>
-      <th>Código</th><th>Produto</th><th>Preço</th><th>Custo</th><th>Taxa Shopee</th><th>Antecipação</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
+      <th>Código</th><th>Produto</th><th>Preço</th><th>Custo</th><th>Taxa Shopee</th><th>Antec.</th><th>Renda Shopee</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
     </tr></thead><tbody id="sh2-tbl-body"></tbody></table>
   </div>
   <div class="mob" id="sh2-mob-cards" style="display:none"></div>
@@ -717,11 +717,104 @@ const SEED=[
 ];
 
 const SEED_ML2=[
-  {cod:'ML2001',nome:'Lustre Sala Jantar',preco:329.90,precoD:289.90,custo:115.00,com:11.5,ant:4.2,frete:48.00,ajml:0,descPct:5,descMax:10.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'ML2002',nome:'Abajur Veludo Rosa',preco:149.90,precoD:129.90,custo:48.00,com:11.5,ant:4.2,frete:20.00,ajml:0,descPct:5,descMax:6.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'ML2003',nome:'Plafon Redondo 40cm',preco:199.90,precoD:174.90,custo:72.00,com:11.5,ant:4.2,frete:30.00,ajml:0,descPct:5,descMax:8.75,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'ML2004',nome:'Trilho de Luz 1m',preco:289.90,precoD:249.90,custo:98.00,com:11.5,ant:4.2,frete:38.00,ajml:0,descPct:5,descMax:10.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
-  {cod:'ML2005',nome:'Arandela Externa IP65',preco:119.90,precoD:99.90,custo:38.00,com:11.5,ant:4.2,frete:16.00,ajml:0,descPct:5,descMax:5.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}}
+  {cod:'4585262697',nome:'Coluna Áustria',preco:500.00,precoD:392.10,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4585298353',nome:'ABJ Áustria',preco:290.00,precoD:237.40,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:true,oferta:false,pub:false}},
+  {cod:'3969610341',nome:'ABJ Wood',preco:309.00,precoD:293.55,custo:106.41,com:11.5,ant:4.2,frete:70.25,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:true,pub:false}},
+  {cod:'4586694161',nome:'ABJ Áustria',preco:300.00,precoD:209.10,custo:64.15,com:11.5,ant:4.2,frete:48.05,ajml:0,descPct:5,descMax:10,imp:10,obs:'ADS',tags:{full:false,oferta:false,pub:true}},
+  {cod:'6574433410',nome:'Coluna Áustria',preco:500.00,precoD:387.40,custo:121.90,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4586818521',nome:'ABJ Áustria',preco:260.00,precoD:237.07,custo:64.15,com:11.5,ant:4.2,frete:48.05,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4159251187',nome:'ABJ Áustria',preco:254.90,precoD:226.73,custo:64.15,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Retirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5285285754',nome:'ABJ Slim',preco:179.90,precoD:143.95,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:4.45,descPct:5,descMax:7.20,imp:10,obs:'Subir preço para R$200',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4586801249',nome:'ABJ Mine',preco:150.00,precoD:107.40,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:0,descPct:5,descMax:5.37,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'3967801757',nome:'ABJ Slim',preco:174.30,precoD:140.41,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:0,descPct:5,descMax:7.02,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4586924195',nome:'Coluna Wells',preco:450.00,precoD:356.47,custo:108.33,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5840057296',nome:'Coluna Wells',preco:399.00,precoD:333.25,custo:108.33,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4016428529',nome:'Coluna Áustria',preco:480.00,precoD:346.56,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:13.34,descPct:5,descMax:10,imp:10,obs:'Tirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6574383306',nome:'Coluna Ipanema',preco:520.00,precoD:356.09,custo:106.78,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5771949280',nome:'Coluna Ipanema',preco:510.00,precoD:346.29,custo:106.78,com:11.5,ant:4.2,frete:65.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4415985527',nome:'Coluna Monâco',preco:490.00,precoD:360.97,custo:105.87,com:11.5,ant:4.2,frete:106.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso até 14/03',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4587083697',nome:'Coluna Wells',preco:490.00,precoD:357.60,custo:108.33,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'Subir preço urgente',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5301597570',nome:'ABJ Áustria',preco:249.90,precoD:219.70,custo:64.15,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Criar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4417927427',nome:'Prateleira Invisível',preco:40.00,precoD:40.00,custo:10.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4181589365',nome:'ABJ Wood',preco:299.00,precoD:299.00,custo:106.41,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso até 14/03',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5285127764',nome:'Coluna Áustria',preco:465.50,precoD:332.21,custo:121.90,com:11.5,ant:4.2,frete:106.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4304743297',nome:'ABJ Mine',preco:130.00,precoD:103.79,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:4.49,descPct:5,descMax:5.19,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4329541467',nome:'Cúpula 40cm c/ Aro',preco:78.00,precoD:78.00,custo:32.00,com:11.5,ant:4.2,frete:11.35,ajml:0,descPct:5,descMax:3.90,imp:10,obs:'Retirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4415862431',nome:'Coluna Monâco',preco:490.00,precoD:372.40,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:11.76,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5310043854',nome:'Coluna Áustria',preco:450.00,precoD:397.10,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4136206895',nome:'Coluna Áustria',preco:465.50,precoD:379.29,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:11.73,descPct:5,descMax:10,imp:10,obs:'Tirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4176351347',nome:'Coluna Áustria',preco:509.00,precoD:367.50,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:14.15,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4181135515',nome:'Coluna Floripa',preco:510.00,precoD:324.68,custo:117.02,com:11.5,ant:4.2,frete:70.25,ajml:18.53,descPct:5,descMax:10,imp:10,obs:'Promo c/ reembolso até 14/03',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6574792410',nome:'ABJ Mine',preco:110.00,precoD:99.80,custo:37.29,com:11.5,ant:4.2,frete:15.75,ajml:0,descPct:5,descMax:4.99,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4415825217',nome:'Coluna Monâco',preco:500.00,precoD:379.28,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:22.59,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5285107876',nome:'Coluna Wells',preco:450.00,precoD:357.93,custo:108.33,com:11.5,ant:4.2,frete:105.95,ajml:11.07,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5771773286',nome:'Coluna Áustria',preco:540.00,precoD:359.10,custo:121.90,com:11.5,ant:4.2,frete:68.65,ajml:18.09,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6575052894',nome:'Coluna Ripada',preco:510.00,precoD:448.70,custo:133.21,com:11.5,ant:4.2,frete:110.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'Subir preço urgente',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6574504830',nome:'Coluna Áustria',preco:500.00,precoD:378.90,custo:121.90,com:11.5,ant:4.2,frete:91.15,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4159366395',nome:'Coluna Áustria',preco:578.90,precoD:370.61,custo:121.90,com:11.5,ant:4.2,frete:107.05,ajml:20.92,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4303886101',nome:'Coluna Wells',preco:450.00,precoD:336.11,custo:108.33,com:11.5,ant:4.2,frete:106.95,ajml:11.38,descPct:5,descMax:10,imp:10,obs:'Subir preço urgente',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4245245257',nome:'Kit Mine',preco:200.00,precoD:170.72,custo:74.58,com:11.5,ant:4.2,frete:21.65,ajml:4.80,descPct:5,descMax:8.54,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4403443389',nome:'Kit Slim',preco:250.00,precoD:221.13,custo:86.50,com:11.5,ant:4.2,frete:30.75,ajml:6.84,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4449926971',nome:'Cúpula 40cm c/ Aro',preco:78.00,precoD:78.00,custo:32.00,com:11.5,ant:4.2,frete:11.35,ajml:0,descPct:5,descMax:3.90,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5329944716',nome:'Coluna Áustria',preco:480.00,precoD:372.48,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:11.52,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5771892662',nome:'Kit Áustria',preco:450.00,precoD:336.11,custo:128.38,com:11.5,ant:4.2,frete:68.65,ajml:11.38,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5917878496',nome:'Coluna Áustria',preco:509.00,precoD:377.14,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:13.18,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6143566424',nome:'Coluna Áustria',preco:499.00,precoD:387.22,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:16.18,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'3995208115',nome:'Coluna Áustria',preco:450.00,precoD:353.56,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:10.94,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4057371379',nome:'Kit Áustria ABJ e Col',preco:669.00,precoD:517.05,custo:186.05,com:11.5,ant:4.2,frete:91.15,ajml:15.99,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4078808005',nome:'Coluna Áustria',preco:509.00,precoD:362.66,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:14.63,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4163038005',nome:'Coluna Áustria',preco:519.90,precoD:353.01,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:16.68,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4168480279',nome:'ABJ Áustria',preco:294.20,precoD:222.77,custo:64.15,com:11.5,ant:4.2,frete:70.25,ajml:0,descPct:5,descMax:10,imp:10,obs:'Tirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4449847575',nome:'Cúpula 40cm s/ Aro',preco:78.00,precoD:78.00,custo:32.00,com:11.5,ant:4.2,frete:10.95,ajml:0,descPct:5,descMax:3.90,imp:10,obs:'Tirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5284955120',nome:'ABJ Slim',preco:179.90,precoD:140.98,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:0,descPct:5,descMax:7.05,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5285196722',nome:'ABJ Mine',preco:120.00,precoD:98.21,custo:37.29,com:11.5,ant:4.2,frete:13.85,ajml:3.10,descPct:5,descMax:4.91,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5299450858',nome:'Coluna Viena',preco:490.00,precoD:364.95,custo:112.09,com:11.5,ant:4.2,frete:70.25,ajml:11.76,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5309928930',nome:'Coluna Áustria',preco:510.00,precoD:410.30,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6160232894',nome:'Coluna Ripada',preco:510.00,precoD:425.41,custo:133.21,com:11.5,ant:4.2,frete:118.15,ajml:13.43,descPct:5,descMax:10,imp:10,obs:'Inativo',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4586870457',nome:'Coluna Ripada',preco:510.00,precoD:412.65,custo:133.21,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6239587654',nome:'Coluna Monâco',preco:480.00,precoD:381.79,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4159239223',nome:'ABJ Slim',preco:169.90,precoD:145.35,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:4.50,descPct:5,descMax:7.27,imp:10,obs:'Retirar cupom',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4176338843',nome:'ABJ Slim',preco:199.00,precoD:130.43,custo:43.25,com:11.5,ant:4.2,frete:32.65,ajml:6.85,descPct:5,descMax:6.52,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4278692813',nome:'ABJ Slim',preco:170.00,precoD:138.24,custo:43.25,com:11.5,ant:4.2,frete:21.05,ajml:4.28,descPct:5,descMax:6.91,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4288526237',nome:'Coluna Áustria',preco:519.00,precoD:342.33,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:17.66,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4415895369',nome:'Coluna Ripada',preco:510.00,precoD:435.34,custo:133.21,com:11.5,ant:4.2,frete:110.75,ajml:13.46,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4440151269',nome:'ABJ Soft',preco:170.00,precoD:77.22,custo:32.00,com:11.5,ant:4.2,frete:9.75,ajml:0,descPct:5,descMax:3.86,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5368990714',nome:'Coluna Wells',preco:509.90,precoD:387.52,custo:108.33,com:11.5,ant:4.2,frete:106.95,ajml:12.24,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5770896978',nome:'Coluna Áustria',preco:509.90,precoD:363.31,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:14.65,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5771783852',nome:'ABJ Áustria',preco:235.00,precoD:203.12,custo:64.15,com:11.5,ant:4.2,frete:48.05,ajml:5.64,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5893806426',nome:'ABJ Slim',preco:169.90,precoD:143.02,custo:43.25,com:11.5,ant:4.2,frete:24.65,ajml:4.42,descPct:5,descMax:7.15,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6143550794',nome:'ABJ Mine',preco:125.00,precoD:117.97,custo:37.29,com:11.5,ant:4.2,frete:16.15,ajml:0,descPct:5,descMax:5.90,imp:10,obs:'Subir preço urgente',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6291413110',nome:'Kit 2 Monâco',preco:950.00,precoD:750.50,custo:211.74,com:11.5,ant:4.2,frete:105.95,ajml:19.95,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4057406823',nome:'Coluna Áustria',preco:499.00,precoD:363.02,custo:121.90,com:11.5,ant:4.2,frete:78.65,ajml:13.59,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4304064187',nome:'Coluna Ipanema',preco:519.90,precoD:364.54,custo:106.78,com:11.5,ant:4.2,frete:70.25,ajml:15.13,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4403494643',nome:'Kit 2 ABJ Áustria',preco:450.00,precoD:377.53,custo:128.30,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4418027647',nome:'Prateleira Invisível',preco:45.00,precoD:45.00,custo:15.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.25,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4440254147',nome:'ABJ Soft',preco:170.00,precoD:78.40,custo:32.00,com:11.5,ant:4.2,frete:9.75,ajml:0,descPct:5,descMax:3.92,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4463801373',nome:'Kit 3 Prateleiras Invisível',preco:57.01,precoD:57.01,custo:20.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.85,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4492808481',nome:'ABJ Sky',preco:400.00,precoD:267.72,custo:106.41,com:11.5,ant:4.2,frete:30.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4492868483',nome:'Coluna Áustria',preco:500.00,precoD:371.90,custo:121.90,com:11.5,ant:4.2,frete:105.95,ajml:17.80,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4508211147',nome:'Coluna Ripada',preco:550.00,precoD:522.50,custo:133.21,com:11.5,ant:4.2,frete:110.75,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4508238533',nome:'ABJ Áustria',preco:300.00,precoD:278.11,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:1.91,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5368901108',nome:'Coluna Áustria',preco:549.90,precoD:383.40,custo:121.90,com:11.5,ant:4.2,frete:74.95,ajml:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5864577256',nome:'Coluna Áustria',preco:509.90,precoD:369.31,custo:121.90,com:11.5,ant:4.2,frete:70.25,ajml:13.46,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5872057576',nome:'ABJ Áustria',preco:230.00,precoD:199.56,custo:64.15,com:11.5,ant:4.2,frete:30.75,ajml:0,descPct:5,descMax:9.98,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5893702492',nome:'Coluna Áustria',preco:499.00,precoD:383.46,custo:121.90,com:11.5,ant:4.2,frete:74.95,ajml:11.86,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'5932477026',nome:'Coluna Ipanema',preco:519.90,precoD:358.06,custo:106.78,com:11.5,ant:4.2,frete:70.25,ajml:16.18,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6136495616',nome:'Tampo 35cm',preco:60.00,precoD:60.00,custo:10.00,com:11.5,ant:4.2,frete:8.05,ajml:0,descPct:5,descMax:3,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6136613300',nome:'Kit 2 Tampo 35cm',preco:120.00,precoD:120.00,custo:25.00,com:11.5,ant:4.2,frete:21.05,ajml:0,descPct:5,descMax:6,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6174853758',nome:'ABJ Soft',preco:100.00,precoD:95.00,custo:32.00,com:11.5,ant:4.2,frete:18.45,ajml:0,descPct:5,descMax:4.75,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6210329754',nome:'Adega Quebra Cabeça',preco:150.00,precoD:150.00,custo:15.00,com:11.5,ant:4.2,frete:20.20,ajml:0,descPct:5,descMax:7.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6210373072',nome:'Suporte de Taça',preco:78.00,precoD:34.10,custo:10.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:1.71,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6210421180',nome:'Adega Quebra Cabeça',preco:160.00,precoD:49.80,custo:15.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.49,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6210462614',nome:'Suporte de Taça',preco:78.00,precoD:32.10,custo:10.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:1.61,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6210514680',nome:'Suporte de Taça',preco:78.00,precoD:29.70,custo:10.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:1.49,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6210843608',nome:'Adega Quebra Cabeça',preco:170.00,precoD:170.00,custo:10.00,com:11.5,ant:4.2,frete:20.00,ajml:0,descPct:5,descMax:8.50,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6228947092',nome:'Adega Quebra Cabeça',preco:150.00,precoD:54.10,custo:15.00,com:11.5,ant:4.2,frete:0,ajml:0,descPct:5,descMax:2.71,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6239329598',nome:'Coluna Monâco',preco:490.00,precoD:384.99,custo:105.87,com:11.5,ant:4.2,frete:105.95,ajml:11.91,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6291361174',nome:'Kit 2 Monâco',preco:1000.00,precoD:773.48,custo:201.74,com:11.5,ant:4.2,frete:105.95,ajml:36.66,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6304420276',nome:'ABJ Áustria',preco:300.00,precoD:261.90,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:4.86,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'6311157122',nome:'Coluna Ipanema',preco:510.00,precoD:354.09,custo:106.78,com:11.5,ant:4.2,frete:105.95,ajml:14.51,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'4508238534',nome:'ABJ Áustria Preto',preco:300.00,precoD:267.40,custo:64.15,com:11.5,ant:4.2,frete:68.65,ajml:0,descPct:5,descMax:10,imp:10,obs:'Oportunidade',tags:{full:false,oferta:false,pub:false}}
 ];
 
 
@@ -1721,27 +1814,34 @@ function loadShopee2(){
 function svSH2(){localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));scheduleSyncUp();}
 
 function taxaShopee(pv){
-  if(pv<=79.99) return pv*0.20+4;
-  if(pv<=99.99) return pv*0.14+16;
-  if(pv<=199.99) return pv*0.14+20;
-  return pv*0.14+26;
+  // Fórmula real Shopee: comissão + taxa serviço + taxa transação + fixo da faixa
+  // Validado com pedidos reais (Mine R$99.90 e Sisal R$334.20)
+  if(pv<=79.99)  return pv*0.20+4;    // 20%+R$4
+  if(pv<=99.99)  return pv*0.175+16;  // 17.5%+R$16 (12%com+3.5%svc+2%trx+R$16fixo)
+  if(pv<=199.99) return pv*0.17+20;   // 17%+R$20
+  if(pv<=499.99) return pv*0.17+26;   // 17%+R$26
+  return pv*0.17+26;                   // 17%+R$26 (acima R$500 +subsídio Pix 8%)
 }
 function calcSH(a){
   const pv=(+a.precoD>0)?(+a.precoD):(+a.preco||0);
   const preco=+a.preco||pv;
   const custo=+a.custo||0;
-  const taxa=taxaShopee(pv);        // Comissão Shopee (fórmula escalonada)
-  const antec=(+a.ant||6)/100*pv;   // Antecipação + camp (% separado)
+  const taxaTotal=taxaShopee(pv);
+  const taxaCom=pv<=79.99?pv*0.20:pv*0.12;
+  const taxaSvc=pv<=79.99?0:pv*0.035;
+  const taxaTrx=pv<=79.99?4:pv*0.02;
+  const taxaFixo=pv<=79.99?0:pv<=99.99?16:pv<=199.99?20:26;
+  const antec=(+a.ant||2.5)/100*pv;
   const frete=+a.frete||0;
   const outros=+a.outros||0;
   const rawDesc=(+a.descPct||5)/100*preco;
   const desc=Math.min(rawDesc,+a.descMax||999);
   const imp=(+a.imp||10)/100*pv;
-  const totalTaxa=taxa+antec;        // total descontado pela plataforma
+  const totalTaxa=taxaTotal+antec;
+  const rendaShopee=pv-taxaTotal-antec;
   const lucro=pv-custo-totalTaxa-frete-outros-desc-imp;
-  return{pv,preco,custo,taxa,antec,totalTaxa,frete,outros,desc,imp,lucro,margem:pv>0?lucro/pv*100:0}
+  return{pv,preco,custo,taxa:taxaTotal,taxaCom,taxaSvc,taxaTrx,taxaFixo,antec,totalTaxa,rendaShopee,frete,outros,desc,imp,lucro,margem:pv>0?lucro/pv*100:0};
 }
-
 function shAutoFill(){
   const nome=document.getElementById('sh-f-nome')?.value||'';
   const ce=document.getElementById('sh-f-custo');
@@ -1937,21 +2037,32 @@ function renderShopee(){
       const stBadge=a.status==='ativo'?'<span class=\"badge b-ok\">Ativo</span>':a.status==='pausado'?'<span class=\"badge b-warn\">Pausado</span>':'<span class=\"badge b-nok\">Inativo</span>';
       return`<tr data-idx="${i}" class="sh-row" style="cursor:pointer">
         <td style="font-family:var(--mono);font-size:11px;color:var(--t3)" data-cod="${a.cod}" class="cod-copy" title="Copiar">${a.cod}</td>
-        <td style="font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis">${a.nome}</td>
-        <td>${stBadge}</td>
+        <td style="font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis">${a.nome}</td>
         <td>${fmt(a.preco)}</td>
         <td><input class="tbl-inp" type="number" value="${+(a.precoD>0?a.precoD:a.preco).toFixed(2)}" data-idx="${i}" data-field="precoD" style="width:80px"></td>
         <td><input class="tbl-inp" type="number" value="${+a.custo.toFixed(2)}" data-idx="${i}" data-field="custo" style="width:72px"></td>
-        <td style="color:var(--t2)" title="Taxa Shopee total (comissão + antecipação)">${fmt(a.totalTaxa)}</td>
-        <td><input class="tbl-inp" type="number" value="${+a.frete.toFixed(2)}" data-idx="${i}" data-field="frete" style="width:65px"></td>
-        <td style="color:var(--t2)">${fmt(a.desc)}</td>
+        <td style="color:var(--pu);font-size:12px">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="font-weight:600">${fmt(a.taxa)}</span>
+            <span style="color:var(--t3);font-size:10px">Com: ${fmt(a.taxaCom)}</span>
+            <span style="color:var(--t3);font-size:10px">Svc: ${fmt(a.taxaSvc)}</span>
+            <span style="color:var(--t3);font-size:10px">Trx+Fix: ${fmt(a.taxaTrx+a.taxaFixo)}</span>
+          </div>
+        </td>
+        <td style="color:var(--pu)">${fmt(a.antec)}</td>
+        <td style="font-weight:600;color:var(--gr)">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span>${fmt(a.rendaShopee)}</span>
+            <span style="color:var(--t3);font-size:10px">${((a.rendaShopee/a.pv)*100).toFixed(1)}% do PV</span>
+          </div>
+        </td>
         <td style="font-weight:500;color:${ok?'var(--gr)':'var(--rd)'}">${fmt(a.lucro)}</td>
         <td><span class="badge ${ok?'b-ok':'b-nok'}">${a.margem.toFixed(1)}%</span><div class="mbar"><div class="mbar-fill" style="width:${Math.min(a.margem*2,100)}%;background:${ok?'var(--gr)':'var(--rd)'}"></div></div></td>
         <td style="font-size:12px;color:var(--t2);max-width:120px">${a.obs||'—'}</td>
         <td><button class="btn-sm sh-edit-btn" data-idx="${i}">Editar</button></td>
       </tr>`;
     }).join('')
-    :`<tr><td colspan="13"><div class="empty">Nenhum resultado</div></td></tr>`;
+    :`<tr><td colspan="12"><div class="empty">Nenhum resultado</div></td></tr>`;
 
   // Event delegation for Shopee table
   const sbtb=document.getElementById('sh-tbl-body');
@@ -2094,7 +2205,7 @@ function renderML2(){
     c8.innerHTML=a.obs?('<em>'+a.obs+'</em>'):'—';
     var c9=document.createElement('td');
     c9.innerHTML='<button class="btn-sm">Editar</button>';
-    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
+    [c0,c1,c2,c3,c4,c5,c5b,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
     _tb2.appendChild(tr);
   }); }
 
@@ -2290,8 +2401,21 @@ function renderShopee2(){
     var c3=document.createElement('td');
     c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:70px">';
     c3.onclick=function(e){e.stopPropagation();};
-    var c4=document.createElement('td');c4.textContent=fmt(a.taxa);c4.style.color='var(--pu)';
+    var c4=document.createElement('td');
+    c4.style.cssText='color:var(--pu);font-size:12px;min-width:130px';
+    c4.innerHTML='<div style="display:flex;flex-direction:column;gap:2px">'+
+      '<span style="font-weight:600">'+fmt(a.taxa)+'</span>'+
+      '<span style="color:var(--t3);font-size:10px" title="Comissão bruta">Com: '+fmt(a.taxaCom)+'</span>'+
+      '<span style="color:var(--t3);font-size:10px" title="Taxa de serviço">Svc: '+fmt(a.taxaSvc)+'</span>'+
+      '<span style="color:var(--t3);font-size:10px" title="Taxa de transação + fixo">Trx+Fix: '+fmt(a.taxaTrx+a.taxaFixo)+'</span>'+
+    '</div>';
     var c5=document.createElement('td');c5.textContent=fmt(a.antec);c5.style.color='var(--pu)';
+    var c5b=document.createElement('td');
+    c5b.style.cssText='font-weight:600;color:var(--gr)';
+    c5b.innerHTML='<div style="display:flex;flex-direction:column;gap:2px">'+
+      '<span>'+fmt(a.rendaShopee)+'</span>'+
+      '<span style="color:var(--t3);font-size:10px">'+((a.rendaShopee/a.pv)*100).toFixed(1)+'% do PV</span>'+
+    '</div>';
     var c6=document.createElement('td');c6.textContent=fmt(a.lucro);
     c6.style.cssText='font-weight:500;color:'+okCl2;
     var c7=document.createElement('td');
@@ -2300,7 +2424,7 @@ function renderShopee2(){
     var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
     c8.innerHTML=a.obs?('<em>'+sanitize(a.obs)+'</em>'):'—';
     var c9=document.createElement('td');c9.innerHTML='<button class="btn-sm">Editar</button>';
-    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
+    [c0,c1,c2,c3,c4,c5,c5b,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
     tbody.appendChild(tr);
   });
 
@@ -2331,7 +2455,7 @@ function renderShopee2(){
     return '<div class="an-card" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer">'+
       '<div class="an-hdr"><div class="an-name">'+sanitize(a.nome)+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
       '<div class="an-cod">'+a.cod+'</div>'+
-      '<div class="an-stats"><span>Preço: <strong>'+fmt(a.precoD>0?a.precoD:a.preco)+'</strong></span><span>Taxa: <strong style="color:var(--pu)">'+fmt(a.taxa)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span></div>'+
+      '<div class="an-stats"><span>PV: <strong>'+fmt(a.precoD>0?a.precoD:a.preco)+'</strong></span><span>Taxa: <strong style="color:var(--pu)">'+fmt(a.taxa)+'</strong></span><span>Renda: <strong style="color:var(--gr)">'+fmt(a.rendaShopee)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span></div>'+
       '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
     '</div>';
   }).join('');
