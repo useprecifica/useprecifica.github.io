@@ -1760,27 +1760,27 @@ const SK_SH='pfy_sh1';
 let SH_DATA=[],SH_NID=5000,shEditId=null;
 
 const SH_SEED=[
-  {cod:'SH001',nome:'Luminária de Teto',status:'ativo',preco:199.90,precoD:179.90,custo:72.00,ant:6,frete:0,outros:0,descPct:5,descMax:9.00,imp:10,obs:''},
-  {cod:'SH002',nome:'Abajur Mesa Clássico',preco:159.90,precoD:139.90,custo:48.00,ant:6,frete:0,outros:0,descPct:5,descMax:7.00,imp:10,obs:'',status:'ativo'},
-  {cod:'SH003',nome:'Pendente Industrial',status:'ativo',preco:299.90,precoD:269.90,custo:95.00,ant:6,frete:0,outros:0,descPct:5,descMax:10.00,imp:10,obs:''},
-  {cod:'SH004',nome:'Kit 2 Arandelas',status:'ativo',preco:189.90,precoD:169.90,custo:62.00,ant:6,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:''},
-  {cod:'SH005',nome:'Spot LED Embutir',status:'ativo',preco:89.90,precoD:79.90,custo:28.00,ant:6,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:''}
+  {cod:'SH001',nome:'Luminária de Teto',status:'ativo',preco:199.90,precoD:179.90,custo:72.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:9.00,imp:10,obs:''},
+  {cod:'SH002',nome:'Abajur Mesa Clássico',preco:159.90,precoD:139.90,custo:48.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:7.00,imp:10,obs:'',status:'ativo'},
+  {cod:'SH003',nome:'Pendente Industrial',status:'ativo',preco:299.90,precoD:269.90,custo:95.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:10.00,imp:10,obs:''},
+  {cod:'SH004',nome:'Kit 2 Arandelas',status:'ativo',preco:189.90,precoD:169.90,custo:62.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:''},
+  {cod:'SH005',nome:'Spot LED Embutir',status:'ativo',preco:89.90,precoD:79.90,custo:28.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:''}
 ];
 
 const SH2_SEED=[
-  {cod:'58255951961',nome:'ABJ Áustria',status:'ativo',preco:205.60,precoD:165.30,custo:65.15,ant:6,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58255804286',nome:'ABJ Slim',status:'ativo',preco:129.90,precoD:117.30,custo:43.25,ant:6,frete:0,outros:0,descPct:5,descMax:6.50,imp:10,obs:''},
-  {cod:'58255679190',nome:'ABJ Áustria',status:'ativo',preco:209.00,precoD:167.40,custo:65.15,ant:6,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58254539613',nome:'Adega Quebra Cabeça',status:'ativo',preco:170.00,precoD:72.10,custo:15.00,ant:6,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:''},
-  {cod:'58254440796',nome:'ABJ Mine',status:'ativo',preco:110.00,precoD:99.70,custo:37.29,ant:6,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:''},
-  {cod:'58205811287',nome:'ABJ Áustria',status:'ativo',preco:199.90,precoD:168.70,custo:64.15,ant:6,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58205792267',nome:'ABJ Mine',status:'ativo',preco:107.50,precoD:96.75,custo:37.29,ant:6,frete:0,outros:0,descPct:5,descMax:5.38,imp:10,obs:''},
-  {cod:'58204653266',nome:'Coluna Áustria',status:'ativo',preco:430.00,precoD:327.60,custo:121.90,ant:6,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58204649391',nome:'ABJ Áustria',status:'ativo',preco:250.00,precoD:169.10,custo:65.15,ant:6,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58204648767',nome:'Coluna Monâco',status:'ativo',preco:450.00,precoD:374.20,custo:105.87,ant:6,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58204548575',nome:'ABJ Mine',status:'ativo',preco:109.90,precoD:97.30,custo:37.29,ant:6,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:''},
-  {cod:'23999311533',nome:'ABJ Slim',status:'ativo',preco:150.00,precoD:127.10,custo:43.25,ant:6,frete:0,outros:0,descPct:5,descMax:7.50,imp:10,obs:''},
-  {cod:'22099369255',nome:'Suporte de Taças',status:'ativo',preco:80.00,precoD:38.40,custo:10.00,ant:6,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:''}
+  {cod:'58255951961',nome:'ABJ Áustria',status:'ativo',preco:205.60,precoD:165.30,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
+  {cod:'58255804286',nome:'ABJ Slim',status:'ativo',preco:129.90,precoD:117.30,custo:43.25,ant:2.5,frete:0,outros:0,descPct:5,descMax:6.50,imp:10,obs:''},
+  {cod:'58255679190',nome:'ABJ Áustria',status:'ativo',preco:209.00,precoD:167.40,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
+  {cod:'58254539613',nome:'Adega Quebra Cabeça',status:'ativo',preco:170.00,precoD:72.10,custo:15.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:''},
+  {cod:'58254440796',nome:'ABJ Mine',status:'ativo',preco:110.00,precoD:99.70,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:''},
+  {cod:'58205811287',nome:'ABJ Áustria',status:'ativo',preco:199.90,precoD:168.70,custo:64.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
+  {cod:'58205792267',nome:'ABJ Mine',status:'ativo',preco:107.50,precoD:96.75,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.38,imp:10,obs:''},
+  {cod:'58204653266',nome:'Coluna Áustria',status:'ativo',preco:430.00,precoD:327.60,custo:121.90,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
+  {cod:'58204649391',nome:'ABJ Áustria',status:'ativo',preco:250.00,precoD:169.10,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
+  {cod:'58204648767',nome:'Coluna Monâco',status:'ativo',preco:450.00,precoD:374.20,custo:105.87,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
+  {cod:'58204548575',nome:'ABJ Mine',status:'ativo',preco:109.90,precoD:97.30,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:''},
+  {cod:'23999311533',nome:'ABJ Slim',status:'ativo',preco:150.00,precoD:127.10,custo:43.25,ant:2.5,frete:0,outros:0,descPct:5,descMax:7.50,imp:10,obs:''},
+  {cod:'22099369255',nome:'Suporte de Taças',status:'ativo',preco:80.00,precoD:38.40,custo:10.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:''}
 ];
 
 
@@ -1861,14 +1861,22 @@ function shCalcLive(){
   document.getElementById('sh-rb-mar').textContent=r.margem.toFixed(2)+'%';
   document.getElementById('sh-rb-mar').style.color=ok?'var(--gr)':'var(--rd)';
   document.getElementById('sh-rb-custo').textContent=fmt(r.custo);
+  // Detalhe das taxas Shopee
+  var comEl=document.getElementById('sh-rb-com'); if(comEl)comEl.textContent=fmt(r.taxaCom);
+  var svcEl=document.getElementById('sh-rb-svc'); if(svcEl)svcEl.textContent=fmt(r.taxaSvc);
+  var trxEl=document.getElementById('sh-rb-trx'); if(trxEl)trxEl.textContent=fmt(r.taxaTrx+r.taxaFixo);
   document.getElementById('sh-rb-comissao').textContent=fmt(r.taxa);
   document.getElementById('sh-rb-antec').textContent=fmt(r.antec);
   var antLbl=document.getElementById('sh-lbl-ant');
-  if(antLbl)antLbl.textContent=(+shGetForm().ant||6);
+  if(antLbl)antLbl.textContent=(+shGetForm().ant||2.5);
   document.getElementById('sh-rb-taxa').textContent=fmt(r.totalTaxa);
   document.getElementById('sh-rb-taxa').style.color='var(--pu)';
+  var rendaEl=document.getElementById('sh-rb-renda');
+  if(rendaEl){rendaEl.textContent=fmt(r.rendaShopee)+'  ('+((r.rendaShopee/r.pv)*100).toFixed(1)+'% do PV)';}
   document.getElementById('sh-rb-desc').textContent=fmt(r.desc);
   document.getElementById('sh-rb-imp').textContent=fmt(r.imp);
+  var impPct=document.getElementById('sh-rb-imp-pct');
+  if(impPct)impPct.textContent=(+shGetForm().imp||10);
   var frEl=document.getElementById('sh-rb-frete');
   var frRow=document.getElementById('sh-rb-frete-row');
   if(frEl&&frRow){var tf=r.frete+r.outros;frRow.style.display=tf>0?'':'none';frEl.textContent=fmt(tf);}
@@ -1936,7 +1944,7 @@ function openShopeeModal(id){
   g('sh-f-nome',a?.nome||'');g('sh-f-cod',a?.cod||'');g('sh-f-status',a?.status||'ativo');
   g('sh-f-custo',a?.custo||'');g('sh-f-preco',a?.preco||'');g('sh-f-precoD',a?.precoD||'');
   g('sh-f-frete',a?.frete??'');g('sh-f-outros',a?.outros??'');
-  g('sh-f-com',a?.com??14);g('sh-f-ant',a?.ant??6);g('sh-f-imp',a?.imp??10);
+  g('sh-f-com',a?.com??14);g('sh-f-ant',a?.ant??2.5);g('sh-f-imp',a?.imp??10);
   g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
   g('sh-f-obs',a?.obs||'');
   document.getElementById('sh-m-result').style.display='none';
@@ -2472,7 +2480,7 @@ function openShopee2Modal(id){
   var g=function(f,v){var el=document.getElementById(f);if(el)el.value=v??'';};
   g('sh-f-nome',a?.nome||'');g('sh-f-cod',a?.cod||'');g('sh-f-status',a?.status||'ativo');
   g('sh-f-preco',a?.preco||'');g('sh-f-precoD',a?.precoD||'');
-  g('sh-f-custo',a?.custo||'');g('sh-f-ant',a?.ant??6);
+  g('sh-f-custo',a?.custo||'');g('sh-f-ant',a?.ant??2.5);
   g('sh-f-frete',a?.frete||0);g('sh-f-outros',a?.outros||0);
   g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
   g('sh-f-imp',a?.imp??10);g('sh-f-obs',a?.obs||'');
@@ -2542,13 +2550,19 @@ initSupabase();
     </div>
     <div style="background:var(--sur2);border-radius:var(--rs);padding:10px 13px;font-size:12px">
       <div style="font-weight:600;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Composição dos custos</div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo do produto</span><span id="sh-rb-custo">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Comissão Shopee</span><span id="sh-rb-comissao">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Antecipação + camp (<span id="sh-lbl-ant">6</span>%)</span><span id="sh-rb-antec">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd);font-weight:500"><span style="color:var(--pu)">Total taxa Shopee</span><span id="sh-rb-taxa">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Desconto cupom</span><span id="sh-rb-desc">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Imposto (10%)</span><span id="sh-rb-imp">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0" id="sh-rb-frete-row"><span style="color:var(--t2)">Frete + outros</span><span id="sh-rb-frete">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo do produto</span><span id="sh-rb-custo">—</span></div>
+      <div style="padding:6px 0 2px;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px">TAXAS SHOPEE</div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Comissão bruta</span><span id="sh-rb-com" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Taxa de serviço</span><span id="sh-rb-svc" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Taxa transação + fixo</span><span id="sh-rb-trx" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Subtotal taxas Shopee</span><span id="sh-rb-comissao" style="font-weight:600">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu)">Shopee Antecipa (<span id="sh-lbl-ant">2.5</span>%)</span><span id="sh-rb-antec">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:2px solid var(--pu);font-weight:600"><span style="color:var(--pu)">Total descontado Shopee</span><span id="sh-rb-taxa" style="color:var(--pu)">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);background:rgba(26,122,82,.08);padding:6px 8px;border-radius:6px;margin:4px 0"><span style="color:var(--gr);font-weight:600">💰 Liberado pela Shopee</span><span id="sh-rb-renda" style="color:var(--gr);font-weight:700">—</span></div>
+      <div style="padding:6px 0 2px;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px">SEUS CUSTOS</div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Desconto cupom</span><span id="sh-rb-desc" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)" id="sh-rb-frete-row"><span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Frete + outros</span><span id="sh-rb-frete" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Imposto (<span id="sh-rb-imp-pct">10</span>%)</span><span id="sh-rb-imp" style="font-size:12px">—</span></div>
     </div>
   </div>
   <div id="sh-m-sug" style="display:none;font-size:13px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--rs);padding:9px 12px;margin-bottom:12px"></div>
@@ -2566,10 +2580,10 @@ initSupabase();
     <div class="field"><label>Preço c/ desc (R$)</label><input id="sh-f-precoD" type="number" step=".01" inputmode="decimal" placeholder="0 = mesmo" oninput="shCalcLive()"></div>
   </div>
   <div class="fsep">Taxas Shopee</div>
-  <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">Taxa automática: até R$80→20%+R$4 / até R$200→14%+R$20 / acima→14%+R$26</div>
+  <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">Taxa real validada: ≤R$80→20%+R$4 | ≤R$100→17.5%+R$16 | ≤R$200→17%+R$20 | ≤R$500→17%+R$26</div>
   <div class="fg3">
     
-    <div class="field"><label>Antecipação + Camp (%)</label><input id="sh-f-ant" type="number" step=".1" value="6" inputmode="decimal" oninput="shCalcLive()"></div>
+    <div class="field"><label>Shopee Antecipa (%)</label><input id="sh-f-ant" type="number" step=".1" value="6" inputmode="decimal" oninput="shCalcLive()"></div>
     <div class="field"><label>Imposto (%)</label><input id="sh-f-imp" type="number" step=".1" value="10" inputmode="decimal" oninput="shCalcLive()"></div>
   </div>
   <div class="fg3">
