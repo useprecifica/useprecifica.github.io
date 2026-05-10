@@ -236,7 +236,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   <div class="tb-sep"></div>
   <div class="tb-sub" id="tb-sub"></div>
   <div class="tb-right">
-    <button onclick="toggleDark()" id="dark-btn" style="font-family:var(--font);font-size:14px;background:none;border:1px solid var(--bd);border-radius:6px;padding:2px 8px;cursor:pointer;margin-right:6px;color:var(--t2)" title="Modo escuro">☀️</button>
+    <button onclick="syncUp(false)" title="Forçar sincronização com Supabase" style="font-family:var(--font);font-size:11px;font-weight:500;color:var(--t3);background:none;border:1px solid var(--bd);border-radius:6px;padding:3px 9px;cursor:pointer;margin-right:6px" id="sync-now-btn">↑↓ Sync</button><button onclick="toggleDark()" id="dark-btn" style="font-family:var(--font);font-size:14px;background:none;border:1px solid var(--bd);border-radius:6px;padding:2px 8px;cursor:pointer;margin-right:6px;color:var(--t2)" title="Modo escuro">☀️</button>
     
     <div id="sync-status" style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3);cursor:pointer" onclick="goTab('config')" title="Configurar Supabase">
       <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
@@ -971,24 +971,54 @@ async function pushML2up(){
     var r=await SB.from('anuncios_ml2').insert(rows);
   }
 }
+
+async function pushSH2up(){
+  if(!SB_USER||!SH2_DATA||!SH2_DATA.length)return;
+  var uid=SB_USER.id;
+  var rows=SH2_DATA.map(function(a){return{
+    user_id:uid,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
+    preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,ant:a.ant||2.5,
+    frete:a.frete||0,outros:a.outros||0,desc_pct:a.descPct||5,
+    desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||''
+  };});
+  if(rows.length){await SB.from('anuncios_shopee2').insert(rows);}
+}
 async function syncUp(silent){
   if(!SB||!SB_USER)return;
-  if(!silent)setSyncStatus('syncing');
+  setSyncStatus('syncing');
   try{
     var uid=SB_USER.id;
-    await SB.from('anuncios').delete().eq('user_id',uid);
+    // ML1
+    var d1=await SB.from('anuncios').delete().eq('user_id',uid);
+    if(d1.error)throw d1.error;
     await pushMLup();
+    // Shopee
     try{
-      await SB.from('anuncios_shopee').delete().eq('user_id',uid);
+      var d2=await SB.from('anuncios_shopee').delete().eq('user_id',uid);
       await pushSHup();
-    }catch(e2){}
+    }catch(e2){console.warn('syncUp shopee:',e2);}
+    // ML2
     try{
-      await SB.from('anuncios_ml2').delete().eq('user_id',uid);
+      var d3=await SB.from('anuncios_ml2').delete().eq('user_id',uid);
       await pushML2up();
-    }catch(e3){}
+    }catch(e3){console.warn('syncUp ml2:',e3);}
+    // Shopee2
+    try{
+      var d4=await SB.from('anuncios_shopee2').delete().eq('user_id',uid);
+      await pushSH2up();
+    }catch(e4){console.warn('syncUp shopee2:',e4);}
     setSyncStatus('connected');
-    if(!silent)showCfgStatus('Sincronizado!','ok');
-  }catch(e){console.error('syncUp:',e);setSyncStatus('error');}
+    var ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    var lbl=document.getElementById('sync-label');
+    if(lbl)lbl.title='Último sync: '+ts;
+    if(!silent)showCfgStatus('Sincronizado às '+ts,'ok');
+  }catch(e){
+    console.error('syncUp error:',e);
+    setSyncStatus('error');
+    var lbl=document.getElementById('sync-label');
+    if(lbl){lbl.style.color='var(--rd)';lbl.title='Erro ao sincronizar: '+e.message;}
+    if(!silent)showCfgStatus('Erro ao sincronizar: '+e.message,'err');
+  }
 }
 
 
