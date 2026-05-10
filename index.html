@@ -425,11 +425,11 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   </div>
   <div class="fbar" style="margin-bottom:12px">
     <input id="sh2-busca" placeholder="Buscar nome ou código..." oninput="renderShopee2()">
-    <select id="sh2-fstatus" onchange="renderShopee2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
+    <select id="sh2-fstatus" onchange="renderShopee2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option><option value="crit">Críticos (&lt;10%)</option></select>
   </div>
   <div class="tbl-wrap">
     <table class="tbl"><thead><tr>
-      <th>Código</th><th>Produto</th><th>Preço</th><th>Custo</th><th>Taxa Shopee</th><th>Antec.</th><th>Renda Shopee</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
+      <th>Código</th><th>Produto</th><th>Preço</th><th>Custo</th><th>Taxa Shopee</th><th>Renda Shopee</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
     </tr></thead><tbody id="sh2-tbl-body"></tbody></table>
   </div>
   <div class="mob" id="sh2-mob-cards" style="display:none"></div>
@@ -515,7 +515,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div style="padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <input id="sh-busca" class="fbar" style="flex:1;min-width:150px;margin:0;height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 10px;font-size:13px;font-family:var(--font);background:var(--sur);color:var(--t)" placeholder="Buscar...">
       <select id="sh-fstatus" onchange="renderShopee()" style="height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 8px;font-size:12px;font-family:var(--font);background:var(--sur);color:var(--t)">
-        <option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option>
+        <option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option><option value="crit">Críticos (&lt;10%)</option>
       </select>
     </div>
     <div class="tbl-wrap">
@@ -557,7 +557,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   <div id="ml2-filter-bar">
     <div class="fbar">
       <input id="ml2-busca" placeholder="Buscar nome ou código..." oninput="renderML2()">
-      <select id="ml2-fstatus" onchange="renderML2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
+      <select id="ml2-fstatus" onchange="renderML2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option><option value="crit">Críticos (&lt;10%)</option></select>
       <select id="ml2-fclass" onchange="renderML2()"><option value="">Clássico + Premium</option><option value="classico">Clássico</option><option value="premium">Premium</option></select>
     </div>
   </div>
@@ -1096,16 +1096,59 @@ function goTab(t){
 
 function filterAndGo(type){
   activeFilter=type
-  const labels={urgente:'Margem crítica (<10%)',oportunidade:'Oportunidades (≥25%)',cupom:'Cupons a retirar',inativo:'Inativos',full:'Full ML',oferta:'Oferta relâmpago',pub:'Publicidade'}
+  const labels={urgente:'Margem crítica (<10%)',nok:'Não saudáveis (<16%)',saudavel:'Saudáveis (≥16%)',oportunidade:'Oportunidades (≥25%)',cupom:'Cupons a retirar',inativo:'Inativos',full:'Full ML',oferta:'Oferta relâmpago',pub:'Publicidade'}
   const el_title=document.getElementById('an-title'),el_sub=document.getElementById('an-sub')
   if(el_title)el_title.textContent=labels[type]||'Anúncios'
   const todos=DATA.map(a=>({...a,...calc(a)}))
-  const fns={urgente:a=>a.margem<10,oportunidade:a=>a.margem>=25,cupom:a=>!!a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/),inativo:a=>a.obs?.toLowerCase().includes('inativo'),full:a=>a.tags?.full,oferta:a=>a.tags?.oferta,pub:a=>a.tags?.pub}
+  const fns={urgente:a=>a.margem<10,nok:a=>a.margem<16,saudavel:a=>a.margem>=16,oportunidade:a=>a.margem>=25,cupom:a=>!!a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/),inativo:a=>a.obs?.toLowerCase().includes('inativo'),full:a=>a.tags?.full,oferta:a=>a.tags?.oferta,pub:a=>a.tags?.pub}
   const count=todos.filter(fns[type]||(_=>true)).length
   if(el_sub)el_sub.textContent=count+' anúncio(s)'
   document.getElementById('filter-bar-wrap').style.display='none'
   document.getElementById('btn-back').style.display=''
   goTab('anuncios')
+}
+
+function ml2FilterAndGo(type){
+  goTab('ml2');
+  setTimeout(function(){
+    var s=document.getElementById('ml2-fstatus');
+    var b=document.getElementById('ml2-busca');
+    if(s){s.value=type==='nok'?'nok':type==='ok'?'ok':type==='crit'?'crit':'';}
+    if(b)b.value='';
+    renderML2();
+  },50);
+}
+function shFilterAndGo(type){
+  // Filter Shopee1 and navigate to it
+  goTab('shopee');
+  setTimeout(function(){
+    var fstatus=document.getElementById('sh-fstatus');
+    var busca=document.getElementById('sh-busca');
+    if(fstatus){
+      if(type==='nok')fstatus.value='nok';
+      else if(type==='ok')fstatus.value='ok';
+      else if(type==='crit')fstatus.value='crit';
+      else fstatus.value='';
+    }
+    if(busca)busca.value='';
+    renderShopee();
+  },50);
+}
+function sh2FilterAndGo(type){
+  // Filter Shopee2 and navigate to it
+  goTab('shopee2');
+  setTimeout(function(){
+    var fstatus=document.getElementById('sh2-fstatus');
+    var busca=document.getElementById('sh2-busca');
+    if(fstatus){
+      if(type==='nok')fstatus.value='nok';
+      else if(type==='ok')fstatus.value='ok';
+      else if(type==='crit')fstatus.value='crit';
+      else fstatus.value='';
+    }
+    if(busca)busca.value='';
+    renderShopee2();
+  },50);
 }
 
 function clearFilter(){
@@ -1151,8 +1194,8 @@ function renderDash(){
   if(dm)dm.innerHTML=`
     <div class="met"><div class="met-label">Total</div><div class="met-val">${todos.length}</div><div class="met-sub">${prem.length} premium</div></div>
     <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</div><div class="met-sub">${ok.length} saudáveis</div></div>
-    <div class="met click" onclick="filterAndGo('urgente')"><div class="met-label" style="color:${nok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok.length?'var(--rd)':'var(--t)'}">${nok.length}</div><div class="met-sub">${crit.length} abaixo de 10%</div></div>
-    <div class="met click" onclick="filterAndGo('oportunidade')"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:var(--gr)">${opp.length}</div><div class="met-sub">margem ≥ 25%</div></div>`
+    <div class="met click" onclick="filterAndGo('nok')" title="Ver todos não saudáveis"><div class="met-label" style="color:${nok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok.length?'var(--rd)':'var(--t)'}">${nok.length}</div><div class="met-sub" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation();filterAndGo('urgente')">${crit.length} críticos ↗</div></div>
+    <div class="met click" onclick="filterAndGo('saudavel')" title="Ver todos saudáveis"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${ok.length}</div><div class="met-sub" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation();filterAndGo('oportunidade')">${opp.length} oportunidades ↗</div></div>`
 
   const sorted=[...todos].sort((a,b)=>b.margem-a.margem)
   window._dashData=todos;
@@ -1179,7 +1222,7 @@ function renderDash(){
 function renderAnuncios(){
   let lista=DATA.map(a=>({...a,...calc(a)}))
   if(activeFilter){
-    const fns={urgente:a=>a.margem<10,oportunidade:a=>a.margem>=25,cupom:a=>!!a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/),inativo:a=>a.obs?.toLowerCase().includes('inativo'),full:a=>a.tags?.full,oferta:a=>a.tags?.oferta,pub:a=>a.tags?.pub}
+    const fns={urgente:a=>a.margem<10,nok:a=>a.margem<16,saudavel:a=>a.margem>=16,oportunidade:a=>a.margem>=25,cupom:a=>!!a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/),inativo:a=>a.obs?.toLowerCase().includes('inativo'),full:a=>a.tags?.full,oferta:a=>a.tags?.oferta,pub:a=>a.tags?.pub}
     lista=lista.filter(fns[activeFilter]||(_=>true))
     const s=document.getElementById('an-sub');if(s)s.textContent=lista.length+' anúncio(s)'
   } else {
@@ -2017,11 +2060,11 @@ function renderShopee(){
   if(dm)dm.innerHTML=`
     <div class="met"><div class="met-label">Total</div><div class="met-val">${todos.length}</div></div>
     <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</div></div>
-    <div class="met click" onclick=""><div class="met-label" style="color:${nok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok.length?'var(--rd)':'var(--t)'}">${nok.length}</div><div class="met-sub">${crit.length} críticos</div></div>
-    <div class="met"><div class="met-label">Saudáveis</div><div class="met-val" style="color:var(--gr)">${ok.length}</div></div>`;
+    <div class="met click" onclick="shFilterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:${nok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok.length?'var(--rd)':'var(--t)'}">${nok.length}</div><div class="met-sub" onclick="event.stopPropagation();shFilterAndGo('crit')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">${crit.length} críticos ↗</div></div>
+    <div class="met click" onclick="shFilterAndGo('ok')" title="Ver saudáveis"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${ok.length}</div></div>`;
 
   const sorted=[...todos].sort((a,b)=>b.margem-a.margem);
-  const mkR=(list,cls)=>list.map(a=>`<div class="ri" onclick="openShopeeModal(${a.id})">
+  const mkR=(list,cls)=>list.map(a=>`<div class="ri" data-id="${a.id}" onclick="openShopeeModal(${a.id})" style="cursor:pointer">
     <div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
     <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
   </div>`).join('');
@@ -2035,6 +2078,7 @@ function renderShopee(){
     if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
+    if(st==='crit'&&a.margem>=10)return false;
     return true;
   });
 
@@ -2049,19 +2093,11 @@ function renderShopee(){
         <td>${fmt(a.preco)}</td>
         <td><input class="tbl-inp" type="number" value="${+(a.precoD>0?a.precoD:a.preco).toFixed(2)}" data-idx="${i}" data-field="precoD" style="width:80px"></td>
         <td><input class="tbl-inp" type="number" value="${+a.custo.toFixed(2)}" data-idx="${i}" data-field="custo" style="width:72px"></td>
-        <td style="color:var(--pu);font-size:12px">
-          <div style="display:flex;flex-direction:column;gap:2px">
-            <span style="font-weight:600">${fmt(a.taxa)}</span>
-            <span style="color:var(--t3);font-size:10px">Com: ${fmt(a.taxaCom)}</span>
-            <span style="color:var(--t3);font-size:10px">Svc: ${fmt(a.taxaSvc)}</span>
-            <span style="color:var(--t3);font-size:10px">Trx+Fix: ${fmt(a.taxaTrx+a.taxaFixo)}</span>
-          </div>
-        </td>
-        <td style="color:var(--pu)">${fmt(a.antec)}</td>
+        <td style="color:var(--pu);font-weight:500">${fmt(a.taxa+a.antec)}</td>
         <td style="font-weight:600;color:var(--gr)">
-          <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;flex-direction:column;gap:1px">
             <span>${fmt(a.rendaShopee)}</span>
-            <span style="color:var(--t3);font-size:10px">${((a.rendaShopee/a.pv)*100).toFixed(1)}% do PV</span>
+            <span style="color:var(--t3);font-size:10px">${((a.rendaShopee/a.pv)*100).toFixed(0)}% do PV</span>
           </div>
         </td>
         <td style="font-weight:500;color:${ok?'var(--gr)':'var(--rd)'}">${fmt(a.lucro)}</td>
@@ -2070,7 +2106,7 @@ function renderShopee(){
         <td><button class="btn-sm sh-edit-btn" data-idx="${i}">Editar</button></td>
       </tr>`;
     }).join('')
-    :`<tr><td colspan="12"><div class="empty">Nenhum resultado</div></td></tr>`;
+    :`<tr><td colspan="11"><div class="empty">Nenhum resultado</div></td></tr>`;
 
   // Event delegation for Shopee table
   const sbtb=document.getElementById('sh-tbl-body');
@@ -2144,7 +2180,7 @@ function renderML2(){
   if(dm2)dm2.innerHTML=
     '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
     '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
-    '<div class="met"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub">'+crit2.length+' críticos</div></div>'+
+    '<div class="met click" onclick="ml2FilterAndGo(\'nok\')" title="Ver não saudáveis"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub" onclick="event.stopPropagation();ml2FilterAndGo(\'crit\')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">'+crit2.length+' críticos ↗</div></div>'+
     '<div class="met"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:var(--gr)">'+opp2.length+'</div><div class="met-sub">margem ≥25%</div></div>';
 
   // Top/bot
@@ -2165,6 +2201,7 @@ function renderML2(){
     if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
+    if(st==='crit'&&a.margem>=10)return false;
     if(cl&&(a.tipo||'classico')!==cl)return false;
     return true;
   });
@@ -2213,7 +2250,7 @@ function renderML2(){
     c8.innerHTML=a.obs?('<em>'+a.obs+'</em>'):'—';
     var c9=document.createElement('td');
     c9.innerHTML='<button class="btn-sm">Editar</button>';
-    [c0,c1,c2,c3,c4,c5,c5b,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
+    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){if(td)tr.appendChild(td);});
     _tb2.appendChild(tr);
   }); }
 
@@ -2367,8 +2404,8 @@ function renderShopee2(){
   if(dm)dm.innerHTML=
     '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
     '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
-    '<div class="met"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub">'+crit2.length+' críticos</div></div>'+
-    '<div class="met"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">'+ok2.length+'</div><div class="met-sub">saudáveis</div></div>';
+    '<div class="met click" onclick="sh2FilterAndGo(\'nok\')" title="Ver não saudáveis"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub" onclick="event.stopPropagation();sh2FilterAndGo(\'crit\')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">'+crit2.length+' críticos ↗</div></div>'+
+    '<div class="met click" onclick="sh2FilterAndGo(\'ok\')"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">'+ok2.length+'</div><div class="met-sub">saudáveis</div></div>';
 
   var sorted=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
   function mkR(list,cls){return list.map(function(a){return '<div class="ri" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer"><div><div class="ir-name">'+a.nome+'</div><div class="ir-sub">'+a.cod+'</div></div><div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';}).join('');}
@@ -2381,6 +2418,7 @@ function renderShopee2(){
     if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
+    if(st==='crit'&&a.margem>=10)return false;
     return true;
   });
   window._sh2Lista=lista;
@@ -2410,20 +2448,15 @@ function renderShopee2(){
     c3.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+a.custo.toFixed(2)+'" data-idx="'+i+'" data-field="custo" style="width:70px">';
     c3.onclick=function(e){e.stopPropagation();};
     var c4=document.createElement('td');
-    c4.style.cssText='color:var(--pu);font-size:12px;min-width:130px';
-    c4.innerHTML='<div style="display:flex;flex-direction:column;gap:2px">'+
-      '<span style="font-weight:600">'+fmt(a.taxa)+'</span>'+
-      '<span style="color:var(--t3);font-size:10px" title="Comissão bruta">Com: '+fmt(a.taxaCom)+'</span>'+
-      '<span style="color:var(--t3);font-size:10px" title="Taxa de serviço">Svc: '+fmt(a.taxaSvc)+'</span>'+
-      '<span style="color:var(--t3);font-size:10px" title="Taxa de transação + fixo">Trx+Fix: '+fmt(a.taxaTrx+a.taxaFixo)+'</span>'+
-    '</div>';
-    var c5=document.createElement('td');c5.textContent=fmt(a.antec);c5.style.color='var(--pu)';
-    var c5b=document.createElement('td');
-    c5b.style.cssText='font-weight:600;color:var(--gr)';
-    c5b.innerHTML='<div style="display:flex;flex-direction:column;gap:2px">'+
+    c4.style.cssText='color:var(--pu);font-weight:500';
+    c4.textContent=fmt(a.taxa+a.antec);
+    var c5=document.createElement('td');
+    c5.style.cssText='font-weight:600;color:var(--gr)';
+    c5.innerHTML='<div style="display:flex;flex-direction:column;gap:1px">'+
       '<span>'+fmt(a.rendaShopee)+'</span>'+
-      '<span style="color:var(--t3);font-size:10px">'+((a.rendaShopee/a.pv)*100).toFixed(1)+'% do PV</span>'+
+      '<span style="color:var(--t3);font-size:10px">'+((a.rendaShopee/a.pv)*100).toFixed(0)+'% do PV</span>'+
     '</div>';
+    var c5b=null;
     var c6=document.createElement('td');c6.textContent=fmt(a.lucro);
     c6.style.cssText='font-weight:500;color:'+okCl2;
     var c7=document.createElement('td');
@@ -2432,7 +2465,7 @@ function renderShopee2(){
     var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
     c8.innerHTML=a.obs?('<em>'+sanitize(a.obs)+'</em>'):'—';
     var c9=document.createElement('td');c9.innerHTML='<button class="btn-sm">Editar</button>';
-    [c0,c1,c2,c3,c4,c5,c5b,c6,c7,c8,c9].forEach(function(td){tr.appendChild(td);});
+    [c0,c1,c2,c3,c4,c5,c6,c7,c8,c9].forEach(function(td){if(td)tr.appendChild(td);});
     tbody.appendChild(tr);
   });
 
@@ -2550,28 +2583,44 @@ initSupabase();
     </div>
     <div style="background:var(--sur2);border-radius:var(--rs);padding:10px 13px;font-size:12px">
       <div style="font-weight:600;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">Composição dos custos</div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo</span><span id="sh-rb-custo">—</span></div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px dashed var(--bd)">
-        <span style="color:var(--pu);font-size:12px">Taxas Shopee</span>
-        <span style="display:flex;gap:10px;font-size:11px;color:var(--t3)">
-          <span>Com <span id="sh-rb-com" style="color:var(--pu)">—</span></span>
-          <span>Svc <span id="sh-rb-svc" style="color:var(--pu)">—</span></span>
-          <span>Trx <span id="sh-rb-trx" style="color:var(--pu)">—</span></span>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Custo do produto</span><span id="sh-rb-custo">—</span></div>
+      <div style="padding:5px 0 2px;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px">TAXAS SHOPEE</div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Comissão bruta</span><span id="sh-rb-com" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Taxa de serviço</span><span id="sh-rb-svc" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Transação + fixo</span><span id="sh-rb-trx" style="font-size:12px">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu);font-weight:500">Subtotal taxas Shopee</span><span id="sh-rb-comissao" style="font-weight:600">—</span></div>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;align-items:center">
+        <span style="color:var(--pu)">Shopee Antecipa</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <input id="sh-f-ant" type="number" step=".1" style="width:54px;font-size:12px;padding:2px 6px;border:1px solid var(--bd);border-radius:4px;background:var(--sur2);color:var(--t);text-align:right" oninput="shCalcLive()">
+          <span style="font-size:11px;color:var(--t3)">%</span>
+          <span id="sh-rb-antec" style="min-width:60px;text-align:right">—</span>
         </span>
       </div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Subtotal</span><span id="sh-rb-comissao" style="font-size:12px;font-weight:600">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--pu);font-size:12px;padding-left:8px">↳ Antecipa (<span id="sh-lbl-ant">2.5</span>%)</span><span id="sh-rb-antec" style="font-size:12px">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:2px solid var(--pu);font-weight:600"><span style="color:var(--pu)">Total Shopee</span><span id="sh-rb-taxa" style="color:var(--pu)">—</span></div>
-      <div style="display:flex;justify-content:space-between;background:rgba(26,122,82,.1);padding:5px 8px;border-radius:6px;margin:4px 0;font-weight:600"><span style="color:var(--gr)">💰 Liberado pela Shopee</span><span id="sh-rb-renda" style="color:var(--gr)">—</span></div>
-      <div style="display:flex;justify-content:space-between;padding:3px 0;border-top:1px solid var(--bd)">
-        <span style="font-size:12px;color:var(--t2)">Desc · Frete · Imp(<span id="sh-rb-imp-pct">10</span>%)</span>
-        <span style="font-size:12px;display:flex;gap:8px;color:var(--t3)">
-          <span id="sh-rb-desc">—</span>
-          <span id="sh-rb-frete">—</span>
-          <span id="sh-rb-imp">—</span>
+      <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:2px solid var(--pu);font-weight:600"><span style="color:var(--pu)">Total descontado Shopee</span><span id="sh-rb-taxa" style="color:var(--pu)">—</span></div>
+      <div style="display:flex;justify-content:space-between;background:rgba(26,122,82,.1);padding:6px 8px;border-radius:6px;margin:5px 0;font-weight:600"><span style="color:var(--gr)">💰 Liberado pela Shopee</span><span id="sh-rb-renda" style="color:var(--gr)">—</span></div>
+      <div style="padding:5px 0 2px;font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px">SEUS CUSTOS</div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;align-items:center">
+        <span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Imposto</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <input id="sh-f-imp" type="number" step=".1" style="width:54px;font-size:12px;padding:2px 6px;border:1px solid var(--bd);border-radius:4px;background:var(--sur2);color:var(--t);text-align:right" oninput="shCalcLive()">
+          <span style="font-size:11px;color:var(--t3)">%</span>
+          <span id="sh-rb-imp" style="min-width:60px;text-align:right">—</span>
         </span>
       </div>
-      <div id="sh-rb-frete-row" style="display:none"></div>
+      <div style="display:flex;justify-content:space-between;padding:2px 0;align-items:center">
+        <span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Desc cupom</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <input id="sh-f-descpct" type="number" step=".1" style="width:54px;font-size:12px;padding:2px 6px;border:1px solid var(--bd);border-radius:4px;background:var(--sur2);color:var(--t);text-align:right" oninput="shCalcLive()">
+          <span style="font-size:11px;color:var(--t3)">%</span>
+          <span id="sh-rb-desc" style="min-width:60px;text-align:right">—</span>
+        </span>
+      </div>
+      <div id="sh-rb-frete-row" style="display:flex;justify-content:space-between;padding:2px 0;align-items:center">
+        <span style="color:var(--t2);font-size:12px;padding-left:8px">↳ Frete</span>
+        <span id="sh-rb-frete" style="font-size:12px">—</span>
+      </div>
+      <div id="sh-rb-imp-pct" style="display:none"></div>
     </div>
   </div>
   <div id="sh-m-sug" style="display:none;font-size:13px;color:var(--am);background:var(--am-bg);border:1px solid var(--am-bd);border-radius:var(--rs);padding:9px 12px;margin-bottom:12px"></div>
@@ -2588,17 +2637,10 @@ initSupabase();
     <div class="field"><label>Preço s/ desc (R$)</label><input id="sh-f-preco" type="number" step=".01" inputmode="decimal" oninput="shCalcLive()"></div>
     <div class="field"><label>Preço c/ desc (R$)</label><input id="sh-f-precoD" type="number" step=".01" inputmode="decimal" placeholder="0 = mesmo" oninput="shCalcLive()"></div>
   </div>
-  <div class="fsep">Taxas Shopee</div>
-  <div style="font-size:12px;color:var(--pu);background:var(--pu-bg);border-radius:var(--rs);padding:8px 11px;margin-bottom:10px">≤R$80: 20%+R$4 · ≤R$100: 17.5%+R$16 · ≤R$200: 17%+R$20 · acima: 17%+R$26</div>
-  <div class="fg3">
-    
-    <div class="field"><label>Shopee Antecipa (%)</label><input id="sh-f-ant" type="number" step=".1" value="6" inputmode="decimal" oninput="shCalcLive()"></div>
-    <div class="field"><label>Imposto (%)</label><input id="sh-f-imp" type="number" step=".1" value="10" inputmode="decimal" oninput="shCalcLive()"></div>
-  </div>
-  <div class="fg3">
+  <div style="font-size:11px;color:var(--t3);padding:4px 0 8px">Taxa Shopee automática · Antecipa, imposto e desconto editáveis acima</div>
+  <div class="fg2">
     <div class="field"><label>Frete (R$)</label><input id="sh-f-frete" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="shCalcLive()"></div>
-    <div class="field"><label>Outros custos (R$)</label><input id="sh-f-outros" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="shCalcLive()"></div>
-    <div class="field"><label>Desc cupom (%)</label><input id="sh-f-descpct" type="number" step=".1" value="5" inputmode="decimal" oninput="shCalcLive()"></div>
+    <div class="field"><label>Outros (R$)</label><input id="sh-f-outros" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="shCalcLive()"></div>
   </div>
   <div class="field"><label>Limite máx. desconto (R$)</label><input id="sh-f-descmax" type="number" step=".01" value="10" inputmode="decimal" oninput="shCalcLive()"></div>
   <div class="field"><label>Observação</label><input id="sh-f-obs" placeholder="Ex: produto em promoção..."></div>
