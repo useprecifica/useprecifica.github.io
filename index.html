@@ -285,19 +285,19 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     Painel<span class="ni-badge" id="nb-urg" style="display:none"></span>
   </button>
   <button class="ni" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     ML — Conta 1
   </button>
   <button class="ni" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
-    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     ML — Conta 2
   </button>
   <button class="ni" data-tab="shopee" onclick="goTab('shopee')" style="color:var(--pu)">
-    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     Shopee
   </button>
   <button class="ni" data-tab="shopee2" onclick="goTab('shopee2')" style="color:#e05fc4">
-    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     Shopee 2
   </button>
   <button class="ni" data-tab="sim" onclick="goTab('sim')">
@@ -345,68 +345,20 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <div><div class="ph-title">Painel Geral</div><div class="ph-sub" id="dash-sub"></div></div>
     <div class="ph-actions">
       <button class="btn" onclick="goTab('sim')">Simular preço</button>
-      <button class="btn btn-p" onclick="openModal()">+ Novo anúncio</button>
     </div>
   </div>
-
-  <!-- RESUMO GERAL TODOS OS CANAIS -->
   <div id="dash-alerts"></div>
-  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px">VISÃO GERAL — TODOS OS CANAIS</div>
+
+  <!-- VISÃO GERAL CONSOLIDADA -->
   <div class="metrics" id="dash-geral-metrics" style="margin-bottom:16px"></div>
   <div class="two-col" style="margin-bottom:16px">
-    <div class="card"><div class="card-title">🏆 Melhores margens (todos)</div><div id="dash-geral-top"></div></div>
-    <div class="card"><div class="card-title">⚠ Piores margens (todos)</div><div id="dash-geral-bot"></div></div>
+    <div class="card"><div class="card-title">🏆 Melhores margens</div><div id="dash-geral-top"></div></div>
+    <div class="card"><div class="card-title">⚠ Piores margens</div><div id="dash-geral-bot"></div></div>
   </div>
 
-  <!-- ML CONTA 1 -->
-  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px;margin-top:8px">
-    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M10 1C5.58 1 2 4.58 2 9s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM8 5h1.2l1.8 2.8L12.8 5H14v6h-1.2V7.7L11 10.2 9.2 7.7V11H8V5z"/></svg>
-    ML — CONTA 1
-  </div>
-  <div class="metrics" id="dash-metrics" style="margin-bottom:12px"></div>
-  <div class="two-col" style="margin-bottom:12px">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="dash-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="dash-bot"></div></div>
-  </div>
-  <div class="two-col" style="margin-bottom:16px">
-    <div class="card" id="dash-tipos"></div>
-    <div class="card" id="dash-acoes"></div>
-  </div>
-
-  <!-- ML CONTA 2 -->
-  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--gr);letter-spacing:.8px">
-    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;color:var(--gr)"><path d="M10 1C5.58 1 2 4.58 2 9s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM8 5h1.2l1.8 2.8L12.8 5H14v6h-1.2V7.7L11 10.2 9.2 7.7V11H8V5z"/></svg>
-    ML — CONTA 2
-  </div>
-  <div class="metrics" id="dash-ml2-metrics" style="margin-bottom:12px"></div>
-  <div class="two-col" style="margin-bottom:16px">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="dash-ml2-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="dash-ml2-bot"></div></div>
-  </div>
-
-  <!-- SHOPEE CONTA 1 -->
-  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--pu);letter-spacing:.8px">
-    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M10 2C7.24 2 5 3.79 5 6c0 .5.1.97.27 1.41L4 7.5A1.5 1.5 0 0 0 2.5 9v8A1.5 1.5 0 0 0 4 18.5h12a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 16 7.5l-1.27-.09C14.9 6.97 15 6.5 15 6c0-2.21-2.24-4-5-4zm0 1.75c1.79 0 3.25 1.01 3.25 2.25S11.79 8.25 10 8.25 6.75 7.24 6.75 6 8.21 3.75 10 3.75zm0 6.5c1.93 0 3.5 1.01 3.5 2.25S11.93 14.75 10 14.75 6.5 13.74 6.5 12.5 8.07 10.25 10 10.25z"/></svg>
-    SHOPEE — CONTA 1
-  </div>
-  <div class="metrics" id="sh-metrics" style="margin-bottom:12px"></div>
-  <div class="two-col" style="margin-bottom:16px">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="sh-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="sh-bot"></div></div>
-  </div>
-
-  <!-- SHOPEE CONTA 2 -->
-  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:#e05fc4;letter-spacing:.8px">
-    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M10 2C7.24 2 5 3.79 5 6c0 .5.1.97.27 1.41L4 7.5A1.5 1.5 0 0 0 2.5 9v8A1.5 1.5 0 0 0 4 18.5h12a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 16 7.5l-1.27-.09C14.9 6.97 15 6.5 15 6c0-2.21-2.24-4-5-4zm0 1.75c1.79 0 3.25 1.01 3.25 2.25S11.79 8.25 10 8.25 6.75 7.24 6.75 6 8.21 3.75 10 3.75zm0 6.5c1.93 0 3.5 1.01 3.5 2.25S11.93 14.75 10 14.75 6.5 13.74 6.5 12.5 8.07 10.25 10 10.25z"/></svg>
-    SHOPEE — CONTA 2
-  </div>
-  <div class="metrics" id="sh2-metrics" style="margin-bottom:12px"></div>
-  <div class="two-col" style="margin-bottom:16px">
-    <div class="card"><div class="card-title">Melhores margens</div><div id="sh2-top"></div></div>
-    <div class="card"><div class="card-title">Piores margens</div><div id="sh2-bot"></div></div>
-  </div>
+  <!-- CARDS POR CANAL (clicáveis) -->
+  <div class="metrics" id="dash-canais" style="margin-bottom:16px"></div>
 </div>
-
 <!-- ANÚNCIOS -->
 <div id="p-anuncios" style="display:none">
   <div class="ph">
@@ -416,6 +368,17 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <button class="btn btn-p" onclick="openModal()">+ Novo</button>
     </div>
   </div>
+  <div id="dash-alerts-ml1" style="margin-bottom:8px"></div>
+  <div class="metrics" id="dash-metrics" style="margin-bottom:12px"></div>
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card"><div class="card-title">Melhores margens</div><div id="dash-top"></div></div>
+    <div class="card"><div class="card-title">Piores margens</div><div id="dash-bot"></div></div>
+  </div>
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card" id="dash-tipos"></div>
+    <div class="card" id="dash-acoes"></div>
+  </div>
+  <div id="f-alerts"></div>
   <div id="filter-bar-wrap">
     <div class="fbar">
       <input id="busca" placeholder="Buscar nome ou código..." oninput="renderAnuncios()">
@@ -663,7 +626,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     Painel<span class="nb-dot" id="bn-dot" style="display:none"></span>
   </button>
   <button class="nb" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     ML 1
   </button>
   <button class="nb" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
@@ -678,8 +641,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
     Simular
   </button>
-  <button class="nb" data-tab="shopee" onclick="goTab('shopee')" style="position:relative">
-    <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
+  <button class="nb" data-tab="shopee" onclick="goTab('shopee')" style="color:var(--pu)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     Shopee
   </button>
   <button class="nb" data-tab="insights" onclick="goTab('insights')">
@@ -1208,108 +1171,97 @@ function populateFiltro(){
 function renderDash(){
   const todos=DATA.map(a=>({...a,...calc(a)}))
   const ok=todos.filter(a=>a.margem>=16),nok=todos.filter(a=>a.margem<16)
-
-  // ── PAINEL GERAL (todos os canais) ──
-  const todosML1=todos;
-  const todosML2=(typeof DATA2!=='undefined'?DATA2:[]).map(a=>({...a,...calc(a)}));
-  const todosSH=(typeof SH_DATA!=='undefined'?SH_DATA:[]).map(a=>({...a,...calcSH(a)}));
-  const todosSH2=(typeof SH2_DATA!=='undefined'?SH2_DATA:[]).map(a=>({...a,...calcSH(a)}));
-  const allTodos=[
-    ...todosML1.map(a=>({...a,_ch:'ML1'})),
-    ...todosML2.map(a=>({...a,_ch:'ML2'})),
-    ...todosSH.map(a=>({...a,_ch:'SH1'})),
-    ...todosSH2.map(a=>({...a,_ch:'SH2'}))
-  ];
-  const allAvg=allTodos.length?allTodos.reduce((s,a)=>s+a.margem,0)/allTodos.length:0;
-  const allNok=allTodos.filter(a=>a.margem<16);
-  const allOk=allTodos.filter(a=>a.margem>=16);
-  const allCrit=allTodos.filter(a=>a.margem<10);
-  const allSorted=[...allTodos].sort((a,b)=>b.margem-a.margem);
-
-  const gm=document.getElementById('dash-geral-metrics');
-  if(gm)gm.innerHTML=`
-    <div class="met"><div class="met-label">Total anúncios</div><div class="met-val">${allTodos.length}</div><div class="met-sub">todos os canais</div></div>
-    <div class="met"><div class="met-label">Margem média geral</div><div class="met-val" style="color:${allAvg>=16?'var(--gr)':'var(--rd)'}">${allAvg.toFixed(1)}%</div></div>
-    <div class="met" style="cursor:pointer" title="Ver não saudáveis ML1"><div class="met-label" style="color:${allNok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${allNok.length?'var(--rd)':'var(--t)'}">${allNok.length}</div><div class="met-sub">${allCrit.length} críticos</div></div>
-    <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${allOk.length}</div><div class="met-sub">${(allOk.length/Math.max(allTodos.length,1)*100).toFixed(0)}% do total</div></div>`;
-
-  // Geral top/bot (all channels mixed, clickable)
-  const mkGR=(list,cls)=>list.map(a=>{
-    const chIcon=a._ch==='ML1'||a._ch==='ML2'?'ML':'🛒';
-    const chColor=a._ch==='SH1'||a._ch==='SH2'?'var(--pu)':'var(--t3)';
-    const onclick=a._ch==='ML1'?`openModalById('${a.id}')`:a._ch==='ML2'?`openModal2('${a.id}')`:a._ch==='SH1'?`openShopeeModal(${a.id})`:`openShopee2Modal('${a.id}')`;
-    return `<div class="ri" onclick="${onclick}" style="cursor:pointer">
-      <div><div class="ri-name">${a.nome}</div><div class="ri-cod" style="color:${chColor}">${a._ch} · ${a.cod}</div></div>
-      <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
-    </div>`;
-  }).join('');
-  const gt=document.getElementById('dash-geral-top');if(gt)gt.innerHTML=mkGR(allSorted.slice(0,5),'b-ok');
-  const gb=document.getElementById('dash-geral-bot');if(gb)gb.innerHTML=mkGR(allSorted.slice(-5).reverse(),'b-nok');
-
-  // ML2 mini painel no dash
-  const dm2=document.getElementById('dash-ml2-metrics');
-  if(dm2&&todosML2.length){
-    const avg2=todosML2.reduce((s,a)=>s+a.margem,0)/todosML2.length;
-    const nok2=todosML2.filter(a=>a.margem<16);
-    dm2.innerHTML=`
-      <div class="met"><div class="met-label">Total</div><div class="met-val">${todosML2.length}</div></div>
-      <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg2>=16?'var(--gr)':'var(--rd)'}">${avg2.toFixed(1)}%</div></div>
-      <div class="met click" onclick="ml2FilterAndGo('nok')"><div class="met-label" style="color:${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok2.length?'var(--rd)':'var(--t)'}">${nok2.length}</div></div>
-      <div class="met click" onclick="ml2FilterAndGo('ok')"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${todosML2.length-nok2.length}</div></div>`;
-    const s2=todosML2.sort((a,b)=>b.margem-a.margem);
-    const mkR2=(list,cls)=>list.map(a=>`<div class="ri" onclick="openModal2('${a.id}')" style="cursor:pointer"><div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div><div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div></div>`).join('');
-    const t2=document.getElementById('dash-ml2-top');if(t2)t2.innerHTML=mkR2(s2.slice(0,5),'b-ok');
-    const b2=document.getElementById('dash-ml2-bot');if(b2)b2.innerHTML=mkR2(s2.slice(-5).reverse(),'b-nok');
-  } else if(dm2){dm2.innerHTML='<div class="empty">Sem dados ML2</div>';}
   const avg=todos.length?todos.reduce((s,a)=>s+a.margem,0)/todos.length:0
-  const urg=todos.filter(a=>a.margem<10),opp=todos.filter(a=>a.margem>=25),crit=urg
-  const prem=todos.filter(a=>a.tipo==='premium')
-  const lucroTotal=todos.reduce((s,a)=>s+a.lucro,0)
+  const urg=todos.filter(a=>a.margem<10),opp=todos.filter(a=>a.margem>=25)
 
-  const tbs=document.getElementById('tb-sub');if(tbs)tbs.textContent=`${todos.length} anúncios · avg ${avg.toFixed(1)}%`
-  const ds=document.getElementById('dash-sub');if(ds)ds.textContent=`${todos.length} anúncios · lucro potencial ${fmt(lucroTotal)}`
-  const nb=document.getElementById('nb-urg'),tb=document.getElementById('tb-urg'),bnd=document.getElementById('bn-dot')
-  if(urg.length){if(nb){nb.style.display='';nb.textContent=urg.length}if(tb){tb.style.display='';tb.textContent=urg.length+' críticos'}if(bnd)bnd.style.display=''}
-  else{if(nb)nb.style.display='none';if(tb)tb.style.display='none';if(bnd)bnd.style.display='none'}
-
-  const alEl=document.getElementById('dash-alerts')
-  if(alEl){
-    const al=[]
-    if(crit.length)al.push(`<div class="alert al-rd"><span>⚠</span><span><strong>${crit.length} anúncio${crit.length>1?'s':''}</strong> com margem abaixo de 10%</span><button class="al-link" onclick="filterAndGo('urgente')">Ver →</button></div>`)
-    if(opp.length)al.push(`<div class="alert al-gr"><span>★</span><span><strong>${opp.length} oportunidade${opp.length>1?'s':''}</strong> com margem acima de 25%</span><button class="al-link" onclick="filterAndGo('oportunidade')">Ver →</button></div>`)
-    if(!crit.length&&avg>=18)al.push(`<div class="alert al-bl"><span>✓</span><span>Carteira saudável — margem média ${avg.toFixed(1)}%</span></div>`)
-    alEl.innerHTML=al.join('')
-  }
-
-  const dm=document.getElementById('dash-metrics')
-  if(dm)dm.innerHTML=`
-    <div class="met"><div class="met-label">Total</div><div class="met-val">${todos.length}</div><div class="met-sub">${prem.length} premium</div></div>
-    <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</div><div class="met-sub">${ok.length} saudáveis</div></div>
-    <div class="met click" onclick="filterAndGo('nok')" title="Ver todos não saudáveis"><div class="met-label" style="color:${nok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok.length?'var(--rd)':'var(--t)'}">${nok.length}</div><div class="met-sub" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation();filterAndGo('urgente')">${crit.length} críticos ↗</div></div>
-    <div class="met click" onclick="filterAndGo('saudavel')" title="Ver todos saudáveis"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${ok.length}</div><div class="met-sub" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted" onclick="event.stopPropagation();filterAndGo('oportunidade')">${opp.length} oportunidades ↗</div></div>`
-
+  // ML1 own panel (on its tab)
   const sorted=[...todos].sort((a,b)=>b.margem-a.margem)
-  window._dashData=todos;
+  window._dashData=todos
   const mkR=(list,cls)=>list.map(a=>`<div class="ri" data-id="${a.id}" onclick="openModalById(this.dataset.id)" style="cursor:pointer">
     <div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
     <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
   </div>`).join('')
+  const dm=document.getElementById('dash-metrics')
+  if(dm)dm.innerHTML=`
+    <div class="met"><div class="met-label">Total</div><div class="met-val">${todos.length}</div><div class="met-sub">${todos.filter(a=>a.tipo==='premium').length} premium</div></div>
+    <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</div><div class="met-sub">${ok.length} saudáveis</div></div>
+    <div class="met click" onclick="filterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:${nok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok.length?'var(--rd)':'var(--t)'}">${nok.length}</div><div class="met-sub" onclick="event.stopPropagation();filterAndGo('urgente')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">${urg.length} críticos ↗</div></div>
+    <div class="met click" onclick="filterAndGo('oportunidade')"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:var(--gr)">${opp.length}</div><div class="met-sub">margem ≥ 25%</div></div>`
   document.getElementById('dash-top').innerHTML=mkR(sorted.slice(0,5),'b-ok')
   document.getElementById('dash-bot').innerHTML=mkR(sorted.slice(-5).reverse(),'b-nok')
 
   const tc={};todos.forEach(a=>{const t=a.nome.split(' ').slice(0,2).join(' ');tc[t]=(tc[t]||0)+1})
   document.getElementById('dash-tipos').innerHTML=`<div class="card-title">Produtos com mais anúncios</div>`+
     Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([t,n])=>`<div class="ir"><div class="ir-name">${t}</div><span class="badge b-info">${n}</span></div>`).join('')
-
   const co=todos.filter(a=>a.obs?.trim())
   document.getElementById('dash-acoes').innerHTML=`<div class="card-title">Lembretes</div>`+
-    (co.length?co.slice(0,6).map(a=>`<div class="ri" data-id="${a.id}" onclick="openModalById(this.dataset.id)" style="cursor:pointer">
+    (co.length?co.slice(0,6).map(a=>`<div class="ir" onclick="openModalById('${a.id}')" style="cursor:pointer">
       <div><div class="ir-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
       <div style="font-size:12px;color:var(--t2);text-align:right;max-width:150px;margin-left:8px">${a.obs}</div>
     </div>`).join(''):'<div class="empty" style="padding:18px">Nenhum lembrete</div>')
+
+  // ── PAINEL GERAL (dash tab) ──
+  const todosML2=(typeof DATA2!=='undefined'?DATA2:[]).map(a=>({...a,...calc(a)}))
+  const todosSH=(typeof SH_DATA!=='undefined'?SH_DATA:[]).map(a=>({...a,...calcSH(a)}))
+  const todosSH2=(typeof SH2_DATA!=='undefined'?SH2_DATA:[]).map(a=>({...a,...calcSH(a)}))
+  const allTodos=[
+    ...todos.map(a=>({...a,_ch:'ML1',_chLabel:'ML — Conta 1',_onclick:`openModalById('${a.id}')`})),
+    ...todosML2.map(a=>({...a,_ch:'ML2',_chLabel:'ML — Conta 2',_onclick:`openModal2('${a.id}')`})),
+    ...todosSH.map(a=>({...a,_ch:'SH1',_chLabel:'Shopee',_onclick:`openShopeeModal(${a.id})`})),
+    ...todosSH2.map(a=>({...a,_ch:'SH2',_chLabel:'Shopee 2',_onclick:`openShopee2Modal('${a.id}')`}))
+  ]
+  const allAvg=allTodos.length?allTodos.reduce((s,a)=>s+a.margem,0)/allTodos.length:0
+  const allNok=allTodos.filter(a=>a.margem<16)
+  const allOk=allTodos.filter(a=>a.margem>=16)
+  const allCrit=allTodos.filter(a=>a.margem<10)
+  const allSorted=[...allTodos].sort((a,b)=>b.margem-a.margem)
+
+  const gm=document.getElementById('dash-geral-metrics')
+  if(gm)gm.innerHTML=`
+    <div class="met"><div class="met-label">Total anúncios</div><div class="met-val">${allTodos.length}</div><div class="met-sub">todos os canais</div></div>
+    <div class="met"><div class="met-label">Margem média geral</div><div class="met-val" style="color:${allAvg>=16?'var(--gr)':'var(--rd)'}">${allAvg.toFixed(1)}%</div></div>
+    <div class="met"><div class="met-label" style="color:${allNok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${allNok.length?'var(--rd)':'var(--t)'}">${allNok.length}</div><div class="met-sub">${allCrit.length} críticos</div></div>
+    <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${allOk.length}</div><div class="met-sub">${(allOk.length/Math.max(allTodos.length,1)*100).toFixed(0)}% do total</div></div>`
+
+  const mkGR=(list,cls)=>list.map(a=>`<div class="ri" onclick="${a._onclick}" style="cursor:pointer">
+    <div><div class="ri-name">${a.nome}</div><div class="ri-cod" style="color:${a._ch==='SH1'||a._ch==='SH2'?'var(--pu)':'var(--t3)'}">${a._chLabel} · ${a.cod}</div></div>
+    <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
+  </div>`).join('')
+  const gt=document.getElementById('dash-geral-top');if(gt)gt.innerHTML=mkGR(allSorted.slice(0,5),'b-ok')
+  const gb=document.getElementById('dash-geral-bot');if(gb)gb.innerHTML=mkGR(allSorted.slice(-5).reverse(),'b-nok')
+
+  // Cards por canal (clicáveis, levam ao canal certo)
+  const canaisData=[
+    {label:'ML — Conta 1',color:'var(--t)',total:todos.length,avg,nok:nok.length,crit:urg.length,tab:'anuncios'},
+    {label:'ML — Conta 2',color:'var(--gr)',total:todosML2.length,avg:todosML2.length?todosML2.reduce((s,a)=>s+a.margem,0)/todosML2.length:0,nok:todosML2.filter(a=>a.margem<16).length,crit:todosML2.filter(a=>a.margem<10).length,tab:'ml2'},
+    {label:'Shopee',color:'var(--pu)',total:todosSH.length,avg:todosSH.length?todosSH.reduce((s,a)=>s+a.margem,0)/todosSH.length:0,nok:todosSH.filter(a=>a.margem<16).length,crit:todosSH.filter(a=>a.margem<10).length,tab:'shopee'},
+    {label:'Shopee 2',color:'#e05fc4',total:todosSH2.length,avg:todosSH2.length?todosSH2.reduce((s,a)=>s+a.margem,0)/todosSH2.length:0,nok:todosSH2.filter(a=>a.margem<16).length,crit:todosSH2.filter(a=>a.margem<10).length,tab:'shopee2'}
+  ]
+  const dc=document.getElementById('dash-canais')
+  if(dc)dc.innerHTML=canaisData.map(c=>`
+    <div class="met click" onclick="goTab('${c.tab}')" title="Ir para ${c.label}">
+      <div class="met-label" style="color:${c.color}">${c.label}</div>
+      <div class="met-val">${c.total} <span style="font-size:13px;color:var(--t2)">anúncios</span></div>
+      <div class="met-sub" style="display:flex;gap:8px;flex-wrap:wrap">
+        <span style="color:${c.avg>=16?'var(--gr)':'var(--rd)'}">↑ ${c.avg.toFixed(1)}%</span>
+        ${c.nok?`<span style="color:var(--rd)">${c.nok} ruins</span>`:''}
+        ${c.crit?`<span style="color:var(--rd);font-weight:600">${c.crit} críticos</span>`:''}
+      </div>
+    </div>`).join('')
+
+  // Alerts
+  const alertEl=document.getElementById('dash-alerts')
+  if(alertEl){
+    const al=[]
+    if(allCrit.length)al.push(`<div class="alert al-rd"><span>⚠</span><span><strong>${allCrit.length} anúncio${allCrit.length>1?'s':''} crítico${allCrit.length>1?'s':''}</strong> com margem abaixo de 10% em todos os canais</span></div>`)
+    alertEl.innerHTML=al.join('')
+  }
+  const subEl=document.getElementById('dash-sub')
+  if(subEl)subEl.textContent=`${allTodos.length} anúncios · margem média ${allAvg.toFixed(1)}%`
+  const nbUrg=document.getElementById('nb-urg')
+  if(nbUrg){nbUrg.textContent=allCrit.length;nbUrg.style.display=allCrit.length?'':'none'}
 }
 
-// ── ANÚNCIOS ──
 function renderAnuncios(){
   let lista=DATA.map(a=>({...a,...calc(a)}))
   if(activeFilter){
