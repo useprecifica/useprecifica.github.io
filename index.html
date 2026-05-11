@@ -1239,8 +1239,8 @@ function renderDash(){
     const chColor=a._ch==='SH1'||a._ch==='SH2'?'var(--pu)':'var(--t3)';
     const onclick=a._ch==='ML1'?`openModalById('${a.id}')`:a._ch==='ML2'?`openModal2('${a.id}')`:a._ch==='SH1'?`openShopeeModal(${a.id})`:`openShopee2Modal('${a.id}')`;
     return `<div class="ri" onclick="${onclick}" style="cursor:pointer">
-      <div><div class="ri-name">\${a.nome}</div><div class="ri-cod" style="color:\${chColor}">\${a._ch} · \${a.cod}</div></div>
-      <div class="ri-right"><span class="badge \${cls}">\${a.margem.toFixed(1)}%</span><div class="ri-sub">\${fmt(a.lucro)}</div></div>
+      <div><div class="ri-name">${a.nome}</div><div class="ri-cod" style="color:${chColor}">${a._ch} · ${a.cod}</div></div>
+      <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
     </div>`;
   }).join('');
   const gt=document.getElementById('dash-geral-top');if(gt)gt.innerHTML=mkGR(allSorted.slice(0,5),'b-ok');
@@ -1252,12 +1252,12 @@ function renderDash(){
     const avg2=todosML2.reduce((s,a)=>s+a.margem,0)/todosML2.length;
     const nok2=todosML2.filter(a=>a.margem<16);
     dm2.innerHTML=`
-      <div class="met"><div class="met-label">Total</div><div class="met-val">\${todosML2.length}</div></div>
-      <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:\${avg2>=16?'var(--gr)':'var(--rd)'}">\${avg2.toFixed(1)}%</div></div>
-      <div class="met click" onclick="ml2FilterAndGo('nok')"><div class="met-label" style="color:\${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:\${nok2.length?'var(--rd)':'var(--t)'}">\${nok2.length}</div></div>
-      <div class="met click" onclick="ml2FilterAndGo('ok')"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">\${todosML2.length-nok2.length}</div></div>`;
+      <div class="met"><div class="met-label">Total</div><div class="met-val">${todosML2.length}</div></div>
+      <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg2>=16?'var(--gr)':'var(--rd)'}">${avg2.toFixed(1)}%</div></div>
+      <div class="met click" onclick="ml2FilterAndGo('nok')"><div class="met-label" style="color:${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok2.length?'var(--rd)':'var(--t)'}">${nok2.length}</div></div>
+      <div class="met click" onclick="ml2FilterAndGo('ok')"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${todosML2.length-nok2.length}</div></div>`;
     const s2=todosML2.sort((a,b)=>b.margem-a.margem);
-    const mkR2=(list,cls)=>list.map(a=>`<div class="ri" onclick="openModal2('\${a.id}')" style="cursor:pointer"><div><div class="ri-name">\${a.nome}</div><div class="ri-cod">\${a.cod}</div></div><div class="ri-right"><span class="badge \${cls}">\${a.margem.toFixed(1)}%</span><div class="ri-sub">\${fmt(a.lucro)}</div></div></div>`).join('');
+    const mkR2=(list,cls)=>list.map(a=>`<div class="ri" onclick="openModal2('${a.id}')" style="cursor:pointer"><div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div><div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div></div>`).join('');
     const t2=document.getElementById('dash-ml2-top');if(t2)t2.innerHTML=mkR2(s2.slice(0,5),'b-ok');
     const b2=document.getElementById('dash-ml2-bot');if(b2)b2.innerHTML=mkR2(s2.slice(-5).reverse(),'b-nok');
   } else if(dm2){dm2.innerHTML='<div class="empty">Sem dados ML2</div>';}
