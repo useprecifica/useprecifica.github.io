@@ -211,19 +211,51 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 @media(max-width:860px){
   .sidebar{display:none}
   .bnav{display:flex}
-  .content{padding:14px;padding-bottom:72px}
-  .metrics{grid-template-columns:1fr 1fr}
-  .two-col{grid-template-columns:1fr}
+  .content{padding:10px;padding-bottom:72px}
+  .metrics{grid-template-columns:1fr 1fr;gap:8px}
+  .two-col{grid-template-columns:1fr;gap:10px}
+  .fg2{grid-template-columns:1fr 1fr}
   .fg3,.fg4{grid-template-columns:1fr 1fr}
   .rbox{grid-template-columns:1fr 1fr}
   .scols{grid-template-columns:1fr}
-  .ssug-grid{grid-template-columns:1fr 1fr 1fr}
+  .ssug-grid{grid-template-columns:1fr 1fr}
   .tbl-wrap table{display:none}
   .mob{display:block!important}
-  .ph-title{font-size:18px}
+  .ph-title{font-size:17px}
+  .ph{flex-wrap:wrap;gap:8px}
+  .ph-actions{flex-wrap:wrap;gap:6px}
+  .ph-actions .btn{font-size:12px;padding:6px 10px}
+  .card{padding:12px}
+  .card-title{font-size:11px}
+  .met{padding:10px 12px}
+  .met-val{font-size:22px}
+  .met-label{font-size:10px}
+  .an-card{padding:12px}
+  .an-name{font-size:14px}
+  .an-stats{gap:8px;flex-wrap:wrap}
+  .an-stats span{font-size:12px}
+  .ri{padding:8px 0}
+  .ri-name{font-size:13px}
+  .modal{width:96vw;max-height:92vh;padding:16px}
+  .modal-hdr{margin-bottom:12px}
+  .fg2 .field input,.fg3 .field input,.field input{font-size:14px;padding:7px 10px}
+  .field label{font-size:11px}
+  .fbar{flex-wrap:wrap;gap:6px}
+  .fbar input,.fbar select{font-size:13px;flex:1;min-width:120px}
+  .topbar{padding:0 12px;height:44px}
+  .brand{font-size:14px}
+  .tb-sub{font-size:11px}
+  #sync-now-btn{display:none}
 }
 @media(min-width:861px){.mob{display:none!important}}
-@media(max-width:500px){.fg2,.fg3,.fg4{grid-template-columns:1fr 1fr}.ssug-grid{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){
+  .fg2,.fg3,.fg4{grid-template-columns:1fr}
+  .ssug-grid{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .ph-actions .btn{width:100%}
+  .met-val{font-size:20px}
+  .modal{padding:12px}
+}
 </style>
 <script>if(localStorage.getItem("pfy_theme")==="dark")document.documentElement.setAttribute("data-theme","dark");</script>
 
@@ -253,19 +285,19 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     Painel<span class="ni-badge" id="nb-urg" style="display:none"></span>
   </button>
   <button class="ni" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
     ML — Conta 1
   </button>
   <button class="ni" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
     ML — Conta 2
   </button>
   <button class="ni" data-tab="shopee" onclick="goTab('shopee')" style="color:var(--pu)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
     Shopee
   </button>
   <button class="ni" data-tab="shopee2" onclick="goTab('shopee2')" style="color:#e05fc4">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <svg viewBox="0 0 28 28" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
     Shopee 2
   </button>
   <button class="ni" data-tab="sim" onclick="goTab('sim')">
@@ -310,21 +342,68 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 <!-- PAINEL -->
 <div id="p-dash">
   <div class="ph">
-    <div><div class="ph-title">Painel</div><div class="ph-sub" id="dash-sub"></div></div>
+    <div><div class="ph-title">Painel Geral</div><div class="ph-sub" id="dash-sub"></div></div>
     <div class="ph-actions">
       <button class="btn" onclick="goTab('sim')">Simular preço</button>
       <button class="btn btn-p" onclick="openModal()">+ Novo anúncio</button>
     </div>
   </div>
+
+  <!-- RESUMO GERAL TODOS OS CANAIS -->
   <div id="dash-alerts"></div>
-  <div class="metrics" id="dash-metrics"></div>
-  <div class="two-col">
+  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px">VISÃO GERAL — TODOS OS CANAIS</div>
+  <div class="metrics" id="dash-geral-metrics" style="margin-bottom:16px"></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="card"><div class="card-title">🏆 Melhores margens (todos)</div><div id="dash-geral-top"></div></div>
+    <div class="card"><div class="card-title">⚠ Piores margens (todos)</div><div id="dash-geral-bot"></div></div>
+  </div>
+
+  <!-- ML CONTA 1 -->
+  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.8px;margin-top:8px">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M10 1C5.58 1 2 4.58 2 9s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM8 5h1.2l1.8 2.8L12.8 5H14v6h-1.2V7.7L11 10.2 9.2 7.7V11H8V5z"/></svg>
+    ML — CONTA 1
+  </div>
+  <div class="metrics" id="dash-metrics" style="margin-bottom:12px"></div>
+  <div class="two-col" style="margin-bottom:12px">
     <div class="card"><div class="card-title">Melhores margens</div><div id="dash-top"></div></div>
     <div class="card"><div class="card-title">Piores margens</div><div id="dash-bot"></div></div>
   </div>
-  <div class="two-col">
+  <div class="two-col" style="margin-bottom:16px">
     <div class="card" id="dash-tipos"></div>
     <div class="card" id="dash-acoes"></div>
+  </div>
+
+  <!-- ML CONTA 2 -->
+  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--gr);letter-spacing:.8px">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px;color:var(--gr)"><path d="M10 1C5.58 1 2 4.58 2 9s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zM8 5h1.2l1.8 2.8L12.8 5H14v6h-1.2V7.7L11 10.2 9.2 7.7V11H8V5z"/></svg>
+    ML — CONTA 2
+  </div>
+  <div class="metrics" id="dash-ml2-metrics" style="margin-bottom:12px"></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="card"><div class="card-title">Melhores margens</div><div id="dash-ml2-top"></div></div>
+    <div class="card"><div class="card-title">Piores margens</div><div id="dash-ml2-bot"></div></div>
+  </div>
+
+  <!-- SHOPEE CONTA 1 -->
+  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:var(--pu);letter-spacing:.8px">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M10 2C7.24 2 5 3.79 5 6c0 .5.1.97.27 1.41L4 7.5A1.5 1.5 0 0 0 2.5 9v8A1.5 1.5 0 0 0 4 18.5h12a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 16 7.5l-1.27-.09C14.9 6.97 15 6.5 15 6c0-2.21-2.24-4-5-4zm0 1.75c1.79 0 3.25 1.01 3.25 2.25S11.79 8.25 10 8.25 6.75 7.24 6.75 6 8.21 3.75 10 3.75zm0 6.5c1.93 0 3.5 1.01 3.5 2.25S11.93 14.75 10 14.75 6.5 13.74 6.5 12.5 8.07 10.25 10 10.25z"/></svg>
+    SHOPEE — CONTA 1
+  </div>
+  <div class="metrics" id="sh-metrics" style="margin-bottom:12px"></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="card"><div class="card-title">Melhores margens</div><div id="sh-top"></div></div>
+    <div class="card"><div class="card-title">Piores margens</div><div id="sh-bot"></div></div>
+  </div>
+
+  <!-- SHOPEE CONTA 2 -->
+  <div style="padding:4px 0 6px;font-size:10px;font-weight:700;color:#e05fc4;letter-spacing:.8px">
+    <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M10 2C7.24 2 5 3.79 5 6c0 .5.1.97.27 1.41L4 7.5A1.5 1.5 0 0 0 2.5 9v8A1.5 1.5 0 0 0 4 18.5h12a1.5 1.5 0 0 0 1.5-1.5V9A1.5 1.5 0 0 0 16 7.5l-1.27-.09C14.9 6.97 15 6.5 15 6c0-2.21-2.24-4-5-4zm0 1.75c1.79 0 3.25 1.01 3.25 2.25S11.79 8.25 10 8.25 6.75 7.24 6.75 6 8.21 3.75 10 3.75zm0 6.5c1.93 0 3.5 1.01 3.5 2.25S11.93 14.75 10 14.75 6.5 13.74 6.5 12.5 8.07 10.25 10 10.25z"/></svg>
+    SHOPEE — CONTA 2
+  </div>
+  <div class="metrics" id="sh2-metrics" style="margin-bottom:12px"></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="card"><div class="card-title">Melhores margens</div><div id="sh2-top"></div></div>
+    <div class="card"><div class="card-title">Piores margens</div><div id="sh2-bot"></div></div>
   </div>
 </div>
 
@@ -584,7 +663,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     Painel<span class="nb-dot" id="bn-dot" style="display:none"></span>
   </button>
   <button class="nb" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
     ML 1
   </button>
   <button class="nb" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
@@ -600,7 +679,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     Simular
   </button>
   <button class="nb" data-tab="shopee" onclick="goTab('shopee')" style="position:relative">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
     Shopee
   </button>
   <button class="nb" data-tab="insights" onclick="goTab('insights')">
@@ -1041,7 +1120,7 @@ function goTab(t){
   ;['dash','anuncios','sim','insights','hist','config','shopee','custos','ml2','shopee2'].forEach(p=>{
     document.getElementById('p-'+p).style.display=p===t?'':'none'
   })
-  if(t==='dash')renderDash()
+  if(t==='dash'){renderDash();if(typeof renderShopee==='function')renderShopee();if(typeof renderShopee2==='function')renderShopee2();if(typeof renderML2==='function')renderML2();}
   else if(t==='anuncios'){if(!activeFilter)populateFiltro();renderAnuncios()}
   else if(t==='insights')renderInsights()
   else if(t==='hist')renderHist()
@@ -1129,6 +1208,59 @@ function populateFiltro(){
 function renderDash(){
   const todos=DATA.map(a=>({...a,...calc(a)}))
   const ok=todos.filter(a=>a.margem>=16),nok=todos.filter(a=>a.margem<16)
+
+  // ── PAINEL GERAL (todos os canais) ──
+  const todosML1=todos;
+  const todosML2=(typeof DATA2!=='undefined'?DATA2:[]).map(a=>({...a,...calc(a)}));
+  const todosSH=(typeof SH_DATA!=='undefined'?SH_DATA:[]).map(a=>({...a,...calcSH(a)}));
+  const todosSH2=(typeof SH2_DATA!=='undefined'?SH2_DATA:[]).map(a=>({...a,...calcSH(a)}));
+  const allTodos=[
+    ...todosML1.map(a=>({...a,_ch:'ML1'})),
+    ...todosML2.map(a=>({...a,_ch:'ML2'})),
+    ...todosSH.map(a=>({...a,_ch:'SH1'})),
+    ...todosSH2.map(a=>({...a,_ch:'SH2'}))
+  ];
+  const allAvg=allTodos.length?allTodos.reduce((s,a)=>s+a.margem,0)/allTodos.length:0;
+  const allNok=allTodos.filter(a=>a.margem<16);
+  const allOk=allTodos.filter(a=>a.margem>=16);
+  const allCrit=allTodos.filter(a=>a.margem<10);
+  const allSorted=[...allTodos].sort((a,b)=>b.margem-a.margem);
+
+  const gm=document.getElementById('dash-geral-metrics');
+  if(gm)gm.innerHTML=`
+    <div class="met"><div class="met-label">Total anúncios</div><div class="met-val">${allTodos.length}</div><div class="met-sub">todos os canais</div></div>
+    <div class="met"><div class="met-label">Margem média geral</div><div class="met-val" style="color:${allAvg>=16?'var(--gr)':'var(--rd)'}">${allAvg.toFixed(1)}%</div></div>
+    <div class="met" style="cursor:pointer" title="Ver não saudáveis ML1"><div class="met-label" style="color:${allNok.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${allNok.length?'var(--rd)':'var(--t)'}">${allNok.length}</div><div class="met-sub">${allCrit.length} críticos</div></div>
+    <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${allOk.length}</div><div class="met-sub">${(allOk.length/Math.max(allTodos.length,1)*100).toFixed(0)}% do total</div></div>`;
+
+  // Geral top/bot (all channels mixed, clickable)
+  const mkGR=(list,cls)=>list.map(a=>{
+    const chIcon=a._ch==='ML1'||a._ch==='ML2'?'ML':'🛒';
+    const chColor=a._ch==='SH1'||a._ch==='SH2'?'var(--pu)':'var(--t3)';
+    const onclick=a._ch==='ML1'?`openModalById('${a.id}')`:a._ch==='ML2'?`openModal2('${a.id}')`:a._ch==='SH1'?`openShopeeModal(${a.id})`:`openShopee2Modal('${a.id}')`;
+    return \`<div class="ri" onclick="${onclick}" style="cursor:pointer">
+      <div><div class="ri-name">\${a.nome}</div><div class="ri-cod" style="color:\${chColor}">\${a._ch} · \${a.cod}</div></div>
+      <div class="ri-right"><span class="badge \${cls}">\${a.margem.toFixed(1)}%</span><div class="ri-sub">\${fmt(a.lucro)}</div></div>
+    </div>\`;
+  }).join('');
+  const gt=document.getElementById('dash-geral-top');if(gt)gt.innerHTML=mkGR(allSorted.slice(0,5),'b-ok');
+  const gb=document.getElementById('dash-geral-bot');if(gb)gb.innerHTML=mkGR(allSorted.slice(-5).reverse(),'b-nok');
+
+  // ML2 mini painel no dash
+  const dm2=document.getElementById('dash-ml2-metrics');
+  if(dm2&&todosML2.length){
+    const avg2=todosML2.reduce((s,a)=>s+a.margem,0)/todosML2.length;
+    const nok2=todosML2.filter(a=>a.margem<16);
+    dm2.innerHTML=\`
+      <div class="met"><div class="met-label">Total</div><div class="met-val">\${todosML2.length}</div></div>
+      <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:\${avg2>=16?'var(--gr)':'var(--rd)'}">\${avg2.toFixed(1)}%</div></div>
+      <div class="met click" onclick="ml2FilterAndGo('nok')"><div class="met-label" style="color:\${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:\${nok2.length?'var(--rd)':'var(--t)'}">\${nok2.length}</div></div>
+      <div class="met click" onclick="ml2FilterAndGo('ok')"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">\${todosML2.length-nok2.length}</div></div>\`;
+    const s2=todosML2.sort((a,b)=>b.margem-a.margem);
+    const mkR2=(list,cls)=>list.map(a=>\`<div class="ri" onclick="openModal2('\${a.id}')" style="cursor:pointer"><div><div class="ri-name">\${a.nome}</div><div class="ri-cod">\${a.cod}</div></div><div class="ri-right"><span class="badge \${cls}">\${a.margem.toFixed(1)}%</span><div class="ri-sub">\${fmt(a.lucro)}</div></div></div>\`).join('');
+    const t2=document.getElementById('dash-ml2-top');if(t2)t2.innerHTML=mkR2(s2.slice(0,5),'b-ok');
+    const b2=document.getElementById('dash-ml2-bot');if(b2)b2.innerHTML=mkR2(s2.slice(-5).reverse(),'b-nok');
+  } else if(dm2){dm2.innerHTML='<div class="empty">Sem dados ML2</div>';}
   const avg=todos.length?todos.reduce((s,a)=>s+a.margem,0)/todos.length:0
   const urg=todos.filter(a=>a.margem<10),opp=todos.filter(a=>a.margem>=25),crit=urg
   const prem=todos.filter(a=>a.tipo==='premium')
@@ -1190,7 +1322,7 @@ function renderAnuncios(){
     const tp=document.getElementById('f-tipo')?.value||''
     const cl=document.getElementById('f-class')?.value||''
     lista=lista.filter(a=>{
-      if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false
+      if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').toLowerCase().includes(q)&&!(a.cod+'').replace(/\s/g,'').includes(q.replace(/\s/g,'')))return false
       if(st==='ok'&&a.margem<16)return false
       if(st==='nok'&&a.margem>=16)return false
       if(tp&&!a.nome.startsWith(tp))return false
@@ -1320,7 +1452,7 @@ function openModal(id){
 function closeModal(){document.getElementById('overlay').classList.remove('open');editId=null}
 
 function getForm(){
-  const n=v=>parseFloat(document.getElementById(v)?.value)||0
+  const n=v=>Math.round((parseFloat(document.getElementById(v)?.value)||0)*100)/100
   const s=v=>document.getElementById(v)?.value||''
   return{nome:s('f-nome'),cod:s('f-cod'),obs:s('f-obs'),tipo:mTipo,
     custo:n('f-custo'),preco:n('f-preco'),precoD:n('f-precoD'),
@@ -1929,7 +2061,7 @@ function shAplicarSug(pv){
 }
 
 function shGetForm(){
-  const n=v=>parseFloat(document.getElementById(v)?.value)||0;
+  const n=v=>Math.round((parseFloat(document.getElementById(v)?.value)||0)*100)/100;
   const s=v=>document.getElementById(v)?.value||'';
   return{nome:s('sh-f-nome'),cod:s('sh-f-cod'),status:s('sh-f-status'),obs:s('sh-f-obs'),
     custo:n('sh-f-custo'),preco:n('sh-f-preco'),precoD:n('sh-f-precoD'),
@@ -2034,7 +2166,7 @@ function renderShopee(){
   const q=(document.getElementById('sh-busca')?.value||'').toLowerCase();
   const st=document.getElementById('sh-fstatus')?.value||'';
   let lista=todos.filter(a=>{
-    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
+    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').toLowerCase().includes(q)&&!(a.cod+'').replace(/\s/g,'').includes(q.replace(/\s/g,'')))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
     if(st==='crit'&&a.margem>=10)return false;
@@ -2157,7 +2289,7 @@ function renderML2(){
   var st=document.getElementById('ml2-fstatus')?.value||'';
   var cl=document.getElementById('ml2-fclass')?.value||'';
   var lista=todos.filter(function(a){
-    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
+    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').toLowerCase().includes(q)&&!(a.cod+'').replace(/\s/g,'').includes(q.replace(/\s/g,'')))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
     if(st==='crit'&&a.margem>=10)return false;
@@ -2374,7 +2506,7 @@ function renderShopee2(){
   var q=(document.getElementById('sh2-busca')?.value||'').toLowerCase();
   var st=document.getElementById('sh2-fstatus')?.value||'';
   var lista=todos.filter(function(a){
-    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').includes(q))return false;
+    if(q&&!a.nome.toLowerCase().includes(q)&&!(a.cod+'').toLowerCase().includes(q)&&!(a.cod+'').replace(/\s/g,'').includes(q.replace(/\s/g,'')))return false;
     if(st==='ok'&&a.margem<16)return false;
     if(st==='nok'&&a.margem>=16)return false;
     if(st==='crit'&&a.margem>=10)return false;
@@ -2441,7 +2573,7 @@ function renderShopee2(){
       if(e.target.tagName!=='INPUT')return;
       var a=window._sh2Lista[+e.target.dataset.idx];
       if(a&&e.target.dataset.field){
-        a[e.target.dataset.field]=parseFloat(e.target.value)||0;
+        a[e.target.dataset.field]=Math.round((parseFloat(e.target.value)||0)*100)/100;
         var orig=SH2_DATA.find(function(x){return String(x.id)===String(a.id);});
         if(orig)orig[e.target.dataset.field]=a[e.target.dataset.field];
         svSH2();renderShopee2();
