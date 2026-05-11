@@ -2268,12 +2268,11 @@ function renderML2(){
 
   // Metrics
   var dm2=document.getElementById('ml2-metrics');
-  if(dm2)dm2.innerHTML=
-    '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
-    '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
-    '<div class="met click" onclick="ml2FilterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub" onclick="event.stopPropagation();ml2FilterAndGo(\'crit\')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">'+crit2.length+' críticos ↗</div></div>'+
-    '<div class="met"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:var(--gr)">'+opp2.length+'</div><div class="met-sub">margem ≥25%</div></div>';
-
+  if(dm2)dm2.innerHTML=`
+    <div class="met"><div class="met-label">Total</div><div class="met-val">${todos.length}</div></div>
+    <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</div></div>
+    <div class="met click" onclick="ml2FilterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok2.length?'var(--rd)':'var(--t)'}">${nok2.length}</div><div class="met-sub" onclick="event.stopPropagation();ml2FilterAndGo('crit')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">${crit2.length} críticos ↗</div></div>
+    <div class="met click" onclick="ml2FilterAndGo('ok')"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${todos.length-nok2.length}</div></div>`;
   // Top/bot
   var sorted2=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
   function mkR2(list,cls){return list.map(function(a){
@@ -2492,12 +2491,11 @@ function renderShopee2(){
     alEl.innerHTML=al.join('');
   }
   var dm=document.getElementById('sh2-metrics');
-  if(dm)dm.innerHTML=
-    '<div class="met"><div class="met-label">Total</div><div class="met-val">'+todos.length+'</div></div>'+
-    '<div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:'+(avg>=16?'var(--gr)':'var(--rd)')+'">'+avg.toFixed(1)+'%</div></div>'+
-    '<div class="met click" onclick="sh2FilterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:'+(nok2.length?'var(--rd)':'var(--t3)')+'">Não saudáveis</div><div class="met-val" style="color:'+(nok2.length?'var(--rd)':'var(--t)')+'">'+nok2.length+'</div><div class="met-sub" onclick="event.stopPropagation();sh2FilterAndGo(\'crit\')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">'+crit2.length+' críticos ↗</div></div>'+
-    '<div class="met click" onclick="sh2FilterAndGo('ok')"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">'+ok2.length+'</div><div class="met-sub">saudáveis</div></div>';
-
+  if(dm)dm.innerHTML=`
+    <div class="met"><div class="met-label">Total</div><div class="met-val">${todos.length}</div></div>
+    <div class="met"><div class="met-label">Margem média</div><div class="met-val" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">${avg.toFixed(1)}%</div></div>
+    <div class="met click" onclick="sh2FilterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok2.length?'var(--rd)':'var(--t)'}">${nok2.length}</div><div class="met-sub" onclick="event.stopPropagation();sh2FilterAndGo('crit')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">${crit2.length} críticos ↗</div></div>
+    <div class="met click" onclick="sh2FilterAndGo('ok')"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">${ok2.length}</div><div class="met-sub">saudáveis</div></div>`;
   var sorted=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
   function mkR(list,cls){return list.map(function(a){return '<div class="ri" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer"><div><div class="ir-name">'+a.nome+'</div><div class="ir-sub">'+a.cod+'</div></div><div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';}).join('');}
   var t=document.getElementById('sh2-top');if(t)t.innerHTML=mkR(sorted.slice(0,5),'b-ok');
