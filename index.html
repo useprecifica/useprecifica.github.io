@@ -306,15 +306,15 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   </button>
   <div class="sb-sep"></div>
   <div class="sb-label">Filtrar por tag</div>
-  <button class="ni" data-tab="anuncios" onclick="filterAndGo('full')">
+  <button class="ni" data-tab="tags" onclick="filterAndGo('full')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-    Full ML
+    Full
   </button>
-  <button class="ni" data-tab="anuncios" onclick="filterAndGo('oferta')">
+  <button class="ni" data-tab="tags" onclick="filterAndGo('oferta')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     Oferta relâmpago
   </button>
-  <button class="ni" data-tab="anuncios" onclick="filterAndGo('pub')">
+  <button class="ni" data-tab="tags" onclick="filterAndGo('pub')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
     Publicidade
   </button>
@@ -475,6 +475,88 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     </tr></thead><tbody id="sh2-tbl-body"></tbody></table>
   </div>
   <div class="mob" id="sh2-mob-cards" style="display:none"></div>
+</div>
+
+<!-- TAGS PAGE -->
+<div id="p-tags" style="display:none">
+  <div class="ph">
+    <div><div class="ph-title" id="tags-title">Tags</div><div class="ph-sub" id="tags-sub"></div></div>
+  </div>
+
+  <!-- FULL ML / FULL SHOPEE -->
+  <div id="tags-full-section">
+    <div style="padding:4px 0 8px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase">Full</div>
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title" style="color:var(--t)">ML — Conta 1</div>
+        <div id="tags-full-ml1"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--gr)">ML — Conta 2</div>
+        <div id="tags-full-ml2"></div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:24px">
+      <div class="card">
+        <div class="card-title" style="color:var(--pu)">Shopee — Conta 1</div>
+        <div id="tags-full-sh1"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#e05fc4">Shopee — Conta 2</div>
+        <div id="tags-full-sh2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFERTA RELÂMPAGO -->
+  <div id="tags-oferta-section">
+    <div style="padding:4px 0 8px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase">Oferta Relâmpago</div>
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title" style="color:var(--t)">ML — Conta 1</div>
+        <div id="tags-oferta-ml1"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--gr)">ML — Conta 2</div>
+        <div id="tags-oferta-ml2"></div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:24px">
+      <div class="card">
+        <div class="card-title" style="color:var(--pu)">Shopee — Conta 1</div>
+        <div id="tags-oferta-sh1"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#e05fc4">Shopee — Conta 2</div>
+        <div id="tags-oferta-sh2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLICIDADE -->
+  <div id="tags-pub-section">
+    <div style="padding:4px 0 8px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase">Publicidade (ADS)</div>
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title" style="color:var(--t)">ML — Conta 1</div>
+        <div id="tags-pub-ml1"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--gr)">ML — Conta 2</div>
+        <div id="tags-pub-ml2"></div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title" style="color:var(--pu)">Shopee — Conta 1</div>
+        <div id="tags-pub-sh1"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#e05fc4">Shopee — Conta 2</div>
+        <div id="tags-pub-sh2"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- INSIGHTS -->
@@ -953,8 +1035,9 @@ async function syncDown(){
       SH_DATA=r2.data.map(function(a){return{
         id:a.id,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
         preco:+a.preco||0,precoD:+a.preco_d||0,custo:+a.custo||0,
-        ant:+a.ant||6,frete:+a.frete||0,outros:+a.outros||0,
-        descPct:+a.desc_pct||5,descMax:+a.desc_max||10,imp:+a.imp||10,obs:a.obs||''
+        ant:+a.ant||2.5,frete:+a.frete||0,outros:+a.outros||0,
+        descPct:+a.desc_pct||5,descMax:+a.desc_max||10,imp:+a.imp||10,obs:a.obs||'',
+        tags:{full:!!(a.tag_full),oferta:!!(a.tag_oferta),pub:!!(a.tag_pub)}
       };});
       SH_NID=999999;
       localStorage.setItem(SK_SH,JSON.stringify(SH_DATA));
@@ -992,7 +1075,8 @@ async function pushSHup(){
     user_id:uid,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
     preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,
     ant:a.ant||6,frete:a.frete||0,outros:a.outros||0,
-    desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||''
+    desc_pct:a.descPct||5,desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||'',
+    tag_full:!!(a.tags&&a.tags.full),tag_oferta:!!(a.tags&&a.tags.oferta),tag_pub:!!(a.tags&&a.tags.pub)
   };});
   if(rows.length){
     const {error}=await SB.from('anuncios_shopee').insert(rows);
@@ -1021,7 +1105,8 @@ async function pushSH2up(){
     user_id:uid,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
     preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,ant:a.ant||2.5,
     frete:a.frete||0,outros:a.outros||0,desc_pct:a.descPct||5,
-    desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||''
+    desc_max:a.descMax||10,imp:a.imp||10,obs:a.obs||'',
+    tag_full:!!(a.tags&&a.tags.full),tag_oferta:!!(a.tags&&a.tags.oferta),tag_pub:!!(a.tags&&a.tags.pub)
   };});
   if(rows.length){await SB.from('anuncios_shopee2').insert(rows);}
 }
@@ -1080,7 +1165,7 @@ function scheduleSyncUp(){
 
 function goTab(t){
   document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('active',el.dataset.tab===t))
-  ;['dash','anuncios','sim','insights','hist','config','shopee','custos','ml2','shopee2'].forEach(p=>{
+  ;['dash','anuncios','sim','insights','hist','config','shopee','custos','ml2','shopee2','tags'].forEach(p=>{
     document.getElementById('p-'+p).style.display=p===t?'':'none'
   })
   if(t==='dash'){renderDash();if(typeof renderShopee==='function')renderShopee();if(typeof renderShopee2==='function')renderShopee2();if(typeof renderML2==='function')renderML2();}
@@ -1092,16 +1177,23 @@ function goTab(t){
   else if(t==='custos')renderCustos()
   else if(t==='ml2'){renderML2();}
   else if(t==='shopee2'){renderShopee2();}
+  else if(t==='tags'){renderTags();}
   document.querySelector('.content').scrollTop=0
 }
 
 function filterAndGo(type){
+  // Tags go to dedicated tags page
+  if(type==='full'||type==='oferta'||type==='pub'){
+    goTab('tags');
+    renderTags(type);
+    return;
+  }
   activeFilter=type
-  const labels={urgente:'Margem crítica (<10%)',nok:'Não saudáveis (<16%)',saudavel:'Saudáveis (≥16%)',oportunidade:'Oportunidades (≥25%)',cupom:'Cupons a retirar',inativo:'Inativos',full:'Full ML',oferta:'Oferta relâmpago',pub:'Publicidade'}
+  const labels={urgente:'Margem crítica (<10%)',nok:'Não saudáveis (<16%)',saudavel:'Saudáveis (≥16%)',oportunidade:'Oportunidades (≥25%)',cupom:'Cupons a retirar',inativo:'Inativos'}
   const el_title=document.getElementById('an-title'),el_sub=document.getElementById('an-sub')
   if(el_title)el_title.textContent=labels[type]||'Anúncios'
   const todos=DATA.map(a=>({...a,...calc(a)}))
-  const fns={urgente:a=>a.margem<10,nok:a=>a.margem<16,saudavel:a=>a.margem>=16,oportunidade:a=>a.margem>=25,cupom:a=>!!a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/),inativo:a=>a.obs?.toLowerCase().includes('inativo'),full:a=>a.tags?.full,oferta:a=>a.tags?.oferta,pub:a=>a.tags?.pub}
+  const fns={urgente:a=>a.margem<10,nok:a=>a.margem<16,saudavel:a=>a.margem>=16,oportunidade:a=>a.margem>=25,cupom:a=>!!a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/),inativo:a=>a.obs?.toLowerCase().includes('inativo')}
   const count=todos.filter(fns[type]||(_=>true)).length
   if(el_sub)el_sub.textContent=count+' anúncio(s)'
   document.getElementById('filter-bar-wrap').style.display='none'
@@ -1232,7 +1324,7 @@ function renderDash(){
 
   // Cards por canal (clicáveis, levam ao canal certo)
   const canaisData=[
-    {label:'ML — Conta 1',color:'var(--t)',total:todos.length,avg,nok:nok.length,crit:urg.length,tab:'anuncios'},
+    {label:'ML — Conta 1',color:'var(--t)',total:todos.length,avg:avg,nok:nok.length,crit:urg.length,tab:'anuncios'},
     {label:'ML — Conta 2',color:'var(--gr)',total:todosML2.length,avg:todosML2.length?todosML2.reduce((s,a)=>s+a.margem,0)/todosML2.length:0,nok:todosML2.filter(a=>a.margem<16).length,crit:todosML2.filter(a=>a.margem<10).length,tab:'ml2'},
     {label:'Shopee',color:'var(--pu)',total:todosSH.length,avg:todosSH.length?todosSH.reduce((s,a)=>s+a.margem,0)/todosSH.length:0,nok:todosSH.filter(a=>a.margem<16).length,crit:todosSH.filter(a=>a.margem<10).length,tab:'shopee'},
     {label:'Shopee 2',color:'#e05fc4',total:todosSH2.length,avg:todosSH2.length?todosSH2.reduce((s,a)=>s+a.margem,0)/todosSH2.length:0,nok:todosSH2.filter(a=>a.margem<16).length,crit:todosSH2.filter(a=>a.margem<10).length,tab:'shopee2'}
@@ -1846,27 +1938,27 @@ const SK_SH='pfy_sh1';
 let SH_DATA=[],SH_NID=5000,shEditId=null;
 
 const SH_SEED=[
-  {cod:'SH001',nome:'Luminária de Teto',status:'ativo',preco:199.90,precoD:179.90,custo:72.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:9.00,imp:10,obs:''},
+  {cod:'SH001',nome:'Luminária de Teto',status:'ativo',preco:199.90,precoD:179.90,custo:72.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:9.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
   {cod:'SH002',nome:'Abajur Mesa Clássico',preco:159.90,precoD:139.90,custo:48.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:7.00,imp:10,obs:'',status:'ativo'},
-  {cod:'SH003',nome:'Pendente Industrial',status:'ativo',preco:299.90,precoD:269.90,custo:95.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:10.00,imp:10,obs:''},
-  {cod:'SH004',nome:'Kit 2 Arandelas',status:'ativo',preco:189.90,precoD:169.90,custo:62.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:''},
-  {cod:'SH005',nome:'Spot LED Embutir',status:'ativo',preco:89.90,precoD:79.90,custo:28.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:''}
+  {cod:'SH003',nome:'Pendente Industrial',status:'ativo',preco:299.90,precoD:269.90,custo:95.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:10.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'SH004',nome:'Kit 2 Arandelas',status:'ativo',preco:189.90,precoD:169.90,custo:62.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'SH005',nome:'Spot LED Embutir',status:'ativo',preco:89.90,precoD:79.90,custo:28.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}}
 ];
 
 const SH2_SEED=[
-  {cod:'58255951961',nome:'ABJ Áustria',status:'ativo',preco:205.60,precoD:165.30,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58255804286',nome:'ABJ Slim',status:'ativo',preco:129.90,precoD:117.30,custo:43.25,ant:2.5,frete:0,outros:0,descPct:5,descMax:6.50,imp:10,obs:''},
-  {cod:'58255679190',nome:'ABJ Áustria',status:'ativo',preco:209.00,precoD:167.40,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58254539613',nome:'Adega Quebra Cabeça',status:'ativo',preco:170.00,precoD:72.10,custo:15.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:''},
-  {cod:'58254440796',nome:'ABJ Mine',status:'ativo',preco:110.00,precoD:99.70,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:''},
-  {cod:'58205811287',nome:'ABJ Áustria',status:'ativo',preco:199.90,precoD:168.70,custo:64.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58205792267',nome:'ABJ Mine',status:'ativo',preco:107.50,precoD:96.75,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.38,imp:10,obs:''},
-  {cod:'58204653266',nome:'Coluna Áustria',status:'ativo',preco:430.00,precoD:327.60,custo:121.90,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58204649391',nome:'ABJ Áustria',status:'ativo',preco:250.00,precoD:169.10,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58204648767',nome:'Coluna Monâco',status:'ativo',preco:450.00,precoD:374.20,custo:105.87,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:''},
-  {cod:'58204548575',nome:'ABJ Mine',status:'ativo',preco:109.90,precoD:97.30,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:''},
-  {cod:'23999311533',nome:'ABJ Slim',status:'ativo',preco:150.00,precoD:127.10,custo:43.25,ant:2.5,frete:0,outros:0,descPct:5,descMax:7.50,imp:10,obs:''},
-  {cod:'22099369255',nome:'Suporte de Taças',status:'ativo',preco:80.00,precoD:38.40,custo:10.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:''}
+  {cod:'58255951961',nome:'ABJ Áustria',status:'ativo',preco:205.60,precoD:165.30,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58255804286',nome:'ABJ Slim',status:'ativo',preco:129.90,precoD:117.30,custo:43.25,ant:2.5,frete:0,outros:0,descPct:5,descMax:6.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58255679190',nome:'ABJ Áustria',status:'ativo',preco:209.00,precoD:167.40,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58254539613',nome:'Adega Quebra Cabeça',status:'ativo',preco:170.00,precoD:72.10,custo:15.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:8.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58254440796',nome:'ABJ Mine',status:'ativo',preco:110.00,precoD:99.70,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58205811287',nome:'ABJ Áustria',status:'ativo',preco:199.90,precoD:168.70,custo:64.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58205792267',nome:'ABJ Mine',status:'ativo',preco:107.50,precoD:96.75,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.38,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58204653266',nome:'Coluna Áustria',status:'ativo',preco:430.00,precoD:327.60,custo:121.90,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58204649391',nome:'ABJ Áustria',status:'ativo',preco:250.00,precoD:169.10,custo:65.15,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58204648767',nome:'Coluna Monâco',status:'ativo',preco:450.00,precoD:374.20,custo:105.87,ant:2.5,frete:0,outros:0,descPct:5,descMax:10,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'58204548575',nome:'ABJ Mine',status:'ativo',preco:109.90,precoD:97.30,custo:37.29,ant:2.5,frete:0,outros:0,descPct:5,descMax:5.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'23999311533',nome:'ABJ Slim',status:'ativo',preco:150.00,precoD:127.10,custo:43.25,ant:2.5,frete:0,outros:0,descPct:5,descMax:7.50,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}},
+  {cod:'22099369255',nome:'Suporte de Taças',status:'ativo',preco:80.00,precoD:38.40,custo:10.00,ant:2.5,frete:0,outros:0,descPct:5,descMax:4.00,imp:10,obs:'',tags:{full:false,oferta:false,pub:false}}
 ];
 
 
@@ -1894,8 +1986,8 @@ function loadShopee2(){
   try{
     var s=localStorage.getItem(SK_SH2);
     if(s){SH2_DATA=JSON.parse(s);SH2_NID=Math.max(...SH2_DATA.map(function(a){return +a.id||0;}),6999)+1;}
-    else{SH2_DATA=SH2_SEED.map(function(a,i){return Object.assign({},a,{id:7000+i});});SH2_NID=7000+SH2_DATA.length;localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));}
-  }catch(e){SH2_DATA=SH2_SEED.map(function(a,i){return Object.assign({},a,{id:7000+i});});SH2_NID=7000+SH2_DATA.length;localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));}
+    else{SH2_DATA=SH2_SEED.map(function(a,i){return Object.assign({},a,{id:7000+i,tags:a.tags||{full:false,oferta:false,pub:false}});});SH2_NID=7000+SH2_DATA.length;localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));}
+  }catch(e){SH2_DATA=SH2_SEED.map(function(a,i){return Object.assign({},a,{id:7000+i,tags:a.tags||{full:false,oferta:false,pub:false}});});SH2_NID=7000+SH2_DATA.length;localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));}
 }
 function svSH2(){localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));scheduleSyncUp();}
 
@@ -2015,7 +2107,11 @@ function shAplicarSug(pv){
 function shGetForm(){
   const n=v=>Math.round((parseFloat(document.getElementById(v)?.value)||0)*100)/100;
   const s=v=>document.getElementById(v)?.value||'';
+  var shFull=document.getElementById('sh-f-full');
+  var shOferta=document.getElementById('sh-f-oferta');
+  var shPub=document.getElementById('sh-f-pub');
   return{nome:s('sh-f-nome'),cod:s('sh-f-cod'),status:s('sh-f-status'),obs:s('sh-f-obs'),
+    tags:{full:!!(shFull&&shFull.checked),oferta:!!(shOferta&&shOferta.checked),pub:!!(shPub&&shPub.checked)},
     custo:n('sh-f-custo'),preco:n('sh-f-preco'),precoD:n('sh-f-precoD'),
     frete:n('sh-f-frete'),outros:n('sh-f-outros'),com:n('sh-f-com'),ant:n('sh-f-ant'),imp:n('sh-f-imp'),
     descPct:n('sh-f-descpct'),descMax:n('sh-f-descmax')}
@@ -2558,6 +2654,10 @@ function openShopee2Modal(id){
   g('sh-f-frete',a?.frete||0);g('sh-f-outros',a?.outros||0);
   g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
   g('sh-f-imp',a?.imp??10);g('sh-f-obs',a?.obs||'');
+  var sfull=document.getElementById('sh-f-full');var soferta=document.getElementById('sh-f-oferta');var spub=document.getElementById('sh-f-pub');
+  if(sfull)sfull.checked=!!(a?.tags?.full);
+  if(soferta)soferta.checked=!!(a?.tags?.oferta);
+  if(spub)spub.checked=!!(a?.tags?.pub);
   document.getElementById('sh-overlay').classList.add('open');
   shCalcLive();
 }
@@ -2607,6 +2707,58 @@ async function initSupabase(){
 }
 
 
+
+// ── TAGS PAGE ──
+function renderTags(activeTag){
+  var tagEl=document.getElementById('tags-title');
+  if(tagEl){
+    var labels={full:'Full',oferta:'Oferta Relâmpago',pub:'Publicidade (ADS)'};
+    tagEl.textContent=activeTag?labels[activeTag]||'Tags':'Tags';
+  }
+  var allML1=DATA.map(function(a){return Object.assign({},a,calc(a));});
+  var allML2=(typeof DATA2!=='undefined'?DATA2:[]).map(function(a){return Object.assign({},a,calc(a));});
+  var allSH=(typeof SH_DATA!=='undefined'?SH_DATA:[]).map(function(a){return Object.assign({},a,calcSH(a));});
+  var allSH2=(typeof SH2_DATA!=='undefined'?SH2_DATA:[]).map(function(a){return Object.assign({},a,calcSH(a));});
+
+  function mkTagItem(a,openFn){
+    var ok=a.margem>=16;
+    return '<div class="ri" onclick="'+openFn+'" style="cursor:pointer">'+
+      '<div><div class="ri-name">'+sanitize(a.nome)+'</div><div class="ri-cod">'+a.cod+'</div></div>'+
+      '<div class="ri-right"><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
+      '<div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';
+  }
+  function fillTag(tag,elId,data,openFn){
+    var el=document.getElementById(elId);
+    if(!el)return;
+    var filtered=data.filter(a=>a.tags&&a.tags[tag]);
+    if(!filtered.length){el.innerHTML='<div class="empty">Nenhum</div>';return;}
+    el.innerHTML=filtered.map(a=>mkTagItem(a,openFn(a))).join('');
+  }
+
+  var tags=activeTag?[activeTag]:['full','oferta','pub'];
+
+  // Show/hide sections based on active tag
+  ['full','oferta','pub'].forEach(function(t){
+    var sec=document.getElementById('tags-'+t+'-section');
+    if(sec)sec.style.display=(!activeTag||activeTag===t)?'':'none';
+  });
+
+  tags.forEach(function(tag){
+    fillTag(tag,'tags-'+tag+'-ml1',allML1,function(a){return "openModalById('"+a.id+"')";});
+    fillTag(tag,'tags-'+tag+'-ml2',allML2,function(a){return "openModal2('"+a.id+"')";});
+    fillTag(tag,'tags-'+tag+'-sh1',allSH,function(a){return "openShopeeModal("+a.id+")";});
+    fillTag(tag,'tags-'+tag+'-sh2',allSH2,function(a){return "openShopee2Modal('"+a.id+"')";});
+  });
+
+  var totalAll=0;
+  tags.forEach(function(tag){
+    [allML1,allML2,allSH,allSH2].forEach(function(d){
+      totalAll+=d.filter(function(a){return a.tags&&a.tags[tag];}).length;
+    });
+  });
+  var subEl=document.getElementById('tags-sub');
+  if(subEl)subEl.textContent=totalAll+' anúncio(s) com tag';
+}
 initSupabase();
 </script>
 <!-- MODAL SHOPEE -->
@@ -2684,6 +2836,12 @@ initSupabase();
     <div class="field"><label>Outros (R$)</label><input id="sh-f-outros" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="shCalcLive()"></div>
   </div>
   <div class="field"><label>Limite máx. desconto (R$)</label><input id="sh-f-descmax" type="number" step=".01" value="10" inputmode="decimal" oninput="shCalcLive()"></div>
+  <div style="padding:4px 0 2px;font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.4px;margin-top:8px">TAGS</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" id="sh-f-full" onchange="shCalcLive()"> Full</label>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" id="sh-f-oferta" onchange="shCalcLive()"> Oferta relâmpago</label>
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" id="sh-f-pub" onchange="shCalcLive()"> Publicidade</label>
+  </div>
   <div class="field"><label>Observação</label><input id="sh-f-obs" placeholder="Ex: produto em promoção..."></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn btn-p" onclick="salvarShopee()" style="flex:1;background:var(--pu);border-color:var(--pu)">Salvar</button>
