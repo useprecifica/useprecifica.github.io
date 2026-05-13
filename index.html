@@ -1050,9 +1050,53 @@ async function syncDown(){
     setSyncStatus('connected');
     updateCfgCard();
     renderDash();
-    if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios();
-    if(document.getElementById('p-shopee').style.display!=='none')renderShopee();
-  }catch(e){console.error('syncDown:',e);setSyncStatus('error');}
+    // ML2
+    var r4=await SB.from('anuncios_ml2').select('*').eq('user_id',uid).order('created_at');
+    if(!r4.error&&r4.data&&r4.data.length>0){
+      DATA2=r4.data.map(function(a){return{
+        id:a.id,cod:a.cod||'',nome:a.nome||'',tipo:a.tipo||'classico',
+        preco:+a.preco||0,precoD:+a.preco_d||0,custo:+a.custo||0,
+        com:+a.com||11.5,ant:+a.ant||4.2,frete:+a.frete||0,ajml:+a.aj_ml||0,
+        descPct:+a.desc_pct||5,descMax:+a.desc_max||10,imp:+a.imp||10,
+        obs:a.obs||'',tags:{full:!!a.tag_full,oferta:!!a.tag_oferta,pub:!!a.tag_pub}
+      };});
+      ML2_NID=999999;
+      localStorage.setItem(SK2,JSON.stringify(DATA2));
+    } else if(!r4.error && (!DATA2||!DATA2.length)){
+      await pushML2up();
+    }
+    // Shopee2
+    var r5=await SB.from('anuncios_shopee2').select('*').eq('user_id',uid).order('created_at');
+    if(!r5.error&&r5.data&&r5.data.length>0){
+      SH2_DATA=r5.data.map(function(a){return{
+        id:a.id,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
+        preco:+a.preco||0,precoD:+a.preco_d||0,custo:+a.custo||0,
+        ant:+a.ant||2.5,frete:+a.frete||0,outros:+a.outros||0,
+        descPct:+a.desc_pct||5,descMax:+a.desc_max||10,imp:+a.imp||10,
+        obs:a.obs||'',tags:{full:!!a.tag_full,oferta:!!a.tag_oferta,pub:!!a.tag_pub}
+      };});
+      SH2_NID=999999;
+      localStorage.setItem(SK_SH2,JSON.stringify(SH2_DATA));
+    } else if(!r5.error && (!SH2_DATA||!SH2_DATA.length)){
+      await pushSH2up();
+    }
+    setSyncStatus('connected');
+    updateCfgCard();
+    // Re-render tudo depois do sync
+    renderDash();
+    var cur=document.querySelector('[data-tab].active');
+    var curTab=cur?cur.dataset.tab:'dash';
+    if(curTab==='anuncios')renderAnuncios();
+    else if(curTab==='ml2')renderML2();
+    else if(curTab==='shopee')renderShopee();
+    else if(curTab==='shopee2')renderShopee2();
+  }catch(e){
+    console.error('syncDown error:',e);
+    setSyncStatus('error');
+    // Mostra o erro na tela para facilitar debug
+    var lbl=document.getElementById('sync-label');
+    if(lbl){lbl.style.color='var(--rd)';lbl.title='Sync falhou: '+e.message;}
+  }
 }
 
 async function pushMLup(){
@@ -2695,14 +2739,28 @@ async function initSupabase(){
     if(!SB)SB=window.supabase.createClient(SB_URL,SB_KEY);
     SB_USER={id:'05c26431-331f-439a-a42f-4b2fdad1e618'};
     initDark();
+    // Carrega localStorage primeiro (resposta imediata)
     load();loadShopee();loadML2();loadShopee2();
-    setSyncStatus('connected');
-    updateCfgCard();
     renderDash();
-    syncDown();
+    setSyncStatus('connecting');
+    updateCfgCard();
+    // Sync com Supabase (atualiza se houver dados mais recentes)
+    syncDown().then(function(){
+      renderDash();
+    }).catch(function(e){
+      console.warn('syncDown failed, retrying in 3s:', e);
+      setSyncStatus('error');
+      // Retry automático após 3 segundos
+      setTimeout(function(){
+        syncDown().catch(function(e2){
+          console.error('syncDown retry failed:', e2);
+        });
+      }, 3000);
+    });
   }catch(e){
     console.error('initSupabase:',e);
     load();loadShopee();loadML2();loadShopee2();renderDash();
+    setSyncStatus('local');
   }
 }
 
