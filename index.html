@@ -385,6 +385,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <select id="f-status" onchange="renderAnuncios()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option></select>
       <select id="f-tipo" onchange="renderAnuncios()"><option value="">Todos os tipos</option></select>
       <select id="f-class" onchange="renderAnuncios()"><option value="">Clássico + Premium</option><option value="classico">Clássico</option><option value="premium">Premium</option></select>
+      <select id="f-sort" onchange="renderAnuncios()" title="Ordenar"><option value="">Ordenar</option><option value="margem_desc">Margem ↓</option><option value="margem_asc">Margem ↑</option><option value="nome_asc">Nome A-Z</option></select>
     </div>
   </div>
   <div class="tbl-wrap">
@@ -468,6 +469,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   <div class="fbar" style="margin-bottom:12px">
     <input id="sh2-busca" placeholder="Buscar nome ou código..." oninput="renderShopee2()">
     <select id="sh2-fstatus" onchange="renderShopee2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option><option value="crit">Críticos (&lt;10%)</option></select>
+    <select id="sh2-fsort" onchange="renderShopee2()" title="Ordenar"><option value="">Ordenar</option><option value="margem_desc">Margem ↓</option><option value="margem_asc">Margem ↑</option><option value="nome_asc">Nome A-Z</option></select>
   </div>
   <div class="tbl-wrap">
     <table class="tbl"><thead><tr>
@@ -620,7 +622,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 
 
 <!-- SHOPEE -->
-<div id="p-shopee" style="display:none">
+<div id="p-sh
+      <select id="sh-fsort" onchange="renderShopee()" style="height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 8px;font-size:13px;font-family:var(--font);background:var(--sur);color:var(--t)" title="Ordenar"><option value="">Ordenar</option><option value="margem_desc">Margem ↓</option><option value="margem_asc">Margem ↑</option><option value="nome_asc">Nome A-Z</option></select>opee" style="display:none">
   <div class="ph">
     <div><div class="ph-title" style="color:var(--pu)">Shopee</div><div class="ph-sub" id="sh-sub"></div></div>
     <div class="ph-actions">
@@ -683,6 +686,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
       <input id="ml2-busca" placeholder="Buscar nome ou código..." oninput="renderML2()">
       <select id="ml2-fstatus" onchange="renderML2()"><option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option><option value="crit">Críticos (&lt;10%)</option></select>
       <select id="ml2-fclass" onchange="renderML2()"><option value="">Clássico + Premium</option><option value="classico">Clássico</option><option value="premium">Premium</option></select>
+      <select id="ml2-fsort" onchange="renderML2()" title="Ordenar"><option value="">Ordenar</option><option value="margem_desc">Margem ↓</option><option value="margem_asc">Margem ↑</option><option value="nome_asc">Nome A-Z</option></select>
     </div>
   </div>
   <div class="tbl-wrap">
@@ -1419,6 +1423,11 @@ function renderAnuncios(){
     })
     const s=document.getElementById('an-sub');if(s)s.textContent=`${lista.length} de ${DATA.length}`
   }
+  // Ordenação
+  const sortV=document.getElementById('f-sort')?.value||''
+  if(sortV==='margem_desc')lista.sort((a,b)=>b.margem-a.margem)
+  else if(sortV==='margem_asc')lista.sort((a,b)=>a.margem-b.margem)
+  else if(sortV==='nome_asc')lista.sort((a,b)=>a.nome.localeCompare(b.nome))
 
   const tipoBadge=t=>t==='premium'?'<span class=\"badge b-prm\">Premium</span>':'<span class=\"badge b-cls\">Clássico</span>'
 
@@ -2265,6 +2274,11 @@ function renderShopee(){
     return true;
   });
 
+    // Ordenação
+    var shSort=document.getElementById('sh-fsort')?.value||'';
+    if(shSort==='margem_desc')lista.sort(function(a,b){return b.margem-a.margem;});
+    else if(shSort==='margem_asc')lista.sort(function(a,b){return a.margem-b.margem;});
+    else if(shSort==='nome_asc')lista.sort(function(a,b){return a.nome.localeCompare(b.nome);});
     window._shLista=lista;
   document.getElementById('sh-tbl-body').innerHTML=lista.length
     ?lista.map((a,i)=>{
@@ -2387,6 +2401,11 @@ function renderML2(){
     if(cl&&(a.tipo||'classico')!==cl)return false;
     return true;
   });
+  // Ordenação
+  var sortV2=document.getElementById('ml2-fsort')?.value||'';
+  if(sortV2==='margem_desc')lista.sort(function(a,b){return b.margem-a.margem;});
+  else if(sortV2==='margem_asc')lista.sort(function(a,b){return a.margem-b.margem;});
+  else if(sortV2==='nome_asc')lista.sort(function(a,b){return a.nome.localeCompare(b.nome);});
   window._ml2Lista=lista;
   var sub=document.getElementById('ml2-sub');
   if(sub)sub.textContent=lista.length+' de '+DATA2.length+' anúncios';
@@ -2602,6 +2621,11 @@ function renderShopee2(){
     if(st==='crit'&&a.margem>=10)return false;
     return true;
   });
+  // Ordenação
+  var sh2Sort=document.getElementById('sh2-fsort')?.value||'';
+  if(sh2Sort==='margem_desc')lista.sort(function(a,b){return b.margem-a.margem;});
+  else if(sh2Sort==='margem_asc')lista.sort(function(a,b){return a.margem-b.margem;});
+  else if(sh2Sort==='nome_asc')lista.sort(function(a,b){return a.nome.localeCompare(b.nome);});
   window._sh2Lista=lista;
   var sub=document.getElementById('sh2-sub');
   if(sub)sub.textContent=lista.length+' de '+SH2_DATA.length+' anúncios';
