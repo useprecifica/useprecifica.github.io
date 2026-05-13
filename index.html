@@ -452,6 +452,38 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   </div>
 </div>
 
+<!-- SHOPEE 1 -->
+<div id="p-shopee" style="display:none">
+  <div class="ph">
+    <div><div class="ph-title" style="color:var(--pu)">Shopee — Conta 1</div><div class="ph-sub" id="sh-sub"></div></div>
+    <div class="ph-actions">
+      <button class="btn btn-p" style="background:var(--pu);border-color:var(--pu)" onclick="openShopeeModal()">+ Novo</button>
+    </div>
+  </div>
+  <div id="sh-alerts"></div>
+  <div class="metrics" id="sh-metrics" style="margin-bottom:16px"></div>
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card"><div class="card-title">Melhores margens</div><div id="sh-top"></div></div>
+    <div class="card"><div class="card-title">Piores margens</div><div id="sh-bot"></div></div>
+  </div>
+  <div style="padding:0 0 8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--bd)">
+    <input id="sh-busca" class="fbar" style="flex:1;min-width:150px;margin:0;height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 10px;font-size:13px;font-family:var(--font);background:var(--sur);color:var(--t)" placeholder="Buscar..." oninput="renderShopee()">
+    <select id="sh-fstatus" onchange="renderShopee()" style="height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 8px;font-size:13px;font-family:var(--font);background:var(--sur);color:var(--t)">
+      <option value="">Todos</option><option value="ok">Saudáveis</option><option value="nok">Não saudáveis</option><option value="crit">Críticos</option>
+    </select>
+    <select id="sh-fsort" onchange="renderShopee()" style="height:34px;border:1px solid var(--bd2);border-radius:var(--rs);padding:0 8px;font-size:13px;font-family:var(--font);background:var(--sur);color:var(--t)" title="Ordenar">
+      <option value="">Ordenar</option><option value="margem_desc">Margem ↓</option><option value="margem_asc">Margem ↑</option><option value="nome_asc">Nome A-Z</option>
+    </select>
+  </div>
+  <div class="tbl-wrap">
+    <table class="tbl"><thead><tr>
+      <th>Código</th><th>Produto</th><th>Preço s/d</th><th>Preço c/d</th><th>Custo</th><th>Taxa Shopee</th><th>Renda Shopee</th><th>Lucro</th><th>Margem</th><th>Obs</th><th></th>
+    </tr></thead><tbody id="sh-tbl-body"></tbody></table>
+  </div>
+  <div class="mob" id="sh-mob-cards"></div>
+</div>
+
+
 <!-- SHOPEE 2 -->
 <div id="p-shopee2" style="display:none">
   <div class="ph">
