@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f4f0">
@@ -2161,8 +2164,15 @@ function shGetForm(){
   var shFull=document.getElementById('sh-f-full');
   var shOferta=document.getElementById('sh-f-oferta');
   var shPub=document.getElementById('sh-f-pub');
+  // Also check tag buttons (they update hidden checkboxes)
+  var btnFull=document.querySelector('#sh-modal-tags .tag-btn[data-tag="full"]');
+  var btnOferta=document.querySelector('#sh-modal-tags .tag-btn[data-tag="oferta"]');
+  var btnPub=document.querySelector('#sh-modal-tags .tag-btn[data-tag="pub"]');
+  var tagFull=btnFull?btnFull.classList.contains('on-full'):!!(shFull&&shFull.checked);
+  var tagOferta=btnOferta?btnOferta.classList.contains('on-oferta'):!!(shOferta&&shOferta.checked);
+  var tagPub=btnPub?btnPub.classList.contains('on-pub'):!!(shPub&&shPub.checked);
   return{nome:s('sh-f-nome'),cod:s('sh-f-cod'),status:s('sh-f-status'),obs:s('sh-f-obs'),
-    tags:{full:!!(shFull&&shFull.checked),oferta:!!(shOferta&&shOferta.checked),pub:!!(shPub&&shPub.checked)},
+    tags:{full:tagFull,oferta:tagOferta,pub:tagPub},
     custo:n('sh-f-custo'),preco:n('sh-f-preco'),precoD:n('sh-f-precoD'),
     frete:n('sh-f-frete'),outros:n('sh-f-outros'),com:n('sh-f-com'),ant:n('sh-f-ant'),imp:n('sh-f-imp'),
     descPct:n('sh-f-descpct'),descMax:n('sh-f-descmax')}
@@ -2720,10 +2730,25 @@ function openShopee2Modal(id){
   g('sh-f-frete',a?.frete||0);g('sh-f-outros',a?.outros||0);
   g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
   g('sh-f-imp',a?.imp??10);g('sh-f-obs',a?.obs||'');
-  var sfull=document.getElementById('sh-f-full');var soferta=document.getElementById('sh-f-oferta');var spub=document.getElementById('sh-f-pub');
+  // Populate tag buttons (like ML)
+  var sfull=document.getElementById('sh-f-full');
+  var soferta=document.getElementById('sh-f-oferta');
+  var spub=document.getElementById('sh-f-pub');
   if(sfull)sfull.checked=!!(a?.tags?.full);
   if(soferta)soferta.checked=!!(a?.tags?.oferta);
   if(spub)spub.checked=!!(a?.tags?.pub);
+  var shmt=document.getElementById('sh-modal-tags');
+  if(shmt){
+    if(a){
+      var tg=a.tags||{};
+      shmt.innerHTML=
+        '<button class="tag-btn '+(tg.full?'on-full':'')+'" data-id="'+a.id+'" data-tag="full" onclick="toggleTagBtnSH(this)">📦 Full</button>'+
+        '<button class="tag-btn '+(tg.oferta?'on-oferta':'')+'" data-id="'+a.id+'" data-tag="oferta" onclick="toggleTagBtnSH(this)">⚡ Oferta relâmpago</button>'+
+        '<button class="tag-btn '+(tg.pub?'on-pub':'')+'" data-id="'+a.id+'" data-tag="pub" onclick="toggleTagBtnSH(this)">📢 Publicidade</button>';
+    } else {
+      shmt.innerHTML='<span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>';
+    }
+  }
   document.getElementById('sh-overlay').classList.add('open');
   shCalcLive();
 }
@@ -2839,6 +2864,21 @@ function renderTags(activeTag){
   var subEl=document.getElementById('tags-sub');
   if(subEl)subEl.textContent=totalAll+' anúncio(s) com tag';
 }
+
+function toggleTagBtnSH(btn){
+  var tag=btn.dataset.tag;
+  var id=btn.dataset.id;
+  // Toggle hidden checkbox too
+  var cb=document.getElementById('sh-f-'+tag);
+  var isOn=btn.classList.contains('on-'+tag);
+  if(isOn){
+    btn.classList.remove('on-'+tag);
+    if(cb)cb.checked=false;
+  } else {
+    btn.classList.add('on-'+tag);
+    if(cb)cb.checked=true;
+  }
+}
 initSupabase();
 </script>
 <!-- MODAL SHOPEE -->
@@ -2916,12 +2956,13 @@ initSupabase();
     <div class="field"><label>Outros (R$)</label><input id="sh-f-outros" type="number" step=".01" inputmode="decimal" placeholder="0,00" oninput="shCalcLive()"></div>
   </div>
   <div class="field"><label>Limite máx. desconto (R$)</label><input id="sh-f-descmax" type="number" step=".01" value="10" inputmode="decimal" oninput="shCalcLive()"></div>
-  <div style="padding:4px 0 2px;font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.4px;margin-top:8px">TAGS</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" id="sh-f-full" onchange="shCalcLive()"> Full</label>
-    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" id="sh-f-oferta" onchange="shCalcLive()"> Oferta relâmpago</label>
-    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" id="sh-f-pub" onchange="shCalcLive()"> Publicidade</label>
+  <div id="sh-modal-tags" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;margin-top:8px">
+    <span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>
   </div>
+  <!-- Hidden checkboxes for compatibility -->
+  <input type="checkbox" id="sh-f-full" style="display:none">
+  <input type="checkbox" id="sh-f-oferta" style="display:none">
+  <input type="checkbox" id="sh-f-pub" style="display:none">
   <div class="field"><label>Observação</label><input id="sh-f-obs" placeholder="Ex: produto em promoção..."></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn btn-p" onclick="salvarShopee()" style="flex:1;background:var(--pu);border-color:var(--pu)">Salvar</button>
