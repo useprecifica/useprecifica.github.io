@@ -9,6 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f4f0">
 <title>Precify</title>
+  <!-- v1778877602 -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -2161,16 +2162,13 @@ function shAplicarSug(pv){
 function shGetForm(){
   const n=v=>Math.round((parseFloat(document.getElementById(v)?.value)||0)*100)/100;
   const s=v=>document.getElementById(v)?.value||'';
-  var shFull=document.getElementById('sh-f-full');
-  var shOferta=document.getElementById('sh-f-oferta');
-  var shPub=document.getElementById('sh-f-pub');
-  // Also check tag buttons (they update hidden checkboxes)
+  // Read tags from toggle buttons
   var btnFull=document.querySelector('#sh-modal-tags .tag-btn[data-tag="full"]');
   var btnOferta=document.querySelector('#sh-modal-tags .tag-btn[data-tag="oferta"]');
   var btnPub=document.querySelector('#sh-modal-tags .tag-btn[data-tag="pub"]');
-  var tagFull=btnFull?btnFull.classList.contains('on-full'):!!(shFull&&shFull.checked);
-  var tagOferta=btnOferta?btnOferta.classList.contains('on-oferta'):!!(shOferta&&shOferta.checked);
-  var tagPub=btnPub?btnPub.classList.contains('on-pub'):!!(shPub&&shPub.checked);
+  var tagFull=!!(btnFull&&btnFull.classList.contains('on-full'));
+  var tagOferta=!!(btnOferta&&btnOferta.classList.contains('on-oferta'));
+  var tagPub=!!(btnPub&&btnPub.classList.contains('on-pub'));
   return{nome:s('sh-f-nome'),cod:s('sh-f-cod'),status:s('sh-f-status'),obs:s('sh-f-obs'),
     tags:{full:tagFull,oferta:tagOferta,pub:tagPub},
     custo:n('sh-f-custo'),preco:n('sh-f-preco'),precoD:n('sh-f-precoD'),
@@ -2198,19 +2196,38 @@ function openShopeeModal(id){
 
 function closeShopeeModal(){document.getElementById('sh-overlay').classList.remove('open');shEditId=null}
 
+function salvarShopeeDispatch(){
+  if(typeof _sh2ModalMode!=='undefined'&&_sh2ModalMode){
+    salvarShopee2();
+  } else {
+    salvarShopee();
+  }
+}
+
 function salvarShopee(){
   const f=shGetForm();
   if(!f.nome.trim())return alert('Informe o nome do produto');
   if(shEditId){
     const old=SH_DATA.find(a=>String(a.id)===String(shEditId));
-    const ch=Object.keys(f).filter(k=>String(old[k])!==String(f[k])).map(k=>`${k}:${old[k]}→${f[k]}`).join(', ');
-    Object.assign(old,f);svSH();
-    if(ch)addH(`[Shopee] Editado: ${f.nome} — ${ch}`);
+    if(!old)return;
+    old.nome=f.nome;old.cod=f.cod;old.status=f.status;old.obs=f.obs;
+    old.preco=f.preco;old.precoD=f.precoD;old.custo=f.custo;
+    old.ant=f.ant;old.frete=f.frete;old.outros=f.outros;
+    old.descPct=f.descPct;old.descMax=f.descMax;old.imp=f.imp;
+    old.tags={full:f.tags.full,oferta:f.tags.oferta,pub:f.tags.pub};
+    svSH();scheduleSyncUp();
+    addH(`[Shopee] Editado: ${f.nome}`);
   } else {
-    SH_DATA.push({...f,id:SH_NID++});svSH();
+    SH_DATA.push({
+      id:SH_NID++,nome:f.nome,cod:f.cod,status:f.status,obs:f.obs,
+      preco:f.preco,precoD:f.precoD,custo:f.custo,ant:f.ant,
+      frete:f.frete,outros:f.outros,descPct:f.descPct,descMax:f.descMax,
+      imp:f.imp,tags:{full:f.tags.full,oferta:f.tags.oferta,pub:f.tags.pub}
+    });
+    svSH();scheduleSyncUp();
     addH(`[Shopee] Novo: ${f.nome} (${f.cod})`);
   }
-  closeShopeeModal();renderShopee();
+  closeShopeeModal();renderShopee();renderDash();
 }
 
 function deletarShopee(){
@@ -2294,7 +2311,7 @@ function renderShopee(){
       const stBadge=a.status==='ativo'?'<span class=\"badge b-ok\">Ativo</span>':a.status==='pausado'?'<span class=\"badge b-warn\">Pausado</span>':'<span class=\"badge b-nok\">Inativo</span>';
       return`<tr data-idx="${i}" class="sh-row" style="cursor:pointer">
         <td style="font-family:var(--mono);font-size:11px;color:var(--t3)" data-cod="${a.cod}" class="cod-copy" title="Copiar">${a.cod}</td>
-        <td style="font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis">${a.nome}</td>
+        <td style="font-weight:500;max-width:140px">${a.nome}${mkTags(a.tags)?`<br><span style="display:inline-flex;gap:3px;margin-top:2px">${mkTags(a.tags)}</span>`:''}</td>
         <td>${fmt(a.preco)}</td>
         <td><input class="tbl-inp" type="number" value="${+(a.precoD>0?a.precoD:a.preco).toFixed(2)}" data-idx="${i}" data-field="precoD" style="width:80px"></td>
         <td><input class="tbl-inp" type="number" value="${+a.custo.toFixed(2)}" data-idx="${i}" data-field="custo" style="width:72px"></td>
@@ -2340,6 +2357,7 @@ function renderShopee(){
     return`<div class="an-card" data-id="${a.id}" onclick="openShopeeModal(this.dataset.id)">
       <div class="an-hdr"><div class="an-name">${a.nome}</div><span class="badge ${ok?'b-ok':'b-nok'}">${a.margem.toFixed(1)}%</span></div>
       <div class="an-cod">${a.cod}</div>
+      ${mkTags(a.tags)?`<div class="an-meta" style="margin:2px 0">${mkTags(a.tags)}</div>`:''}
       <div class="an-stats">
         <span>Preço: <strong>${fmt(a.pv)}</strong></span>
         <span>Lucro: <strong style="color:${ok?'var(--gr)':'var(--rd)'}">${fmt(a.lucro)}</strong></span>
@@ -2390,8 +2408,11 @@ function renderML2(){
   // Top/bot
   var sorted2=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
   function mkR2(list,cls){return list.map(function(a){
+    var tg2=mkTags(a.tags);
     return '<div class="ri" data-id="'+a.id+'" onclick="openModal2(this.dataset.id)" style="cursor:pointer">'+
-      '<div><div class="ri-name">'+a.nome+'</div><div class="ri-cod">'+a.cod+'</div></div>'+
+      '<div style="min-width:0;flex:1"><div class="ri-name">'+a.nome+'</div>'+
+      (tg2?'<div style="display:inline-flex;gap:3px;margin-top:2px">'+tg2+'</div>':'')+
+      '<div class="ri-cod">'+a.cod+'</div></div>'+
       '<div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';
   }).join('');}
   var t=document.getElementById('ml2-top'); if(t)t.innerHTML=mkR2(sorted2.slice(0,5),'b-ok');
@@ -2644,7 +2665,6 @@ function renderShopee2(){
   lista.forEach(function(a,i){
     var ok=a.margem>=16;
     var tr=document.createElement('tr');
-    var tr=document.createElement('tr');
     tr.className='sh2-row';tr.dataset.idx=String(i);tr.style.cursor='pointer';
     var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
     var okCl2=ok?'var(--gr)':'var(--rd)';
@@ -2652,8 +2672,9 @@ function renderShopee2(){
     c0.textContent=a.cod;c0.className='sh2-cod';c0.title='Copiar';
     c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
     var c1=document.createElement('td');
-    c1.textContent=a.nome;
-    c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
+    c1.style.cssText='font-weight:500;max-width:150px';
+    var tgHtml=mkTags(a.tags);
+    c1.innerHTML='<span>'+a.nome+'</span>'+(tgHtml?'<br><span style="display:inline-flex;gap:3px;margin-top:2px">'+tgHtml+'</span>':'');
     var c2=document.createElement('td');
     c2.innerHTML='<input class="tbl-inp" type="number" step=".01" value="'+pv2+'" data-idx="'+i+'" data-field="precoD" style="width:80px">';
     c2.onclick=function(e){e.stopPropagation();};
@@ -2673,6 +2694,7 @@ function renderShopee2(){
     var c6=document.createElement('td');c6.textContent=fmt(a.lucro);
     c6.style.cssText='font-weight:500;color:'+okCl2;
     var c7=document.createElement('td');
+    c7.className='sh2-margem';
     var okBadge2=ok?'b-ok':'b-nok';
     c7.innerHTML='<span class="badge '+okBadge2+'">'+a.margem.toFixed(1)+'%</span><div class="mbar"><div class="mbar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+okCl2+'"></div></div>';
     var c8=document.createElement('td');c8.style.cssText='font-size:12px;color:var(--t2);max-width:120px';
@@ -2698,7 +2720,14 @@ function renderShopee2(){
         a[e.target.dataset.field]=Math.round((parseFloat(e.target.value)||0)*100)/100;
         var orig=SH2_DATA.find(function(x){return String(x.id)===String(a.id);});
         if(orig)orig[e.target.dataset.field]=a[e.target.dataset.field];
-        svSH2();renderShopee2();
+        svSH2();scheduleSyncUp();
+        // Update margem display in this row without full re-render
+        var calcResult=calcSH(a);
+        var marginCell=e.target.closest('tr').querySelector('.sh2-margem');
+        if(marginCell){
+          marginCell.textContent=calcResult.margem.toFixed(1)+'%';
+          marginCell.style.color=calcResult.margem>=16?'var(--gr)':'var(--rd)';
+        }
       }
     });
   }
@@ -2709,6 +2738,7 @@ function renderShopee2(){
     return '<div class="an-card" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer">'+
       '<div class="an-hdr"><div class="an-name">'+sanitize(a.nome)+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
       '<div class="an-cod">'+a.cod+'</div>'+
+      (mkTags(a.tags)?'<div class="an-meta" style="margin:2px 0">'+mkTags(a.tags)+'</div>':'')+
       '<div class="an-stats"><span>PV: <strong>'+fmt(a.precoD>0?a.precoD:a.preco)+'</strong></span><span>Taxa: <strong style="color:var(--pu)">'+fmt(a.taxa)+'</strong></span><span>Renda: <strong style="color:var(--gr)">'+fmt(a.rendaShopee)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span></div>'+
       '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
     '</div>';
@@ -2759,10 +2789,22 @@ function salvarShopee2(){
   if(shEditId2){
     var old=SH2_DATA.find(function(a){return String(a.id)===String(shEditId2);});
     if(!old)return;
-    Object.assign(old,f);svSH2();
+    // Copy all fields including tags
+    old.nome=f.nome;old.cod=f.cod;old.status=f.status;old.obs=f.obs;
+    old.preco=f.preco;old.precoD=f.precoD;old.custo=f.custo;
+    old.ant=f.ant;old.frete=f.frete;old.outros=f.outros;
+    old.descPct=f.descPct;old.descMax=f.descMax;old.imp=f.imp;
+    old.tags={full:f.tags.full,oferta:f.tags.oferta,pub:f.tags.pub};
+    svSH2();scheduleSyncUp();
     addH('[Shopee2] Editado: '+f.nome);
   } else {
-    SH2_DATA.push(Object.assign({},f,{id:SH2_NID++}));svSH2();
+    SH2_DATA.push({
+      id:SH2_NID++,nome:f.nome,cod:f.cod,status:f.status,obs:f.obs,
+      preco:f.preco,precoD:f.precoD,custo:f.custo,ant:f.ant,
+      frete:f.frete,outros:f.outros,descPct:f.descPct,descMax:f.descMax,
+      imp:f.imp,tags:{full:f.tags.full,oferta:f.tags.oferta,pub:f.tags.pub}
+    });
+    svSH2();scheduleSyncUp();
     addH('[Shopee2] Novo: '+f.nome);
   }
   _sh2ModalMode=false;shEditId2=null;
@@ -2827,10 +2869,12 @@ function renderTags(activeTag){
 
   function mkTagItem(a,openFn){
     var ok=a.margem>=16;
+    var lucro=typeof a.lucro==='number'?fmt(a.lucro):(a.lucro||'—');
     return '<div class="ri" onclick="'+openFn+'" style="cursor:pointer">'+
-      '<div><div class="ri-name">'+sanitize(a.nome)+'</div><div class="ri-cod">'+a.cod+'</div></div>'+
+      '<div style="min-width:0;flex:1"><div class="ri-name">'+sanitize(a.nome)+'</div>'+
+      '<div class="ri-cod">'+a.cod+'</div></div>'+
       '<div class="ri-right"><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
-      '<div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';
+      '<div class="ri-sub">'+lucro+'</div></div></div>';
   }
   function fillTag(tag,elId,data,openFn){
     var el=document.getElementById(elId);
@@ -2867,16 +2911,11 @@ function renderTags(activeTag){
 
 function toggleTagBtnSH(btn){
   var tag=btn.dataset.tag;
-  var id=btn.dataset.id;
-  // Toggle hidden checkbox too
-  var cb=document.getElementById('sh-f-'+tag);
   var isOn=btn.classList.contains('on-'+tag);
   if(isOn){
     btn.classList.remove('on-'+tag);
-    if(cb)cb.checked=false;
   } else {
     btn.classList.add('on-'+tag);
-    if(cb)cb.checked=true;
   }
 }
 initSupabase();
@@ -2959,13 +2998,14 @@ initSupabase();
   <div id="sh-modal-tags" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;margin-top:8px">
     <span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>
   </div>
-  <!-- Hidden checkboxes for compatibility -->
+  <!-- Hidden fields -->
+  <input type="hidden" id="sh-f-com" value="14">
   <input type="checkbox" id="sh-f-full" style="display:none">
   <input type="checkbox" id="sh-f-oferta" style="display:none">
   <input type="checkbox" id="sh-f-pub" style="display:none">
   <div class="field"><label>Observação</label><input id="sh-f-obs" placeholder="Ex: produto em promoção..."></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn btn-p" onclick="salvarShopee()" style="flex:1;background:var(--pu);border-color:var(--pu)">Salvar</button>
+    <button class="btn btn-p" onclick="salvarShopeeDispatch()" style="flex:1;background:var(--pu);border-color:var(--pu)">Salvar</button>
     <button class="btn btn-d" id="sh-btn-del" onclick="deletarShopee()" style="display:none">Remover</button>
     <button class="btn" onclick="closeShopeeModal()">Cancelar</button>
   </div>
