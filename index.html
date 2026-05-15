@@ -2177,6 +2177,7 @@ function shGetForm(){
 }
 
 function openShopeeModal(id){
+  _sh2ModalMode=false;
   shEditId=id||null;
   const a=id?SH_DATA.find(x=>String(x.id)===String(id)):null;
   document.getElementById('sh-m-title').textContent=a?'Editar anúncio Shopee':'Novo anúncio Shopee';
@@ -2895,7 +2896,7 @@ function renderTags(activeTag){
   tags.forEach(function(tag){
     fillTag(tag,'tags-'+tag+'-ml1',allML1,function(a){return "openModalById('"+a.id+"')";});
     fillTag(tag,'tags-'+tag+'-ml2',allML2,function(a){return "openModal2('"+a.id+"')";});
-    fillTag(tag,'tags-'+tag+'-sh1',allSH,function(a){return "openShopeeModal("+a.id+")";});
+    fillTag(tag,'tags-'+tag+'-sh1',allSH,function(a){return "openShopeeModal('"+a.id+"')";});
     fillTag(tag,'tags-'+tag+'-sh2',allSH2,function(a){return "openShopee2Modal('"+a.id+"')";});
   });
 
