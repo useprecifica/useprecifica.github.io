@@ -881,7 +881,9 @@ const SEED_ML2=[
 function autoFillCusto(){
   const nome=document.getElementById('f-nome')?.value||'';
   const custoEl=document.getElementById('f-custo');
-  if(!custoEl||+custoEl.value>0)return; // don't overwrite
+  if(!custoEl)return;
+  // Only fill if custo is empty or zero
+  if(+custoEl.value>0)return;
   const c=getCusto(nome);
   if(c!==null){custoEl.value=c;calcLive();}
 }
@@ -1943,11 +1945,15 @@ function saveCustosObj(){localStorage.setItem('pfy_custos',JSON.stringify(_custo
 // Override getCusto to check local overrides first
 const _getCustoOrig=getCusto;
 function getCusto(nome){
-  const obj=getCustosObj();
   if(!nome)return null;
   const u=nome.toUpperCase().trim();
+  // Try user catalog first, then base CUSTOS
+  const obj=getCustosObj();
   if(obj[u]!==undefined)return obj[u];
   for(const k of Object.keys(obj)){if(u.includes(k)||k.includes(u))return obj[k];}
+  // Fallback to base CUSTOS
+  if(CUSTOS[u]!==undefined)return CUSTOS[u];
+  for(const k of Object.keys(CUSTOS)){if(u.includes(k)||k.includes(u))return CUSTOS[k];}
   return null;
 }
 
@@ -2078,7 +2084,8 @@ function calcSH(a){
 function shAutoFill(){
   const nome=document.getElementById('sh-f-nome')?.value||'';
   const ce=document.getElementById('sh-f-custo');
-  if(!ce||+ce.value>0)return;
+  if(!ce)return;
+  if(+ce.value>0)return;
   const c=getCusto(nome);
   if(c!==null){ce.value=c;shCalcLive();}
 }
