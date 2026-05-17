@@ -2642,6 +2642,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ════════════════════════════════════════
 
 function renderML2(){
+  console.log('[ML2] renderML2 called, DATA2 length:', typeof DATA2!=='undefined'?DATA2.length:'undefined');
   try{
   var todos=(typeof DATA2!=='undefined'&&DATA2)?DATA2.map(function(a){return Object.assign({},a,calcML2(a));}):[]; 
   var avg=todos.length?todos.reduce(function(s,a){return s+a.margem;},0)/todos.length:0;
@@ -3312,6 +3313,6 @@ initSupabase();
 </div>
 </div>
 
+</div><!-- /shell -->
 </body>
-<
 </html>
