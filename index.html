@@ -212,6 +212,34 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .tbl-inp:focus{outline:1.5px solid var(--bl);border-color:var(--bl)}
 .tbl-inp:hover{border-color:var(--bd2)}
 /* Responsive */
+/* Drawer mobile nav */
+.bnav-drawer{
+  position:fixed;bottom:60px;left:0;right:0;z-index:999;
+  background:var(--sur);border-radius:18px 18px 0 0;
+  padding:8px 0 24px;
+  box-shadow:0 -4px 24px rgba(0,0,0,.15);
+  transform:translateY(100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  display:none;
+}
+.bnav-drawer.open{transform:translateY(0);display:block;}
+.bnav-drawer-handle{
+  width:40px;height:4px;background:var(--bd2);
+  border-radius:2px;margin:4px auto 12px;
+}
+.bnav-drawer-title{
+  font-size:11px;font-weight:700;color:var(--t3);
+  letter-spacing:.6px;text-transform:uppercase;
+  padding:0 20px 8px;
+}
+.bnav-drawer-item{
+  width:100%;display:flex;align-items:center;gap:14px;
+  padding:12px 20px;background:none;border:none;
+  cursor:pointer;color:var(--t);font-family:var(--font);
+  text-align:left;transition:background .15s;
+}
+.bnav-drawer-item:active{background:var(--sur2);}
+
 @media(max-width:860px){
   .sidebar{display:none}
   .bnav{display:flex}
@@ -251,7 +279,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   .tb-sub{font-size:11px}
   #sync-now-btn{display:none}
 }
-@media(min-width:861px){.mob{display:none!important}}
+@media(min-width:861px){.mob{display:none!important}.bnav-drawer{display:none!important}.bnav-overlay{display:none!important}}
 @media(max-width:500px){
   .fg2,.fg3,.fg4{grid-template-columns:1fr}
   .ssug-grid{grid-template-columns:1fr 1fr}
@@ -724,42 +752,80 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 </div></div></div>
 
 <!-- BOTTOM NAV -->
-<div class="bnav">
-  <button class="nb active" data-tab="dash" onclick="goTab('dash')">
+<nav class="bnav">
+  <button class="nb" data-tab="dash" onclick="goTab('dash')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-    Painel<span class="nb-dot" id="bn-dot" style="display:none"></span>
+    Painel
   </button>
-  <button class="nb" data-tab="anuncios" onclick="goTab('anuncios')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML 1
+  <button class="nb" onclick="toggleBnavDrawer('drawer-ml')">
+    <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
+    ML
   </button>
-  <button class="nb" data-tab="ml2" onclick="goTab('ml2')" style="color:var(--gr)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-    ML 2
-  </button>
-  <button class="nb" data-tab="shopee2" onclick="goTab('shopee2')" style="color:#e05fc4">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-    Shop 2
-  </button>
-  <button class="nb" data-tab="sim" onclick="goTab('sim')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-    Simular
-  </button>
-  <button class="nb" data-tab="shopee" onclick="goTab('shopee')" style="color:var(--pu)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+  <button class="nb" onclick="toggleBnavDrawer('drawer-shopee')">
+    <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
     Shopee
   </button>
-  <button class="nb" data-tab="insights" onclick="goTab('insights')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Insights
+  <button class="nb" data-tab="tags" onclick="filterAndGo('full')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Tags
   </button>
-  <button class="nb" data-tab="hist" onclick="goTab('hist')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Histórico
+  <button class="nb" onclick="toggleBnavDrawer('drawer-mais')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/></svg>
+    Mais
   </button>
-  <button class="nb" data-tab="config" onclick="goTab('config')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Config
+</nav>
+
+<!-- Drawers mobile -->
+<div id="bnav-overlay" onclick="closeAllDrawers()" style="display:none;position:fixed;inset:0;z-index:998;background:rgba(0,0,0,.4)"></div>
+
+<div id="drawer-ml" class="bnav-drawer" style="display:none">
+  <div class="bnav-drawer-handle"></div>
+  <div class="bnav-drawer-title">Mercado Livre</div>
+  <button class="bnav-drawer-item" data-tab="anuncios" onclick="closeAllDrawers();goTab('anuncios')">
+    <svg viewBox="0 0 28 28" fill="currentColor" style="width:22px;height:22px;flex-shrink:0"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Conta 1</div><div style="font-size:12px;color:var(--t3)">Anúncios ML principal</div></div>
+  </button>
+  <button class="bnav-drawer-item" data-tab="ml2" onclick="closeAllDrawers();goTab('ml2')" style="color:var(--gr)">
+    <svg viewBox="0 0 28 28" fill="currentColor" style="width:22px;height:22px;flex-shrink:0"><path d="M14 1C6.82 1 1 6.82 1 14s5.82 13 13 13 13-5.82 13-13S21.18 1 14 1zm-2 7h1.8l2.2 3.6 2.2-3.6H20v8h-1.8v-5l-2.2 3.5-2.2-3.5v5H12V8z"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Conta 2</div><div style="font-size:12px;color:var(--t3)">Segunda conta ML</div></div>
+  </button>
+</div>
+
+<div id="drawer-shopee" class="bnav-drawer" style="display:none">
+  <div class="bnav-drawer-handle"></div>
+  <div class="bnav-drawer-title">Shopee</div>
+  <button class="bnav-drawer-item" data-tab="shopee" onclick="closeAllDrawers();goTab('shopee')" style="color:var(--pu)">
+    <svg viewBox="0 0 28 28" fill="currentColor" style="width:22px;height:22px;flex-shrink:0"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Conta 1</div><div style="font-size:12px;color:var(--t3)">Shopee principal</div></div>
+  </button>
+  <button class="bnav-drawer-item" data-tab="shopee2" onclick="closeAllDrawers();goTab('shopee2')" style="color:#e05fc4">
+    <svg viewBox="0 0 28 28" fill="currentColor" style="width:22px;height:22px;flex-shrink:0"><path d="M14 2C10.13 2 7 4.69 7 8c0 .7.14 1.37.38 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V12a2 2 0 0 0-2-2h-1.38c.24-.63.38-1.3.38-2 0-3.31-3.13-6-7-6zm0 2.5c2.48 0 4.5 1.57 4.5 3.5S16.48 11.5 14 11.5 9.5 9.93 9.5 8s2.02-3.5 4.5-3.5zm0 9c2.76 0 5 1.57 5 3.5S16.76 20.5 14 20.5 9 18.93 9 17s2.24-3.5 5-3.5z"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Conta 2</div><div style="font-size:12px;color:var(--t3)">Segunda conta Shopee</div></div>
+  </button>
+</div>
+
+<div id="drawer-mais" class="bnav-drawer" style="display:none">
+  <div class="bnav-drawer-handle"></div>
+  <div class="bnav-drawer-title">Menu</div>
+  <button class="bnav-drawer-item" data-tab="sim" onclick="closeAllDrawers();goTab('sim')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Simulador</div><div style="font-size:12px;color:var(--t3)">Calcular preço ideal</div></div>
+  </button>
+  <button class="bnav-drawer-item" data-tab="insights" onclick="closeAllDrawers();goTab('insights')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Insights</div><div style="font-size:12px;color:var(--t3)">Análise e sugestões</div></div>
+  </button>
+  <button class="bnav-drawer-item" data-tab="hist" onclick="closeAllDrawers();goTab('hist')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Histórico</div><div style="font-size:12px;color:var(--t3)">Alterações recentes</div></div>
+  </button>
+  <button class="bnav-drawer-item" data-tab="custos" onclick="closeAllDrawers();goTab('custos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Custos</div><div style="font-size:12px;color:var(--t3)">Catálogo de custos</div></div>
+  </button>
+  <button class="bnav-drawer-item" data-tab="config" onclick="closeAllDrawers();goTab('config')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <div><div style="font-weight:600;font-size:14px">Configurações</div><div style="font-size:12px;color:var(--t3)">Conta e preferências</div></div>
   </button>
 </div>
 </div>
@@ -1234,7 +1300,8 @@ function scheduleSyncUp(){
 function goTab(t){
   document.querySelectorAll('[data-tab]').forEach(el=>el.classList.toggle('active',el.dataset.tab===t))
   ;['dash','anuncios','sim','insights','hist','config','shopee','custos','ml2','shopee2','tags'].forEach(p=>{
-    document.getElementById('p-'+p).style.display=p===t?'':'none'
+    const el=document.getElementById('p-'+p);
+    if(el)el.style.display=p===t?'':'none'
   })
   if(t==='dash'){renderDash();if(typeof renderShopee==='function')renderShopee();if(typeof renderShopee2==='function')renderShopee2();if(typeof renderML2==='function')renderML2();}
   else if(t==='anuncios'){if(!activeFilter)populateFiltro();renderAnuncios()}
@@ -2575,7 +2642,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ════════════════════════════════════════
 
 function renderML2(){
-  var todos=DATA2.map(function(a){return Object.assign({},a,calcML2(a));});
+  try{
+  var todos=(typeof DATA2!=='undefined'&&DATA2)?DATA2.map(function(a){return Object.assign({},a,calcML2(a));}):[]; 
   var avg=todos.length?todos.reduce(function(s,a){return s+a.margem;},0)/todos.length:0;
   var ok2=todos.filter(function(a){return a.margem>=16;});
   var nok2=todos.filter(function(a){return a.margem<16;});
@@ -2706,6 +2774,15 @@ function renderML2(){
       (a.obs?'<div class="an-obs"><span>'+a.obs+'</span></div>':'')+
     '</div>';
   }).join('');
+  }catch(e){
+    console.error('renderML2 error:',e);
+    var tb=document.getElementById('ml2-tbl-body');
+    if(tb)tb.innerHTML='<tr><td colspan="11" style="color:var(--rd);padding:12px">Erro: '+e.message+'</td></tr>';
+    var mob=document.getElementById('ml2-mob-cards');
+    if(mob)mob.innerHTML='<div style="color:var(--rd);padding:16px">Erro ao carregar ML2: '+e.message+'</div>';
+    var met=document.getElementById('ml2-metrics');
+    if(met)met.innerHTML='<div style="color:var(--rd);padding:12px;font-size:13px">Erro: '+e.message+'</div>';
+  }
 }
 
 function calcML2(a){return calc(a);}  // same formula as ML1
@@ -3111,6 +3188,36 @@ function toggleTagBtnSH(btn){
     btn.classList.add('on-'+tag);
   }
 }
+
+function toggleBnavDrawer(id){
+  var drawer=document.getElementById(id);
+  var overlay=document.getElementById('bnav-overlay');
+  if(!drawer)return;
+  var isOpen=drawer.classList.contains('open');
+  closeAllDrawers();
+  if(!isOpen){
+    drawer.style.display='';
+    requestAnimationFrame(function(){drawer.classList.add('open');});
+    overlay.style.display='';
+  }
+}
+function closeAllDrawers(){
+  ['drawer-ml','drawer-shopee','drawer-mais'].forEach(function(id){
+    var d=document.getElementById(id);
+    if(d){
+      d.classList.remove('open');
+      setTimeout(function(){if(!d.classList.contains('open'))d.style.display='none';},260);
+    }
+  });
+  var ov=document.getElementById('bnav-overlay');
+  if(ov)ov.style.display='none';
+}
+// Close drawers on goTab
+var _origGoTab=goTab;
+goTab=function(t){
+  try{closeAllDrawers();}catch(e){console.warn('closeAllDrawers error:',e);}
+  try{_origGoTab(t);}catch(e){console.error('goTab error for',t,':',e);}
+};
 initSupabase();
 </script>
 <!-- MODAL SHOPEE -->
@@ -3206,4 +3313,5 @@ initSupabase();
 </div>
 
 </body>
+<
 </html>
