@@ -2643,6 +2643,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 function renderML2(){
   console.log('[ML2] renderML2 called, DATA2 length:', typeof DATA2!=='undefined'?DATA2.length:'undefined');
+  var _dbgEl=document.getElementById('ml2-tbl-body');
+  console.log('[ML2] ml2-tbl-body element:', _dbgEl, 'visible:', _dbgEl?_dbgEl.offsetParent:null);
+  var _dbgP=document.getElementById('p-ml2');
+  console.log('[ML2] p-ml2 display:', _dbgP?_dbgP.style.display:'null', 'offsetHeight:', _dbgP?_dbgP.offsetHeight:null);
   try{
   var todos=(typeof DATA2!=='undefined'&&DATA2)?DATA2.map(function(a){return Object.assign({},a,calcML2(a));}):[]; 
   var avg=todos.length?todos.reduce(function(s,a){return s+a.margem;},0)/todos.length:0;
