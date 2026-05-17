@@ -599,21 +599,37 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 
 <!-- INSIGHTS -->
 <div id="p-insights" style="display:none">
-  <div class="ph"><div><div class="ph-title">Insights</div><div class="ph-sub">Análise da carteira</div></div></div>
-  <div class="metrics" id="ins-metrics"></div>
-  <div class="card" id="ins-resumo"></div>
-  <div class="two-col">
-    <div class="card" id="ins-tipos"></div>
+  <div class="ph"><div><div class="ph-title">Insights</div><div class="ph-sub" id="ins-sub">Analisando...</div></div></div>
+  
+  <!-- Alertas urgentes no topo -->
+  <div id="ins-alertas" style="margin-bottom:12px"></div>
+
+  <!-- Métricas rápidas -->
+  <div class="metrics" id="ins-metrics" style="margin-bottom:16px"></div>
+
+  <!-- Sugestões acionáveis -->
+  <div class="card" id="ins-sugestoes" style="margin-bottom:16px"></div>
+
+  <!-- Oportunidades cross-canal -->
+  <div class="card" id="ins-cross-canal" style="margin-bottom:16px"></div>
+
+  <!-- Concentração de produto -->
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="card" id="ins-concentracao"></div>
+    <div class="card" id="ins-distribuicao"></div>
+  </div>
+
+  <!-- Margem por linha + tags -->
+  <div class="two-col" style="margin-bottom:16px">
     <div class="card" id="ins-linhas"></div>
-  </div>
-  <div class="two-col">
     <div class="card" id="ins-tags"></div>
-    <div class="card" id="ins-tipo-an"></div>
   </div>
-  <div class="card" id="ins-ml2-linhas"></div>
-  <div class="card" id="ins-shopee-linhas"></div>
-  <div class="card" id="ins-criticos" style="display:none"></div>
-</div>
+
+  <!-- Críticos clicáveis -->
+  <div class="card" id="ins-criticos" style="display:none;margin-bottom:16px"></div>
+
+  <!-- Clássico vs Premium -->
+  <div class="card" id="ins-tipo-an"></div>
 
 <!-- CONFIG -->
 <div id="p-config" style="display:none">
@@ -1791,128 +1807,297 @@ function resetSim(){
 
 // ── INSIGHTS ──
 function renderInsights(){
-  const todos=DATA.map(a=>({...a,...calc(a)}))
-  const avg=todos.length?todos.reduce((s,a)=>s+a.margem,0)/todos.length:0
-  const ok=todos.filter(a=>a.margem>=16)
-  const urg=todos.filter(a=>a.margem<10),opp=todos.filter(a=>a.margem>=25)
-  const cup=todos.filter(a=>a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/))
-  const ina=todos.filter(a=>a.obs?.toLowerCase().includes('inativo'))
-  const crit=urg
-  const cls=todos.filter(a=>(a.tipo||'classico')==='classico'),prm=todos.filter(a=>a.tipo==='premium')
+  // ── DATA ──
+  const ml1=DATA.map(a=>({...a,...calc(a),_ch:'ML1',_label:'ML C1'}));
+  const ml2=(typeof DATA2!=='undefined'?DATA2:[]).map(a=>({...a,...calc(a),_ch:'ML2',_label:'ML C2'}));
+  const sh1=(typeof SH_DATA!=='undefined'?SH_DATA:[]).map(a=>({...a,...calcSH(a),_ch:'SH1',_label:'Shopee'}));
+  const sh2=(typeof SH2_DATA!=='undefined'?SH2_DATA:[]).map(a=>({...a,...calcSH(a),_ch:'SH2',_label:'Shopee 2'}));
+  const all=[...ml1,...ml2,...sh1,...sh2];
+  const chData={ML1:ml1,ML2:ml2,SH1:sh1,SH2:sh2};
+  const chLabel={ML1:'ML Conta 1',ML2:'ML Conta 2',SH1:'Shopee',SH2:'Shopee 2'};
+  const chColor={ML1:'var(--t)',ML2:'var(--gr)',SH1:'var(--pu)',SH2:'#e05fc4'};
+  const chOpen={ML1:a=>`openModalById('${a.id}')`,ML2:a=>`openModal2('${a.id}')`,SH1:a=>`openShopeeModal('${a.id}')`,SH2:a=>`openShopee2Modal('${a.id}')`};
 
-  const im=document.getElementById('ins-metrics')
+  const avg=arr=>arr.length?arr.reduce((s,a)=>s+a.margem,0)/arr.length:0;
+  const nok=arr=>arr.filter(a=>a.margem<16);
+  const crit=arr=>arr.filter(a=>a.margem<10);
+  const opp=arr=>arr.filter(a=>a.margem>=25);
+
+  // ── MÉTRICAS RÁPIDAS ──
+  const im=document.getElementById('ins-metrics');
   if(im)im.innerHTML=`
-    <div class="met click" onclick="filterAndGo('urgente')"><div class="met-label" style="color:var(--rd)">Críticos</div><div class="met-val" style="color:${urg.length?'var(--rd)':'var(--t)'}">${urg.length}</div><div class="met-sub">margem &lt;10%</div></div>
-    <div class="met click" onclick="filterAndGo('oportunidade')"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:${opp.length?'var(--gr)':'var(--t)'}">${opp.length}</div><div class="met-sub">margem ≥25%</div></div>
-    <div class="met click" onclick="filterAndGo('cupom')"><div class="met-label" style="color:var(--am)">Cupons a retirar</div><div class="met-val" style="color:${cup.length?'var(--am)':'var(--t)'}">${cup.length}</div><div class="met-sub">nos lembretes</div></div>
-    <div class="met click" onclick="filterAndGo('inativo')"><div class="met-label">Inativos</div><div class="met-val">${ina.length}</div><div class="met-sub">nos lembretes</div></div>`
+    <div class="met"><div class="met-label">Total geral</div><div class="met-val">${all.length}</div><div class="met-sub">anúncios ativos</div></div>
+    <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${all.filter(a=>a.margem>=16).length}</div><div class="met-sub">${(all.filter(a=>a.margem>=16).length/Math.max(all.length,1)*100).toFixed(0)}% do total</div></div>
+    <div class="met click" onclick="filterAndGo('urgente')"><div class="met-label" style="color:var(--rd)">Críticos</div><div class="met-val" style="color:${crit(all).length?'var(--rd)':'var(--t)'}">${crit(all).length}</div><div class="met-sub">margem &lt;10%</div></div>
+    <div class="met click" onclick="filterAndGo('oportunidade')"><div class="met-label" style="color:var(--gr)">Oportunidades</div><div class="met-val" style="color:${opp(all).length?'var(--gr)':'var(--t)'}">${opp(all).length}</div><div class="met-sub">margem ≥25%</div></div>`;
 
-  // ML2 stats for insights
-  const ml2Todos=DATA2.map(function(a){return Object.assign({},a,calcML2(a));});
-  const ml2Avg=ml2Todos.length?ml2Todos.reduce(function(s,a){return s+a.margem;},0)/ml2Todos.length:0;
-  const ml2Ok=ml2Todos.filter(function(a){return a.margem>=16;});
-  const ml2Crit=ml2Todos.filter(function(a){return a.margem<10;});
+  // ── ALERTAS URGENTES ──
+  const alertas=[];
+  crit(ml1).forEach(a=>{alertas.push({tipo:'rd',icone:'🔴',msg:`<strong>${a.nome}</strong> (ML C1) com margem ${a.margem.toFixed(1)}% — abaixo do mínimo`,onclick:chOpen.ML1(a)});});
+  crit(ml2).forEach(a=>{alertas.push({tipo:'rd',icone:'🔴',msg:`<strong>${a.nome}</strong> (ML C2) com margem ${a.margem.toFixed(1)}% — abaixo do mínimo`,onclick:chOpen.ML2(a)});});
+  crit(sh1).forEach(a=>{alertas.push({tipo:'rd',icone:'🔴',msg:`<strong>${a.nome}</strong> (Shopee) com margem ${a.margem.toFixed(1)}% — abaixo do mínimo`,onclick:chOpen.SH1(a)});});
+  crit(sh2).forEach(a=>{alertas.push({tipo:'rd',icone:'🔴',msg:`<strong>${a.nome}</strong> (Shopee 2) com margem ${a.margem.toFixed(1)}% — abaixo do mínimo`,onclick:chOpen.SH2(a)});});
+  const ial=document.getElementById('ins-alertas');
+  if(ial)ial.innerHTML=alertas.slice(0,5).map(a=>`<div class="alert al-rd" onclick="${a.onclick}" style="cursor:pointer;margin-bottom:6px">${a.icone} ${a.msg}</div>`).join('');
 
-  // Shopee stats for insights
-  const shTodos=SH_DATA.map(a=>({...a,...calcSH(a)}));
-  const shAvg=shTodos.length?shTodos.reduce((s,a)=>s+a.margem,0)/shTodos.length:0;
-  const shOk=shTodos.filter(a=>a.margem>=16);
-  const shCrit=shTodos.filter(a=>a.margem<10);
+  // ── SUGESTÕES ACIONÁVEIS ──
+  const sugestoes=[];
 
-  const ir=document.getElementById('ins-resumo')
-  if(ir)ir.innerHTML=`<div class="card-title">Resumo geral</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-      <div style="background:var(--sur2);border-radius:var(--rs);padding:12px">
-        <div style="font-size:11px;color:var(--t3);margin-bottom:4px">ML — CONTA 1</div>
-        <div style="font-size:14px;font-weight:500">${todos.length} anúncios · ${ok.length} saudáveis</div>
-        <div style="font-size:13px;color:${avg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${avg.toFixed(1)}%</div>
-        ${crit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${crit.length} críticos</div>`:''}
-      </div>
-      <div style="background:var(--gr-bg);border-radius:var(--rs);padding:12px;border:1px solid var(--gr-bd)">
-        <div style="font-size:11px;color:var(--gr);margin-bottom:4px">ML — CONTA 2</div>
-        <div style="font-size:14px;font-weight:500">${ml2Todos.length} anúncios · ${ml2Ok.length} saudáveis</div>
-        <div style="font-size:13px;color:${ml2Avg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${ml2Avg.toFixed(1)}%</div>
-        ${ml2Crit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${ml2Crit.length} críticos</div>`:''}
-      </div>
-      <div style="background:var(--pu-bg);border-radius:var(--rs);padding:12px;border:1px solid var(--pu-bd)">
-        <div style="font-size:11px;color:var(--pu);margin-bottom:4px">SHOPEE</div>
-        <div style="font-size:14px;font-weight:500">${shTodos.length} anúncios · ${shOk.length} saudáveis</div>
-        <div style="font-size:13px;color:${shAvg>=16?'var(--gr)':'var(--rd)'}">Margem média: ${shAvg.toFixed(1)}%</div>
-        ${shCrit.length?`<div style="font-size:12px;color:var(--rd);margin-top:3px">${shCrit.length} críticos</div>`:''}
-      </div>
-    </div>`
+  // 1. Produto ausente de canal
+  const prodNames={};
+  all.forEach(a=>{
+    const key=a.nome.toUpperCase().replace(/[^A-ZÁÉÍÓÚÃÕÂÊÎÔÛÀÇ]/g,' ').split(/\s+/).slice(0,3).join(' ').trim();
+    if(!prodNames[key])prodNames[key]={canais:new Set(),itens:[]};
+    prodNames[key].canais.add(a._ch);
+    prodNames[key].itens.push(a);
+  });
+  const todosCanais=['ML1','ML2','SH1','SH2'];
+  Object.entries(prodNames).forEach(([nome,d])=>{
+    if(d.canais.size>=2&&d.canais.size<4){
+      const faltam=todosCanais.filter(c=>!d.canais.has(c));
+      const temBoa=d.itens.some(a=>a.margem>=16);
+      if(temBoa&&faltam.length<=2){
+        faltam.forEach(c=>{
+          const avgMargem=avg(d.itens);
+          sugestoes.push({
+            prioridade:1,icone:'➕',cor:'var(--gr)',
+            titulo:`Expandir "${nome}" para ${chLabel[c]}`,
+            desc:`Esse produto tem ${d.itens.length} anúncio(s) em ${[...d.canais].map(x=>chLabel[x]).join(', ')} com margem média de ${avgMargem.toFixed(1)}%. Testar no ${chLabel[c]} pode aumentar o faturamento.`,
+            acao:null
+          });
+        });
+      }
+    }
+  });
 
-  const tc={};todos.forEach(a=>{const t=a.nome.split(/\s+/).slice(0,3).join(' ');tc[t]=(tc[t]||0)+1})
-  const tt=document.getElementById('ins-tipos')
-  if(tt)tt.innerHTML=`<div class="card-title">Produtos com mais anúncios</div>
-    <div style="font-size:12px;color:var(--t3);margin-bottom:10px">Muitos anúncios do mesmo produto → risco de canibalização</div>`+
-    Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([t,n])=>`<div class="ir"><div class="ir-name">${t}</div><span class="badge b-info">${n}</span></div>`).join('')
+  // 2. Produto com muitos anúncios no mesmo canal (canibalização)
+  const porCanalProd={};
+  all.forEach(a=>{
+    const key=a._ch+'|'+a.nome.toUpperCase().split(/\s+/).slice(0,3).join(' ');
+    porCanalProd[key]=(porCanalProd[key]||[]);
+    porCanalProd[key].push(a);
+  });
+  Object.entries(porCanalProd).forEach(([key,itens])=>{
+    if(itens.length>=4){
+      const [ch]=key.split('|');
+      sugestoes.push({
+        prioridade:2,icone:'⚠️',cor:'var(--am)',
+        titulo:`${itens.length} anúncios do mesmo produto em ${chLabel[ch]}`,
+        desc:`Muitos anúncios iguais competem entre si. Avalie pausar os de margem menor e fortalecer os melhores. Margem mais alta: ${Math.max(...itens.map(a=>a.margem)).toFixed(1)}%.`,
+        acao:null
+      });
+    }
+  });
 
-  const la={};todos.forEach(a=>{const t=a.nome.split(/\s+/).slice(0,2).join(' ');if(!la[t])la[t]=[];la[t].push(a.margem)})
-  const tl=document.getElementById('ins-linhas')
-  if(tl)tl.innerHTML=`<div class="card-title">Margem por linha</div>`+
-    Object.entries(la).map(([t,ms])=>({t,avg:ms.reduce((s,v)=>s+v,0)/ms.length,n:ms.length})).sort((a,b)=>b.avg-a.avg).slice(0,8)
-    .map(({t,avg:m,n})=>`<div class="ir"><div><div class="ir-name">${t}</div><div class="ir-sub">${n} anúncio${n>1?'s':''}</div></div><span class="badge ${m>=16?'b-ok':'b-nok'}">${m.toFixed(1)}%</span></div>`).join('')
+  // 3. Canal com margem muito abaixo da média
+  ['ML1','ML2','SH1','SH2'].forEach(ch=>{
+    const d=chData[ch];
+    if(!d.length)return;
+    const chAvg=avg(d);
+    const gAvg=avg(all);
+    if(chAvg<gAvg-5&&d.length>=3){
+      sugestoes.push({
+        prioridade:2,icone:'📉',cor:'var(--rd)',
+        titulo:`${chLabel[ch]} com margem média baixa (${chAvg.toFixed(1)}%)`,
+        desc:`A margem geral é ${gAvg.toFixed(1)}%, mas ${chLabel[ch]} está ${(gAvg-chAvg).toFixed(1)}pp abaixo. Revise os preços ou custos nesse canal.`,
+        acao:null
+      });
+    }
+  });
 
-  const fullC=todos.filter(a=>a.tags?.full),ofertaC=todos.filter(a=>a.tags?.oferta),pubC=todos.filter(a=>a.tags?.pub)
-  const avgT=arr=>arr.length?arr.reduce((s,a)=>s+a.margem,0)/arr.length:0
-  const tg=document.getElementById('ins-tags')
-  if(tg)tg.innerHTML=`<div class="card-title">Desempenho por campanha</div>`+
-    (fullC.length||ofertaC.length||pubC.length?[
-      fullC.length?`<div class="ir"><div><div class="ir-name">📦 Full ML</div><div class="ir-sub">${fullC.length} anúncio${fullC.length>1?'s':''} · avg ${avgT(fullC).toFixed(1)}%</div></div><button class="btn-sm" onclick="filterAndGo('full')">Ver</button></div>`:'',
-      ofertaC.length?`<div class="ir"><div><div class="ir-name">⚡ Oferta relâmpago</div><div class="ir-sub">${ofertaC.length} anúncio${ofertaC.length>1?'s':''} · avg ${avgT(ofertaC).toFixed(1)}%</div></div><button class="btn-sm" onclick="filterAndGo('oferta')">Ver</button></div>`:'',
-      pubC.length?`<div class="ir"><div><div class="ir-name">📢 Publicidade</div><div class="ir-sub">${pubC.length} anúncio${pubC.length>1?'s':''} · avg ${avgT(pubC).toFixed(1)}%</div></div><button class="btn-sm" onclick="filterAndGo('pub')">Ver</button></div>`:''
-    ].filter(Boolean).join(''):'<div style="color:var(--t3);font-size:13px;padding:6px 0">Nenhum anúncio com tag ainda. Edite um anúncio para adicionar.</div>')
+  // 4. Oportunidades não exploradas (alta margem, poucos anúncios)
+  Object.entries(prodNames).forEach(([nome,d])=>{
+    const bons=d.itens.filter(a=>a.margem>=25);
+    if(bons.length>0&&d.itens.length<=2){
+      sugestoes.push({
+        prioridade:1,icone:'💡',cor:'var(--gr)',
+        titulo:`"${nome}" tem margem acima de 25% — explore mais`,
+        desc:`Esse produto tem margem média de ${avg(bons).toFixed(1)}% e apenas ${d.itens.length} anúncio(s). Criar variações ou mais anúncios pode escalar o resultado.`,
+        acao:null
+      });
+    }
+  });
 
-  const ta=document.getElementById('ins-tipo-an')
-  if(ta){
-    const avgCls=cls.length?cls.reduce((s,a)=>s+a.margem,0)/cls.length:0
-    const avgPrm=prm.length?prm.reduce((s,a)=>s+a.margem,0)/prm.length:0
-    ta.innerHTML=`<div class="card-title">Clássico vs Premium</div>
-      <div class="ir"><div><div class="ir-name">Clássico — 11,5%</div><div class="ir-sub">Sem parcelamento · avg ${avgCls.toFixed(1)}%</div></div><span class="badge b-cls">${cls.length}</span></div>
-      <div class="ir"><div><div class="ir-name">Premium — 16,5%</div><div class="ir-sub">Parcelamento · avg ${avgPrm>0?avgPrm.toFixed(1)+'%':'—'}</div></div><span class="badge b-prm">${prm.length}</span></div>
-      <div style="margin-top:10px;font-size:13px;color:var(--t2)">Premium vale a pena em produtos acima de R$300 onde parcelamento aumenta conversão.</div>`
+  // 5. Produtos apenas em ML sem Shopee (e vice-versa)
+  const soML=Object.values(prodNames).filter(d=>
+    (d.canais.has('ML1')||d.canais.has('ML2'))&&!d.canais.has('SH1')&&!d.canais.has('SH2')&&avg(d.itens)>=18
+  );
+  if(soML.length>0){
+    sugestoes.push({
+      prioridade:2,icone:'🛒',cor:'var(--pu)',
+      titulo:`${soML.length} produto(s) só no ML com boa margem — testar na Shopee`,
+      desc:`Produtos como "${soML[0].itens[0].nome}" têm margem acima de 18% e não estão na Shopee. A Shopee pode trazer volume extra sem canibalizar o ML.`,
+      acao:null
+    });
   }
 
-  // ML2 margem por linha
-  const ml2LCard=document.getElementById('ins-ml2-linhas');
-  if(ml2LCard){
-    const ml2Linha={};
-    ml2Todos.forEach(function(a){var t=a.nome.split(' ').slice(0,2).join(' ');if(!ml2Linha[t])ml2Linha[t]=[];ml2Linha[t].push(a.margem);});
-    const ml2Linhas=Object.entries(ml2Linha).map(function(e){return{t:e[0],avg:e[1].reduce(function(s,v){return s+v;},0)/e[1].length,n:e[1].length};}).sort(function(a,b){return b.avg-a.avg;});
-    ml2LCard.innerHTML='<div class="card-title" style="color:var(--gr)">ML Conta 2 — margem por linha</div>'+
-      ml2Linhas.slice(0,8).map(function(x){return'<div class="ir"><div><div class="ir-name">'+x.t+'</div><div class="ir-sub">'+x.n+' anúncio'+(x.n>1?'s':'')+'</div></div><span class="badge '+(x.avg>=16?'b-ok':'b-nok')+'">'+x.avg.toFixed(1)+'%</span></div>';}).join('');
+  // 6. Itens com cupom pra retirar
+  const cupons=ml1.filter(a=>a.obs?.toLowerCase().match(/retirar cupom|tirar cupom/));
+  if(cupons.length>0){
+    sugestoes.push({
+      prioridade:1,icone:'🏷️',cor:'var(--am)',
+      titulo:`${cupons.length} anúncio(s) ML com cupom a retirar`,
+      desc:`Cupons desnecessários reduzem margem. Remova para recuperar: ${cupons.slice(0,2).map(a=>a.nome).join(', ')}${cupons.length>2?'...':''}.`,
+      acao:`filterAndGo('cupom')`
+    });
   }
-  const shLCard=document.getElementById('ins-shopee-linhas');
-  if(shLCard){
-    const shLinha={};
-    shTodos.forEach(function(a){var t=a.nome.split(' ').slice(0,2).join(' ');if(!shLinha[t])shLinha[t]=[];shLinha[t].push(a.margem);});
-    const shLinhas=Object.entries(shLinha).map(function(e){return{t:e[0],avg:e[1].reduce(function(s,v){return s+v;},0)/e[1].length,n:e[1].length};}).sort(function(a,b){return b.avg-a.avg;});
-    shLCard.innerHTML='<div class="card-title" style="color:var(--pu)">Shopee — margem por linha</div>'+
-      shLinhas.slice(0,8).map(function(x){return'<div class="ir"><div><div class="ir-name">'+x.t+'</div><div class="ir-sub">'+x.n+' anúncio'+(x.n>1?'s':'')+'</div></div><span class="badge '+(x.avg>=16?'b-ok':'b-nok')+'">'+x.avg.toFixed(1)+'%</span></div>';}).join('');
+
+  // 7. Canal sem anúncios
+  ['ML1','ML2','SH1','SH2'].forEach(ch=>{
+    if(!chData[ch].length){
+      sugestoes.push({
+        prioridade:3,icone:'📭',cor:'var(--t3)',
+        titulo:`${chLabel[ch]} sem anúncios cadastrados`,
+        desc:`Nenhum produto cadastrado em ${chLabel[ch]}. Comece importando ou cadastrando manualmente.`,
+        acao:null
+      });
+    }
+  });
+
+  sugestoes.sort((a,b)=>a.prioridade-b.prioridade);
+
+  const is=document.getElementById('ins-sugestoes');
+  if(is)is.innerHTML=`<div class="card-title">💡 Sugestões estratégicas</div>`+
+    (sugestoes.length?sugestoes.slice(0,8).map(s=>`
+      <div style="padding:12px 0;border-bottom:1px solid var(--bd);cursor:${s.acao?'pointer':'default'}" ${s.acao?`onclick="${s.acao}"`:''}  >
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:16px;line-height:1.4">${s.icone}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:13px;color:${s.cor};margin-bottom:3px">${s.titulo}</div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.5">${s.desc}</div>
+            ${s.acao?`<div style="font-size:11px;color:var(--t3);margin-top:4px">Clique para ver →</div>`:''}
+          </div>
+        </div>
+      </div>`).join(''):
+      `<div style="color:var(--t3);font-size:13px;padding:8px 0">Sem sugestões no momento. Sua carteira está bem estruturada!</div>`);
+
+  // ── CROSS-CANAL: produto por canal ──
+  const cc=document.getElementById('ins-cross-canal');
+  if(cc){
+    const top=Object.entries(prodNames)
+      .filter(([,d])=>d.itens.length>=2)
+      .sort((a,b)=>b[1].itens.length-a[1].itens.length).slice(0,6);
+    cc.innerHTML=`<div class="card-title">📊 Distribuição por produto e canal</div>`+
+      top.map(([nome,d])=>{
+        const canaisStr=[...d.canais].map(c=>`<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:var(--sur2);color:${chColor[c]}">${chLabel[c]}</span>`).join(' ');
+        return`<div class="ir"><div style="flex:1"><div class="ir-name">${nome}</div><div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">${canaisStr}</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:600">${d.itens.length} anúncios</div><div style="font-size:11px;color:${avg(d.itens)>=16?'var(--gr)':'var(--rd)'}">${avg(d.itens).toFixed(1)}% avg</div></div></div>`;
+      }).join('');
   }
+
+  // ── CONCENTRAÇÃO ──
+  const conc=document.getElementById('ins-concentracao');
+  if(conc){
+    const chStats=['ML1','ML2','SH1','SH2'].map(ch=>({
+      ch,label:chLabel[ch],color:chColor[ch],
+      n:chData[ch].length,avg:avg(chData[ch]),
+      nok:nok(chData[ch]).length,opp:opp(chData[ch]).length
+    }));
+    conc.innerHTML=`<div class="card-title">Canal a canal</div>`+
+      chStats.map(s=>`
+        <div style="padding:8px 0;border-bottom:1px solid var(--bd)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-weight:600;font-size:13px;color:${s.color}">${s.label}</span>
+            <span style="font-size:12px;color:var(--t2)">${s.n} anúncios</span>
+          </div>
+          <div style="height:6px;background:var(--sur2);border-radius:3px;margin-bottom:4px">
+            <div style="height:6px;border-radius:3px;background:${s.avg>=16?'var(--gr)':'var(--rd)'};width:${Math.min(s.avg*2,100)}%"></div>
+          </div>
+          <div style="display:flex;gap:12px;font-size:11px;color:var(--t3)">
+            <span style="color:${s.avg>=16?'var(--gr)':'var(--rd)'}">Avg ${s.avg.toFixed(1)}%</span>
+            ${s.nok?`<span style="color:var(--rd)">${s.nok} ruins</span>`:''}
+            ${s.opp?`<span style="color:var(--gr)">${s.opp} ótimos</span>`:''}
+          </div>
+        </div>`).join('');
+  }
+
+  // ── DISTRIBUIÇÃO margem ──
+  const dist=document.getElementById('ins-distribuicao');
+  if(dist){
+    const buckets=[
+      {label:'Abaixo de 10%',min:-999,max:10,cor:'var(--rd)'},
+      {label:'10% – 16%',min:10,max:16,cor:'var(--am)'},
+      {label:'16% – 25%',min:16,max:25,cor:'var(--gr)'},
+      {label:'Acima de 25%',min:25,max:999,cor:'#22c55e'},
+    ];
+    const maxN=Math.max(...buckets.map(b=>all.filter(a=>a.margem>=b.min&&a.margem<b.max).length),1);
+    dist.innerHTML=`<div class="card-title">Distribuição de margem</div>`+
+      buckets.map(b=>{
+        const n=all.filter(a=>a.margem>=b.min&&a.margem<b.max).length;
+        const pct=n/Math.max(all.length,1)*100;
+        return`<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px">
+            <span style="color:${b.cor}">${b.label}</span><span style="color:var(--t2)">${n} (${pct.toFixed(0)}%)</span>
+          </div>
+          <div style="height:8px;background:var(--sur2);border-radius:4px">
+            <div style="height:8px;border-radius:4px;background:${b.cor};width:${n/maxN*100}%;transition:width .3s"></div>
+          </div>
+        </div>`;
+      }).join('');
+  }
+
+  // ── MARGEM POR LINHA ──
+  const tl=document.getElementById('ins-linhas');
+  if(tl){
+    const linhas={};
+    all.forEach(a=>{
+      const k=a.nome.toUpperCase().split(/\s+/).slice(0,2).join(' ');
+      if(!linhas[k])linhas[k]={margens:[],canais:new Set()};
+      linhas[k].margens.push(a.margem);
+      linhas[k].canais.add(a._label);
+    });
+    const sorted=Object.entries(linhas).map(([k,v])=>({
+      k,avg:avg(v.margens),n:v.margens.length,canais:[...v.canais]
+    })).sort((a,b)=>b.avg-a.avg);
+    tl.innerHTML=`<div class="card-title">Margem por linha de produto</div>`+
+      sorted.slice(0,8).map(({k,avg:m,n,canais})=>
+        `<div class="ir"><div><div class="ir-name">${k}</div><div class="ir-sub">${n} anúncio${n>1?'s':''} · ${canais.join(', ')}</div></div><span class="badge ${m>=16?'b-ok':'b-nok'}">${m.toFixed(1)}%</span></div>`
+      ).join('');
+  }
+
+  // ── TAGS ──
+  const tg=document.getElementById('ins-tags');
+  if(tg){
+    const tagData=[
+      {label:'📦 Full',key:'full',itens:all.filter(a=>a.tags?.full)},
+      {label:'⚡ Oferta',key:'oferta',itens:all.filter(a=>a.tags?.oferta)},
+      {label:'📢 Publicidade',key:'pub',itens:all.filter(a=>a.tags?.pub)},
+    ];
+    tg.innerHTML=`<div class="card-title">Desempenho por campanha</div>`+
+      tagData.map(t=>t.itens.length?
+        `<div class="ir"><div><div class="ir-name">${t.label}</div><div class="ir-sub">${t.itens.length} anúncio${t.itens.length>1?'s':''} · avg ${avg(t.itens).toFixed(1)}%</div></div><button class="btn-sm" onclick="filterAndGo('${t.key}')">Ver</button></div>`:
+        `<div class="ir"><div class="ir-name" style="color:var(--t3)">${t.label}</div><div class="ir-sub">Nenhum anúncio com essa tag</div></div>`
+      ).join('');
+  }
+
+  // ── CRÍTICOS ──
   const ci=document.getElementById('ins-criticos');
   if(ci){
-    const allCrit=[
-      ...crit.map(a=>({...a,plat:'ML1'})),
-      ...ml2Crit.map(a=>({...a,plat:'ML2'})),
-      ...shCrit.map(a=>({...a,plat:'Shopee'}))
-    ];
+    const allCrit=crit(all);
     if(allCrit.length){
       ci.style.display='';
-      ci.innerHTML='<div class="card-title" style="color:var(--rd)">Críticos — abaixo de 10% (todas as contas)</div>'+
-        allCrit.map(function(a){
-          var onclick=a.plat==='ML1'?'openModalById(\''+a.id+'\')':(a.plat==='ML2'?'openModal2(\''+a.id+'\')':'openShopeeModalById(\''+a.id+'\')')
-          var cls=a.plat==='ML1'?'b-info':(a.plat==='ML2'?'b-ok':'b-prm');
-          return '<div class="ir" style="cursor:pointer" onclick="'+onclick+'">'+
-            '<div><div class="ir-name">'+a.nome+' <span class="badge '+cls+'" style="font-size:9px">'+a.plat+'</span></div><div class="ir-sub">'+a.cod+'</div></div>'+
-            '<span class="badge b-nok">'+a.margem.toFixed(1)+'%</span></div>';
-        }).join('');
+      ci.innerHTML=`<div class="card-title" style="color:var(--rd)">🔴 Críticos — ação imediata (margem &lt;10%)</div>`+
+        allCrit.map(a=>`<div class="ir" style="cursor:pointer" onclick="${chOpen[a._ch](a)}">
+          <div><div class="ir-name">${a.nome} <span class="badge b-info" style="font-size:9px">${a._label}</span></div><div class="ir-sub">${a.cod}</div></div>
+          <span class="badge b-nok">${a.margem.toFixed(1)}%</span>
+        </div>`).join('');
     } else ci.style.display='none';
   }
+
+  // ── CLÁSSICO VS PREMIUM ──
+  const ta=document.getElementById('ins-tipo-an');
+  if(ta){
+    const cls=ml1.filter(a=>(a.tipo||'classico')==='classico'),prm=ml1.filter(a=>a.tipo==='premium');
+    const avgCls=avg(cls),avgPrm=avg(prm);
+    ta.innerHTML=`<div class="card-title">Clássico vs Premium (ML C1)</div>
+      <div class="ir"><div><div class="ir-name">Clássico — 11,5%</div><div class="ir-sub">Sem parcelamento · avg ${avgCls.toFixed(1)}%</div></div><span class="badge b-cls">${cls.length}</span></div>
+      <div class="ir"><div><div class="ir-name">Premium — 16,5%</div><div class="ir-sub">Com parcelamento · avg ${avgPrm>0?avgPrm.toFixed(1)+'%':'—'}</div></div><span class="badge b-prm">${prm.length}</span></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--t2)">💡 Premium vale a pena em produtos acima de R$300 onde o parcelamento aumenta a conversão.</div>`;
+  }
+
+  const sub=document.getElementById('ins-sub');
+  if(sub)sub.textContent=`${all.length} anúncios · ${sugestoes.length} sugestão(ões)`;
 }
 
-// ── HISTÓRICO ──
 function renderHist(){
   const hs=document.getElementById('hist-sub');if(hs)hs.textContent=HIST.length+' registros'
   const hl=document.getElementById('hist-list');if(!hl)return
