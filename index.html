@@ -141,6 +141,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .an-bar{height:3px;border-radius:2px;background:var(--sur2);overflow:hidden;margin-bottom:7px}
 .an-bar-fill{height:100%;border-radius:2px}
 
+.cod-copy{cursor:pointer;text-decoration:underline dotted;transition:color .15s}
+.cod-copy:active{color:var(--gr)!important}
 .an-obs{font-size:11px;color:var(--t2);font-style:italic;border-top:1px solid var(--bd);padding-top:6px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 /* Buttons */
 .btn{font-family:var(--font);font-size:13px;font-weight:500;padding:8px 15px;border-radius:var(--rs);border:1px solid var(--bd2);background:none;color:var(--t);cursor:pointer;transition:background .1s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
@@ -1409,7 +1411,7 @@ function renderDash(){
   const sorted=[...todos].sort((a,b)=>b.margem-a.margem)
   window._dashData=todos
   const mkR=(list,cls)=>list.map(a=>`<div class="ri" data-id="${a.id}" onclick="openModalById(this.dataset.id)" style="cursor:pointer">
-    <div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
+    <div><div class="ri-name">${a.nome}</div><div class="ri-cod cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">${a.cod}</div></div>
     <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
   </div>`).join('')
   const dm=document.getElementById('dash-metrics')
@@ -1427,7 +1429,7 @@ function renderDash(){
   const co=todos.filter(a=>a.obs?.trim())
   document.getElementById('dash-acoes').innerHTML=`<div class="card-title">Lembretes</div>`+
     (co.length?co.slice(0,6).map(a=>`<div class="ir" onclick="openModalById('${a.id}')" style="cursor:pointer">
-      <div><div class="ir-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
+      <div><div class="ir-name">${a.nome}</div><div class="ri-cod cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">${a.cod}</div></div>
       <div style="font-size:12px;color:var(--t2);text-align:right;max-width:150px;margin-left:8px">${a.obs}</div>
     </div>`).join(''):'<div class="empty" style="padding:18px">Nenhum lembrete</div>')
 
@@ -1455,7 +1457,7 @@ function renderDash(){
     <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" style="color:var(--gr)">${allOk.length}</div><div class="met-sub">${(allOk.length/Math.max(allTodos.length,1)*100).toFixed(0)}% do total</div></div>`
 
   const mkGR=(list,cls)=>list.map(a=>`<div class="ri" onclick="${a._onclick}" style="cursor:pointer">
-    <div><div class="ri-name">${a.nome}</div><div class="ri-cod" style="color:${a._ch==='SH1'||a._ch==='SH2'?'var(--pu)':'var(--t3)'}">${a._chLabel} · ${a.cod}</div></div>
+    <div><div class="ri-name">${a.nome}</div><div class="ri-cod" style="color:${a._ch==='SH1'||a._ch==='SH2'?'var(--pu)':'var(--t3)'}">${a._chLabel} · <span class="cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">${a.cod}</span></div></div>
     <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
   </div>`).join('')
   const gt=document.getElementById('dash-geral-top');if(gt)gt.innerHTML=mkGR(allSorted.slice(0,5),'b-ok')
@@ -1579,7 +1581,7 @@ function renderAnuncios(){
       const ok=a.margem>=16;
       return`<div class="an-card" data-id="${a.id}" onclick="openModal(this.dataset.id)">
         <div class="an-hdr"><div class="an-name">${a.nome}</div><span class="badge ${ok?'b-ok':'b-nok'}">${a.margem.toFixed(1)}%</span></div>
-        <div class="an-cod">${a.cod}</div>
+        <div class="an-cod cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" style="cursor:pointer;text-decoration:underline dotted" title="Copiar">${a.cod}</div>
         <div class="an-meta">${tipoBadge(a.tipo||'classico')}${mkTags(a.tags)}</div>
         <div class="an-stats">
           <span>Preço: <strong>${fmt(a.pv)}</strong></span>
@@ -2148,7 +2150,7 @@ function renderInsights(){
       ci.style.display='';
       ci.innerHTML=`<div class="card-title" style="color:var(--rd)">🔴 Críticos — ação imediata (margem &lt;10%)</div>`+
         allCrit.map(a=>`<div class="ir" style="cursor:pointer" onclick="${chOpen[a._ch](a)}">
-          <div><div class="ir-name">${a.nome} <span class="badge b-info" style="font-size:9px">${a._label}</span></div><div class="ir-sub">${a.cod}</div></div>
+          <div><div class="ir-name">${a.nome} <span class="badge b-info" style="font-size:9px">${a._label}</span></div><div class="ir-sub cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">${a.cod}</div></div>
           <span class="badge b-nok">${a.margem.toFixed(1)}%</span>
         </div>`).join('');
     } else ci.style.display='none';
@@ -2546,7 +2548,7 @@ function renderShopee(){
 
   const sorted=[...todos].sort((a,b)=>b.margem-a.margem);
   const mkR=(list,cls)=>list.map(a=>`<div class="ri" data-id="${a.id}" onclick="openShopeeModal(${a.id})" style="cursor:pointer">
-    <div><div class="ri-name">${a.nome}</div><div class="ri-cod">${a.cod}</div></div>
+    <div><div class="ri-name">${a.nome}</div><div class="ri-cod cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">${a.cod}</div></div>
     <div class="ri-right"><span class="badge ${cls}">${a.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(a.lucro)}</div></div>
   </div>`).join('');
   document.getElementById('sh-top').innerHTML=mkR(sorted.slice(0,5),'b-ok');
@@ -2620,7 +2622,7 @@ function renderShopee(){
     const ok=a.margem>=16;
     return`<div class="an-card" data-id="${a.id}" onclick="openShopeeModal(this.dataset.id)">
       <div class="an-hdr"><div class="an-name">${a.nome}</div><span class="badge ${ok?'b-ok':'b-nok'}">${a.margem.toFixed(1)}%</span></div>
-      <div class="an-cod">${a.cod}</div>
+      <div class="an-cod cod-copy" data-cod="${a.cod}" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" style="cursor:pointer;text-decoration:underline dotted" title="Copiar">${a.cod}</div>
       ${mkTags(a.tags)?`<div class="an-meta" style="margin:2px 0">${mkTags(a.tags)}</div>`:''}
       <div class="an-stats">
         <span>Preço: <strong>${fmt(a.pv)}</strong></span>
@@ -2678,7 +2680,7 @@ function renderML2(){
     return '<div class="ri" data-id="'+a.id+'" onclick="openModal2(this.dataset.id)" style="cursor:pointer">'+
       '<div style="min-width:0;flex:1"><div class="ri-name">'+a.nome+'</div>'+
       (tg2?'<div style="display:inline-flex;gap:3px;margin-top:2px">'+tg2+'</div>':'')+
-      '<div class="ri-cod">'+a.cod+'</div></div>'+
+      '<div class="ri-cod cod-copy" data-cod="'+a.cod+'" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">'+a.cod+'</div></div>'+
       '<div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';
   }).join('');}
   var t=document.getElementById('ml2-top'); if(t)t.innerHTML=mkR2(sorted2.slice(0,5),'b-ok');
@@ -2724,8 +2726,8 @@ function renderML2(){
     var okCl=ok?'var(--gr)':'var(--rd)';
     var okBadge=ok?'b-ok':'b-nok';
     var c0=document.createElement('td');
-    c0.textContent=a.cod; c0.title='Copiar'; c0.className='ml2-cod';
-    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
+    c0.textContent=a.cod; c0.title='Clique para copiar'; c0.className='ml2-cod cod-copy'; c0.dataset.cod=a.cod; c0.style.cursor='pointer'; c0.style.textDecoration='underline dotted';
+    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3);cursor:pointer;text-decoration:underline dotted';
     var c1=document.createElement('td');
     c1.innerHTML=a.nome+(th?'<br>'+th:'')+badge;
     c1.style.cssText='font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis';
@@ -2755,6 +2757,7 @@ function renderML2(){
   if(!tb._delegated){
     tb._delegated=true;
     tb.addEventListener('click',function(e){
+      var cop=e.target.closest('.cod-copy');if(cop){e.stopPropagation();copiarCod(cop.dataset.cod);return;}
       if(e.target.tagName==='INPUT')return;
       var row=e.target.closest('.ml2-row');
       if(!row)return;
@@ -2773,7 +2776,7 @@ function renderML2(){
     var ok=a.margem>=16;
     return '<div class="an-card" data-id="'+a.id+'" onclick="openModal2(this.dataset.id)" style="cursor:pointer">'+
       '<div class="an-hdr"><div class="an-name">'+a.nome+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
-      '<div class="an-cod">'+a.cod+'</div>'+
+      '<div class="an-cod cod-copy" data-cod="'+a.cod+'" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" style="cursor:pointer;text-decoration:underline dotted" title="Copiar">'+a.cod+'</div>'+
       '<div class="an-stats"><span>Preço: <strong>'+fmt(a.pv)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span><span>Frete: <strong>'+fmt(a.frete)+'</strong></span></div>'+
       '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
       (a.obs?'<div class="an-obs"><span>'+a.obs+'</span></div>':'')+
@@ -2912,7 +2915,7 @@ function renderShopee2(){
     <div class="met click" onclick="sh2FilterAndGo('nok')" title="Ver não saudáveis"><div class="met-label" style="color:${nok2.length?'var(--rd)':'var(--t3)'}">Não saudáveis</div><div class="met-val" style="color:${nok2.length?'var(--rd)':'var(--t)'}">${nok2.length}</div><div class="met-sub" onclick="event.stopPropagation();sh2FilterAndGo('crit')" style="cursor:pointer;text-decoration:underline;text-decoration-style:dotted">${crit2.length} críticos ↗</div></div>
     <div class="met click" onclick="sh2FilterAndGo('ok')"><div class="met-label" style="color:#e05fc4">Shopee 2</div><div class="met-val">${ok2.length}</div><div class="met-sub">saudáveis</div></div>`;
   var sorted=[].concat(todos).sort(function(a,b){return b.margem-a.margem;});
-  function mkR(list,cls){return list.map(function(a){return '<div class="ri" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer"><div><div class="ir-name">'+a.nome+'</div><div class="ir-sub">'+a.cod+'</div></div><div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';}).join('');}
+  function mkR(list,cls){return list.map(function(a){return '<div class="ri" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer"><div><div class="ir-name">'+a.nome+'</div><div class="ir-sub cod-copy" data-cod="'+a.cod+'" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">'+a.cod+'</div></div><div class="ri-right"><span class="badge '+cls+'">'+a.margem.toFixed(1)+'%</span><div class="ri-sub">'+fmt(a.lucro)+'</div></div></div>';}).join('');}
   var t=document.getElementById('sh2-top');if(t)t.innerHTML=mkR(sorted.slice(0,5),'b-ok');
   var b=document.getElementById('sh2-bot');if(b)b.innerHTML=mkR(sorted.slice(-5).reverse(),'b-nok');
 
@@ -2944,8 +2947,8 @@ function renderShopee2(){
     var pv2=(a.precoD>0?a.precoD:a.preco).toFixed(2);
     var okCl2=ok?'var(--gr)':'var(--rd)';
     var c0=document.createElement('td');
-    c0.textContent=a.cod;c0.className='sh2-cod';c0.title='Copiar';
-    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3)';
+    c0.textContent=a.cod;c0.className='sh2-cod cod-copy';c0.title='Clique para copiar';c0.dataset.cod=a.cod;
+    c0.style.cssText='font-family:var(--mono);font-size:11px;color:var(--t3);cursor:pointer;text-decoration:underline dotted';
     var c1=document.createElement('td');
     c1.style.cssText='font-weight:500;max-width:150px';
     var tgHtml=mkTags(a.tags);
@@ -3012,7 +3015,7 @@ function renderShopee2(){
     var ok=a.margem>=16;
     return '<div class="an-card" data-id="'+a.id+'" onclick="openShopee2Modal(this.dataset.id)" style="cursor:pointer">'+
       '<div class="an-hdr"><div class="an-name">'+sanitize(a.nome)+'</div><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span></div>'+
-      '<div class="an-cod">'+a.cod+'</div>'+
+      '<div class="an-cod cod-copy" data-cod="'+a.cod+'" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" style="cursor:pointer;text-decoration:underline dotted" title="Copiar">'+a.cod+'</div>'+
       (mkTags(a.tags)?'<div class="an-meta" style="margin:2px 0">'+mkTags(a.tags)+'</div>':'')+
       '<div class="an-stats"><span>PV: <strong>'+fmt(a.precoD>0?a.precoD:a.preco)+'</strong></span><span>Taxa: <strong style="color:var(--pu)">'+fmt(a.taxa)+'</strong></span><span>Renda: <strong style="color:var(--gr)">'+fmt(a.rendaShopee)+'</strong></span><span>Lucro: <strong style="color:'+(ok?'var(--gr)':'var(--rd)')+'">'+fmt(a.lucro)+'</strong></span></div>'+
       '<div class="an-bar"><div class="an-bar-fill" style="width:'+Math.min(a.margem*2,100)+'%;background:'+(ok?'var(--gr)':'var(--rd)')+'"></div></div>'+
@@ -3147,7 +3150,7 @@ function renderTags(activeTag){
     var lucro=typeof a.lucro==='number'?fmt(a.lucro):(a.lucro||'—');
     return '<div class="ri" onclick="'+openFn+'" style="cursor:pointer">'+
       '<div style="min-width:0;flex:1"><div class="ri-name">'+sanitize(a.nome)+'</div>'+
-      '<div class="ri-cod">'+a.cod+'</div></div>'+
+      '<div class="ri-cod cod-copy" data-cod="'+a.cod+'" onclick="event.stopPropagation();copiarCod(this.dataset.cod)" title="Copiar" style="cursor:pointer;text-decoration:underline dotted">'+a.cod+'</div></div>'+
       '<div class="ri-right"><span class="badge '+(ok?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
       '<div class="ri-sub">'+lucro+'</div></div></div>';
   }
