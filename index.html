@@ -578,25 +578,51 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
     </div>
 
     <!-- REMESSA FULL -->
-    <div class="card" id="full-remessa-card" style="margin-top:4px;margin-bottom:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-        <div class="card-title" style="margin-bottom:0">📦 Simular Remessa Full</div>
-        <button class="btn btn-sm" onclick="calcRemessa()" style="font-size:12px">Calcular</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:10px 12px;background:var(--sur2);border-radius:var(--rs)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <span style="font-size:12px;color:var(--t2);flex:1">Frete de coleta ML (opcional)</span>
-        <div style="display:flex;align-items:center;gap:4px">
-          <span style="font-size:12px;color:var(--t3)">R$</span>
-          <input type="number" id="remessa-frete" min="0" step="0.01" value="" placeholder="0,00"
-            class="tbl-inp" style="width:80px;text-align:right" oninput="calcRemessa()">
+    <div id="full-remessa-card" style="margin-top:4px;margin-bottom:24px">
+      <div style="padding:4px 0 10px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase">Simular Remessa Full</div>
+      <div class="two-col" style="margin-bottom:8px">
+        <div class="card" id="remessa-ml1-card">
+          <div class="card-title" style="color:var(--t)">ML — Conta 1</div>
+          <div id="remessa-frete-ml1-wrap" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--sur2);border-radius:var(--rs)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span style="font-size:12px;color:var(--t2);flex:1">Frete coleta (R$)</span>
+            <input type="number" id="remessa-frete-ml1" min="0" step="0.01" placeholder="0,00" class="tbl-inp" style="width:72px;text-align:right" data-ch="ml1" oninput="calcRemessaCh('ml1')">
+          </div>
+          <div id="remessa-itens-ml1"></div>
+          <div id="remessa-resultado-ml1" style="display:none"></div>
+        </div>
+        <div class="card" id="remessa-ml2-card">
+          <div class="card-title" style="color:var(--gr)">ML — Conta 2</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--sur2);border-radius:var(--rs)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span style="font-size:12px;color:var(--t2);flex:1">Frete coleta (R$)</span>
+            <input type="number" id="remessa-frete-ml2" min="0" step="0.01" placeholder="0,00" class="tbl-inp" style="width:72px;text-align:right" data-ch="ml2" oninput="calcRemessaCh('ml2')">
+          </div>
+          <div id="remessa-itens-ml2"></div>
+          <div id="remessa-resultado-ml2" style="display:none"></div>
         </div>
       </div>
-      <div id="remessa-itens" style="margin-bottom:16px"></div>
-      <div id="remessa-resultado" style="display:none">
-        <div style="height:1px;background:var(--bd);margin-bottom:14px"></div>
-        <div class="metrics" id="remessa-metrics" style="grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px"></div>
-        <div id="remessa-breakdown" style="font-size:12px;color:var(--t2)"></div>
+      <div class="two-col">
+        <div class="card" id="remessa-sh1-card">
+          <div class="card-title" style="color:var(--pu)">Shopee — Conta 1</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--sur2);border-radius:var(--rs)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span style="font-size:12px;color:var(--t2);flex:1">Frete coleta (R$)</span>
+            <input type="number" id="remessa-frete-sh1" min="0" step="0.01" placeholder="0,00" class="tbl-inp" style="width:72px;text-align:right" data-ch="sh1" oninput="calcRemessaCh('sh1')">
+          </div>
+          <div id="remessa-itens-sh1"></div>
+          <div id="remessa-resultado-sh1" style="display:none"></div>
+        </div>
+        <div class="card" id="remessa-sh2-card">
+          <div class="card-title" style="color:#e05fc4">Shopee — Conta 2</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--sur2);border-radius:var(--rs)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <span style="font-size:12px;color:var(--t2);flex:1">Frete coleta (R$)</span>
+            <input type="number" id="remessa-frete-sh2" min="0" step="0.01" placeholder="0,00" class="tbl-inp" style="width:72px;text-align:right" data-ch="sh2" oninput="calcRemessaCh('sh2')">
+          </div>
+          <div id="remessa-itens-sh2"></div>
+          <div id="remessa-resultado-sh2" style="display:none"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -3158,67 +3184,95 @@ async function initSupabase(){
 
 
 // ── TAGS PAGE ──
-function calcRemessa(){
-  var data=window._remessaData||[];
-  if(!data.length)return;
-  var qtdInputs=document.querySelectorAll('.remessa-qty');
-  var itens=[];
-  qtdInputs.forEach(function(inp){
-    var idx=+inp.dataset.idx;
-    var qty=Math.max(0,+inp.value||0);
-    if(qty>0&&data[idx]){
-      itens.push({a:data[idx],qty:qty});
-    }
-  });
-  var totalQty=itens.reduce(function(s,x){return s+x.qty;},0);
-  if(!totalQty){
-    var res=document.getElementById('remessa-resultado');
+function roiColor(roi){
+  return roi>=35?'var(--gr)':roi>=20?'var(--am)':'var(--rd)';
+}
+
+function populateRemessa(ch, data){
+  var el=document.getElementById('remessa-itens-'+ch);
+  if(!el)return;
+  var full=data.filter(function(a){return a.tags&&a.tags.full;});
+  window['_remessaData_'+ch]=full;
+  if(!full.length){
+    el.innerHTML='<div style="color:var(--t3);font-size:12px;padding:4px 0">Nenhum produto com tag Full.</div>';
+    var res=document.getElementById('remessa-resultado-'+ch);
     if(res)res.style.display='none';
     return;
   }
-  var freteColeta=Math.max(0,+(document.getElementById('remessa-frete')?.value)||0);
-  var custoFabTotal=itens.reduce(function(s,x){return s+x.a.custo*x.qty;},0);
-  var custoTotal=custoFabTotal+freteColeta;
+  el.innerHTML=full.map(function(a,i){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd)">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sanitize(a.nome)+'</div>'+
+        '<div style="font-size:11px;color:var(--t3)">Custo: '+fmt(a.custo)+' · PV: '+fmt(a.pv||a.preco)+'</div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:4px;flex-shrink:0">'+
+        '<span style="font-size:11px;color:var(--t3)">Qtd:</span>'+
+        '<input type="number" min="0" value="0" data-idx="'+i+'" data-ch="'+ch+'" class="tbl-inp remessa-qty-'+ch+'" style="width:56px;text-align:center" oninput="calcRemessaCh(this.dataset.ch)">'+
+      '</div>'+
+      '<span class="badge '+(a.margem>=16?'b-ok':'b-nok')+'" style="flex-shrink:0">'+a.margem.toFixed(1)+'%</span>'+
+    '</div>';
+  }).join('');
+  calcRemessaCh(ch);
+}
+
+function calcRemessaCh(ch){
+  var data=window['_remessaData_'+ch]||[];
+  if(!data.length)return;
+  var qtdInputs=document.querySelectorAll('.remessa-qty-'+ch);
+  var itens=[];
+  qtdInputs.forEach(function(inp){
+    var qty=Math.max(0,+inp.value||0);
+    if(qty>0&&data[+inp.dataset.idx]){
+      itens.push({a:data[+inp.dataset.idx],qty:qty});
+    }
+  });
+  var res=document.getElementById('remessa-resultado-'+ch);
+  if(!res)return;
+  var totalQty=itens.reduce(function(s,x){return s+x.qty;},0);
+  if(!totalQty){res.style.display='none';return;}
+
+  var freteEl=document.getElementById('remessa-frete-'+ch);
+  var freteColeta=Math.max(0,+(freteEl&&freteEl.value)||0);
+  var custoFab=itens.reduce(function(s,x){return s+x.a.custo*x.qty;},0);
+  var custoTotal=custoFab+freteColeta;
   var fretePorUn=totalQty>0?freteColeta/totalQty:0;
   var fatTotal=itens.reduce(function(s,x){return s+(x.a.pv||x.a.preco)*x.qty;},0);
   var lucroTotal=itens.reduce(function(s,x){return s+(x.a.lucro-fretePorUn)*x.qty;},0);
   var margemMedia=fatTotal>0?lucroTotal/fatTotal*100:0;
-  // Ponto de equilíbrio: quantas unidades pra cobrir custo total
-  var lucroUnitMedio=totalQty>0?lucroTotal/totalQty:0;
-  // Break-even: unidades necessárias para recuperar custo total da remessa
-  var breakeven=lucroUnitMedio>0?Math.ceil(custoTotal/lucroUnitMedio):null;
-  var breakevenPct=breakeven&&totalQty>0?Math.round(breakeven/totalQty*100):null;
-  var breakevenOk=breakeven&&breakeven<=totalQty;
-  var res=document.getElementById('remessa-resultado');
-  if(res)res.style.display='';
-  var met=document.getElementById('remessa-metrics');
-  if(met)met.innerHTML=
-    '<div class="met"><div class="met-label">Custo total</div><div class="met-val" style="color:var(--rd)">'+fmt(custoTotal)+'</div>'+
-      '<div class="met-sub">'+(freteColeta>0?'fab '+fmt(custoFabTotal)+' + frete '+fmt(freteColeta):totalQty+' unidades')+'</div></div>'+
-    '<div class="met"><div class="met-label">Faturamento</div><div class="met-val" style="color:var(--t)">'+fmt(fatTotal)+'</div><div class="met-sub">se vender tudo</div></div>'+
-    '<div class="met"><div class="met-label">Lucro total</div><div class="met-val" style="color:'+(lucroTotal>=0?'var(--gr)':'var(--rd)')+'">'+fmt(lucroTotal)+'</div><div class="met-sub">margem '+margemMedia.toFixed(1)+'%</div></div>'+
-    '<div class="met"><div class="met-label">Break-even</div>'+
-      '<div class="met-val" style="color:'+(breakevenOk?'var(--gr)':'var(--rd)') +'">'+
-        (breakeven?breakeven+' un.':'—')+
-      '</div>'+
-      '<div class="met-sub">'+
-        (breakeven
-          ? (breakevenOk
-              ? 'vender '+breakevenPct+'% da remessa'
-              : '⚠️ acima da remessa ('+totalQty+' un.)')
-          : 'sem lucro')+
-      '</div></div>';
-  // Breakdown por produto
-  var bd=document.getElementById('remessa-breakdown');
-  if(bd)bd.innerHTML='<div style="margin-bottom:6px;font-weight:600;color:var(--t2)">Por produto:</div>'+
+  var roi=custoTotal>0?lucroTotal/custoTotal*100:0;
+  var roiC=roiColor(roi);
+  var roiLabel=roi>=35?'Excelente':roi>=20?'Aceitável':'Revisar preço/custo';
+
+  res.style.display='';
+  res.innerHTML=
+    '<div style="height:1px;background:var(--bd);margin:12px 0"></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'+
+      '<div class="met" style="padding:8px"><div class="met-label">Investimento</div><div class="met-val" style="font-size:16px;color:var(--rd)">'+fmt(custoTotal)+'</div>'+
+        '<div class="met-sub">'+(freteColeta>0?'fab '+fmt(custoFab)+' + frete '+fmt(freteColeta):totalQty+' un.')+'</div></div>'+
+      '<div class="met" style="padding:8px"><div class="met-label">Lucro total</div><div class="met-val" style="font-size:16px;color:'+(lucroTotal>=0?'var(--gr)':'var(--rd)')+'">'+fmt(lucroTotal)+'</div>'+
+        '<div class="met-sub">margem '+margemMedia.toFixed(1)+'%</div></div>'+
+      '<div class="met" style="padding:8px"><div class="met-label">Faturamento</div><div class="met-val" style="font-size:16px;color:var(--t)">'+fmt(fatTotal)+'</div>'+
+        '<div class="met-sub">se vender tudo</div></div>'+
+      '<div class="met" style="padding:8px;background:var(--sur2);border-radius:var(--rs)"><div class="met-label">ROI</div>'+
+        '<div class="met-val" style="font-size:16px;color:'+roiC+'">'+roi.toFixed(1)+'%</div>'+
+        '<div class="met-sub" style="color:'+roiC+'">'+roiLabel+'</div></div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--t3);margin-bottom:6px;font-weight:600">Por produto:</div>'+
     itens.map(function(x){
-      var lucro=x.a.lucro*x.qty;
-      return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)">'+
-        '<span>'+sanitize(x.a.nome)+' × '+x.qty+'</span>'+
-        '<span style="color:'+(lucro>=0?'var(--gr)':'var(--rd)')+'">'+fmt(lucro)+'</span>'+
+      var lucro=(x.a.lucro-fretePorUn)*x.qty;
+      var roiProd=x.a.custo>0?(x.a.lucro-fretePorUn)/x.a.custo*100:0;
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--bd);font-size:12px">'+
+        '<span style="color:var(--t2)">'+sanitize(x.a.nome)+' × '+x.qty+'</span>'+
+        '<div style="text-align:right">'+
+          '<span style="color:'+(lucro>=0?'var(--gr)':'var(--rd)')+'">'+fmt(lucro)+'</span>'+
+          '<span style="color:'+roiColor(roiProd)+';margin-left:8px;font-size:11px">ROI '+roiProd.toFixed(0)+'%</span>'+
+        '</div>'+
       '</div>';
     }).join('');
 }
+
+function calcRemessa(){calcRemessaCh('sh1');}
+
 
 function renderTags(activeTag){
   var tagEl=document.getElementById('tags-title');
@@ -3272,37 +3326,11 @@ function renderTags(activeTag){
   var subEl=document.getElementById('tags-sub');
   if(subEl)subEl.textContent=totalAll+' anúncio(s) com tag';
 
-  // Populate remessa Full with SH1 products tagged full
-  var fullSH1=allSH.filter(function(a){return a.tags&&a.tags.full;});
-  var remessaItens=document.getElementById('remessa-itens');
-  if(remessaItens){
-    if(!fullSH1.length){
-      remessaItens.innerHTML='<div style="color:var(--t3);font-size:13px">Nenhum produto da Shopee com tag Full.</div>';
-    } else {
-      remessaItens.innerHTML=fullSH1.map(function(a,i){
-        return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd)">'+
-          '<div style="flex:1;min-width:0">'+
-            '<div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sanitize(a.nome)+'</div>'+
-            '<div style="font-size:11px;color:var(--t3)">Custo: '+fmt(a.custo)+' · PV: '+fmt(a.pv||a.preco)+'</div>'+
-          '</div>'+
-          '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+
-            '<span style="font-size:11px;color:var(--t3)">Qtd:</span>'+
-            '<input type="number" min="0" value="0" data-idx="'+i+'" data-id="'+a.id+'"'+
-              ' class="tbl-inp remessa-qty" style="width:60px;text-align:center" '+
-              ' oninput="calcRemessa()">'+
-          '</div>'+
-          '<div style="min-width:52px;text-align:right">'+
-            '<span class="badge '+(a.margem>=16?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
-          '</div>'+
-        '</div>';
-      }).join('');
-    }
-    // Store data for calc
-    window._remessaData=fullSH1;
-    // Reset resultado
-    var res=document.getElementById('remessa-resultado');
-    if(res)res.style.display='none';
-  }
+  // Populate remessa simulators for all channels
+  populateRemessa('ml1', allML1);
+  populateRemessa('ml2', allML2);
+  populateRemessa('sh1', allSH);
+  populateRemessa('sh2', allSH2);
 }
 
 function toggleTagBtnSH(btn){
