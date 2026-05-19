@@ -576,6 +576,20 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
         <div id="tags-full-sh2"></div>
       </div>
     </div>
+
+    <!-- REMESSA FULL -->
+    <div class="card" id="full-remessa-card" style="margin-top:4px;margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div class="card-title" style="margin-bottom:0">📦 Simular Remessa Full</div>
+        <button class="btn btn-sm" onclick="calcRemessa()" style="font-size:12px">Calcular</button>
+      </div>
+      <div id="remessa-itens" style="margin-bottom:16px"></div>
+      <div id="remessa-resultado" style="display:none">
+        <div style="height:1px;background:var(--bd);margin-bottom:14px"></div>
+        <div class="metrics" id="remessa-metrics" style="grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px"></div>
+        <div id="remessa-breakdown" style="font-size:12px;color:var(--t2)"></div>
+      </div>
+    </div>
   </div>
 
   <!-- OFERTA RELÂMPAGO -->
@@ -1241,6 +1255,7 @@ async function pushML2up(){
 async function pushSH2up(){
   if(!SB_USER||!SH2_DATA||!SH2_DATA.length)return;
   var uid=SB_USER.id;
+  await SB.from('anuncios_shopee2').delete().eq('user_id',uid);
   var rows=SH2_DATA.map(function(a){return{
     user_id:uid,cod:a.cod||'',nome:a.nome||'',status:a.status||'ativo',
     preco:a.preco||0,preco_d:a.precoD||0,custo:a.custo||0,ant:a.ant||2.5,
@@ -3134,6 +3149,51 @@ async function initSupabase(){
 
 
 // ── TAGS PAGE ──
+function calcRemessa(){
+  var data=window._remessaData||[];
+  if(!data.length)return;
+  var qtdInputs=document.querySelectorAll('.remessa-qty');
+  var itens=[];
+  qtdInputs.forEach(function(inp){
+    var idx=+inp.dataset.idx;
+    var qty=Math.max(0,+inp.value||0);
+    if(qty>0&&data[idx]){
+      itens.push({a:data[idx],qty:qty});
+    }
+  });
+  var totalQty=itens.reduce(function(s,x){return s+x.qty;},0);
+  if(!totalQty){
+    var res=document.getElementById('remessa-resultado');
+    if(res)res.style.display='none';
+    return;
+  }
+  var custoTotal=itens.reduce(function(s,x){return s+x.a.custo*x.qty;},0);
+  var fatTotal=itens.reduce(function(s,x){return s+(x.a.pv||x.a.preco)*x.qty;},0);
+  var lucroTotal=itens.reduce(function(s,x){return s+x.a.lucro*x.qty;},0);
+  var margemMedia=fatTotal>0?lucroTotal/fatTotal*100:0;
+  // Ponto de equilíbrio: quantas unidades pra cobrir custo total
+  var lucroUnitMedio=totalQty>0?lucroTotal/totalQty:0;
+  var breakeven=lucroUnitMedio>0?Math.ceil(custoTotal/lucroUnitMedio):null;
+  var res=document.getElementById('remessa-resultado');
+  if(res)res.style.display='';
+  var met=document.getElementById('remessa-metrics');
+  if(met)met.innerHTML=
+    '<div class="met"><div class="met-label">Custo total</div><div class="met-val" style="color:var(--rd)">'+fmt(custoTotal)+'</div><div class="met-sub">'+totalQty+' unidades</div></div>'+
+    '<div class="met"><div class="met-label">Faturamento</div><div class="met-val" style="color:var(--t)">'+fmt(fatTotal)+'</div><div class="met-sub">se vender tudo</div></div>'+
+    '<div class="met"><div class="met-label">Lucro total</div><div class="met-val" style="color:'+(lucroTotal>=0?'var(--gr)':'var(--rd)')+'">'+fmt(lucroTotal)+'</div><div class="met-sub">margem '+margemMedia.toFixed(1)+'%</div></div>'+
+    '<div class="met"><div class="met-label">Break-even</div><div class="met-val" style="color:var(--am)">'+(breakeven?breakeven+' un.':'—')+'</div><div class="met-sub">'+(breakeven?'pra cobrir custo':'sem lucro')+'</div></div>';
+  // Breakdown por produto
+  var bd=document.getElementById('remessa-breakdown');
+  if(bd)bd.innerHTML='<div style="margin-bottom:6px;font-weight:600;color:var(--t2)">Por produto:</div>'+
+    itens.map(function(x){
+      var lucro=x.a.lucro*x.qty;
+      return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--bd)">'+
+        '<span>'+sanitize(x.a.nome)+' × '+x.qty+'</span>'+
+        '<span style="color:'+(lucro>=0?'var(--gr)':'var(--rd)')+'">'+fmt(lucro)+'</span>'+
+      '</div>';
+    }).join('');
+}
+
 function renderTags(activeTag){
   var tagEl=document.getElementById('tags-title');
   if(tagEl){
@@ -3185,6 +3245,38 @@ function renderTags(activeTag){
   });
   var subEl=document.getElementById('tags-sub');
   if(subEl)subEl.textContent=totalAll+' anúncio(s) com tag';
+
+  // Populate remessa Full with SH1 products tagged full
+  var fullSH1=allSH.filter(function(a){return a.tags&&a.tags.full;});
+  var remessaItens=document.getElementById('remessa-itens');
+  if(remessaItens){
+    if(!fullSH1.length){
+      remessaItens.innerHTML='<div style="color:var(--t3);font-size:13px">Nenhum produto da Shopee com tag Full.</div>';
+    } else {
+      remessaItens.innerHTML=fullSH1.map(function(a,i){
+        return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd)">'+
+          '<div style="flex:1;min-width:0">'+
+            '<div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sanitize(a.nome)+'</div>'+
+            '<div style="font-size:11px;color:var(--t3)">Custo: '+fmt(a.custo)+' · PV: '+fmt(a.pv||a.preco)+'</div>'+
+          '</div>'+
+          '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+
+            '<span style="font-size:11px;color:var(--t3)">Qtd:</span>'+
+            '<input type="number" min="0" value="0" data-idx="'+i+'" data-id="'+a.id+'"'+
+              ' class="tbl-inp remessa-qty" style="width:60px;text-align:center" '+
+              ' oninput="calcRemessa()">'+
+          '</div>'+
+          '<div style="min-width:52px;text-align:right">'+
+            '<span class="badge '+(a.margem>=16?'b-ok':'b-nok')+'">'+a.margem.toFixed(1)+'%</span>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+    // Store data for calc
+    window._remessaData=fullSH1;
+    // Reset resultado
+    var res=document.getElementById('remessa-resultado');
+    if(res)res.style.display='none';
+  }
 }
 
 function toggleTagBtnSH(btn){
