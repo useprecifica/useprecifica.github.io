@@ -2504,6 +2504,15 @@ function openShopeeModal(id){
   g('sh-f-com',a?.com??14);g('sh-f-ant',a?.ant??2.5);g('sh-f-imp',a?.imp??10);
   g('sh-f-descpct',a?.descPct??5);g('sh-f-descmax',a?.descMax??10);
   g('sh-f-obs',a?.obs||'');
+  // Render tag buttons
+  var tagContainer=document.getElementById('sh-modal-tags');
+  if(tagContainer){
+    var tags=a&&a.tags?a.tags:{full:false,oferta:false,pub:false};
+    tagContainer.innerHTML=
+      '<button type="button" class="tag-btn'+(tags.full?' on-full':'')+'" data-tag="full" onclick="toggleTagBtnSH(this)" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd);background:'+(tags.full?'var(--gr)':'var(--sur2)')+';color:'+(tags.full?'#fff':'var(--t)')+';cursor:pointer;font-size:12px;font-family:var(--font)">📦 Full</button>'+
+      '<button type="button" class="tag-btn'+(tags.oferta?' on-oferta':'')+'" data-tag="oferta" onclick="toggleTagBtnSH(this)" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd);background:'+(tags.oferta?'var(--am)':'var(--sur2)')+';color:'+(tags.oferta?'#fff':'var(--t)')+';cursor:pointer;font-size:12px;font-family:var(--font)">⚡ Oferta</button>'+
+      '<button type="button" class="tag-btn'+(tags.pub?' on-pub':'')+'" data-tag="pub" onclick="toggleTagBtnSH(this)" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd);background:'+(tags.pub?'var(--pu)':'var(--sur2)')+';color:'+(tags.pub?'#fff':'var(--t)')+';cursor:pointer;font-size:12px;font-family:var(--font)">📢 Pub</button>';
+  }
   document.getElementById('sh-m-result').style.display='none';
   document.getElementById('sh-overlay').classList.add('open');
   shCalcLive();
@@ -3097,17 +3106,13 @@ function openShopee2Modal(id){
   if(spub)spub.checked=!!(a?.tags?.pub);
   var shmt=document.getElementById('sh-modal-tags');
   if(shmt){
-    if(a){
-      var tg=a.tags||{};
-      shmt.innerHTML=
-        '<button class="tag-btn '+(tg.full?'on-full':'')+'" data-id="'+a.id+'" data-tag="full" onclick="toggleTagBtnSH(this)">📦 Full</button>'+
-        '<button class="tag-btn '+(tg.oferta?'on-oferta':'')+'" data-id="'+a.id+'" data-tag="oferta" onclick="toggleTagBtnSH(this)">⚡ Oferta relâmpago</button>'+
-        '<button class="tag-btn '+(tg.pub?'on-pub':'')+'" data-id="'+a.id+'" data-tag="pub" onclick="toggleTagBtnSH(this)">📢 Publicidade</button>';
-    } else {
-      shmt.innerHTML='<span style="font-size:12px;color:var(--t3)">Salve para gerenciar tags</span>';
-    }
+    var tg2=a&&a.tags?a.tags:{full:false,oferta:false,pub:false};
+    shmt.innerHTML=
+      '<button type="button" class="tag-btn'+(tg2.full?' on-full':'')+'" data-tag="full" onclick="toggleTagBtnSH(this)" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd);background:'+(tg2.full?'var(--gr)':'var(--sur2)')+';color:'+(tg2.full?'#fff':'var(--t)')+';cursor:pointer;font-size:12px;font-family:var(--font)">📦 Full</button>'+
+      '<button type="button" class="tag-btn'+(tg2.oferta?' on-oferta':'')+'" data-tag="oferta" onclick="toggleTagBtnSH(this)" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd);background:'+(tg2.oferta?'var(--am)':'var(--sur2)')+';color:'+(tg2.oferta?'#fff':'var(--t)')+';cursor:pointer;font-size:12px;font-family:var(--font)">⚡ Oferta</button>'+
+      '<button type="button" class="tag-btn'+(tg2.pub?' on-pub':'')+'" data-tag="pub" onclick="toggleTagBtnSH(this)" style="padding:4px 12px;border-radius:20px;border:1px solid var(--bd);background:'+(tg2.pub?'var(--pu)':'var(--sur2)')+';color:'+(tg2.pub?'#fff':'var(--t)')+';cursor:pointer;font-size:12px;font-family:var(--font)">📢 Pub</button>';
   }
-  document.getElementById('sh-overlay').classList.add('open');
+    document.getElementById('sh-overlay').classList.add('open');
   shCalcLive();
 }
 
@@ -3335,11 +3340,16 @@ function renderTags(activeTag){
 
 function toggleTagBtnSH(btn){
   var tag=btn.dataset.tag;
+  var colors={full:'var(--gr)',oferta:'var(--am)',pub:'var(--pu)'};
   var isOn=btn.classList.contains('on-'+tag);
   if(isOn){
     btn.classList.remove('on-'+tag);
+    btn.style.background='var(--sur2)';
+    btn.style.color='var(--t)';
   } else {
     btn.classList.add('on-'+tag);
+    btn.style.background=colors[tag]||'var(--pu)';
+    btn.style.color='#fff';
   }
 }
 
