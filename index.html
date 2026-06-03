@@ -300,10 +300,36 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 
 </head>
 <body>
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0">
+  <div style="width:100%;max-width:360px;padding:24px;margin:16px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="brand-dot" style="width:10px;height:10px;border-radius:50%;background:var(--pu)"></div>
+        <span style="font-size:22px;font-weight:700;letter-spacing:-.5px">Precify</span>
+      </div>
+      <div style="font-size:13px;color:var(--t3)">Gestão de anúncios IW</div>
+    </div>
+    <div class="card" style="padding:24px">
+      <div class="card-title" style="margin-bottom:20px;text-align:center">Entrar</div>
+      <div class="field" style="margin-bottom:14px">
+        <label>Senha</label>
+        <input type="password" id="login-pwd" placeholder="••••••••" style="width:100%;font-size:15px"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="login-error" style="display:none;color:var(--rd);font-size:12px;margin-bottom:10px;text-align:center"></div>
+      <button class="btn btn-p" onclick="doLogin()" style="width:100%;justify-content:center;font-size:14px;padding:10px">
+        Entrar
+      </button>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--t3)">IW Luminária · acesso restrito</div>
+  </div>
+</div>
+
 <div class="shell">
 
 <div class="topbar">
-  <div class="brand"><div class="brand-dot"></div>Precify</div>
+  <div class="brand" onclick="goTab('dash')" style="cursor:pointer" title="Voltar ao painel"><div class="brand-dot"></div>Precify</div>
   <div class="tb-sep"></div>
   <div class="tb-sub" id="tb-sub"></div>
   <div class="tb-right">
@@ -726,6 +752,26 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 <!-- CONFIG -->
 <div id="p-config" style="display:none">
   <div class="ph"><div><div class="ph-title">Configurações</div><div class="ph-sub">Conecte ao Supabase para sincronizar entre dispositivos</div></div></div>
+  <div class="card">
+    <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Segurança</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:13px;font-weight:500">Alterar senha</div>
+        <div style="font-size:12px;color:var(--t3)">Senha padrão: iw2024</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="password" id="new-pwd-1" placeholder="Nova senha" class="tbl-inp" style="width:130px">
+        <input type="password" id="new-pwd-2" placeholder="Confirmar" class="tbl-inp" style="width:130px">
+        <button class="btn btn-p" onclick="changePwd()">Salvar</button>
+      </div>
+    </div>
+    <div id="pwd-msg" style="display:none;font-size:12px;margin-top:8px"></div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:13px;color:var(--t2)">Encerrar sessão</span>
+      <button class="btn btn-d" onclick="logout()" style="font-size:12px">Sair</button>
+    </div>
+  </div>
   <div class="card">
     <div class="card-title">Conexão Supabase</div>
     <div style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:14px">
@@ -1796,6 +1842,73 @@ function toggleTag(id,tag){
 }
 
 var _privacyOn=false;
+// ── AUTH ──
+var _PWD_KEY='pfy_pwd_hash';
+var _SESSION_KEY='pfy_session';
+
+async function hashPwd(pwd){
+  var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pwd));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function setupDefaultPwd(){
+  if(!localStorage.getItem(_PWD_KEY)){
+    var h=await hashPwd('iw2024');
+    localStorage.setItem(_PWD_KEY,h);
+  }
+}
+
+async function doLogin(){
+  var pwd=document.getElementById('login-pwd').value;
+  if(!pwd)return;
+  var h=await hashPwd(pwd);
+  var stored=localStorage.getItem(_PWD_KEY);
+  if(h===stored){
+    sessionStorage.setItem(_SESSION_KEY,'1');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('login-error').style.display='none';
+    document.getElementById('login-pwd').value='';
+  } else {
+    var err=document.getElementById('login-error');
+    err.textContent='Senha incorreta';
+    err.style.display='block';
+    document.getElementById('login-pwd').value='';
+    document.getElementById('login-pwd').focus();
+  }
+}
+
+function checkAuth(){
+  setupDefaultPwd();
+  if(!sessionStorage.getItem(_SESSION_KEY)){
+    document.getElementById('login-screen').style.display='flex';
+    // Focus password field after brief delay
+    setTimeout(function(){
+      var el=document.getElementById('login-pwd');
+      if(el)el.focus();
+    },100);
+  }
+}
+
+async function changePwd(){
+  var p1=document.getElementById('new-pwd-1').value;
+  var p2=document.getElementById('new-pwd-2').value;
+  var msg=document.getElementById('pwd-msg');
+  msg.style.display='block';
+  if(!p1||p1.length<4){msg.style.color='var(--rd)';msg.textContent='Senha deve ter pelo menos 4 caracteres';return;}
+  if(p1!==p2){msg.style.color='var(--rd)';msg.textContent='Senhas não coincidem';return;}
+  var h=await hashPwd(p1);
+  localStorage.setItem(_PWD_KEY,h);
+  msg.style.color='var(--gr)';msg.textContent='✓ Senha alterada com sucesso';
+  document.getElementById('new-pwd-1').value='';
+  document.getElementById('new-pwd-2').value='';
+  setTimeout(function(){msg.style.display='none';},3000);
+}
+
+function logout(){
+  sessionStorage.removeItem(_SESSION_KEY);
+  location.reload();
+}
+
 function togglePrivacy(){
   _privacyOn=!_privacyOn;
   // Toggle class on dash-top and dash-bot containers
@@ -3415,7 +3528,7 @@ goTab=function(t){
   try{closeAllDrawers();}catch(e){console.warn('closeAllDrawers error:',e);}
   try{_origGoTab(t);}catch(e){console.error('goTab error for',t,':',e);}
 };
-initSupabase();
+initSupabase();checkAuth();
 </script>
 <!-- MODAL SHOPEE -->
 <div class="overlay" id="sh-overlay" onclick="if(event.target===this)closeShopeeModal()">
