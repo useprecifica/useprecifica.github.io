@@ -142,6 +142,9 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .an-bar-fill{height:100%;border-radius:2px}
 
 .cod-copy{cursor:pointer;text-decoration:underline dotted;transition:color .15s}
+.privacy-hidden .ri-name{color:transparent;background:var(--bd2);border-radius:4px;user-select:none}
+.privacy-hidden .badge{color:transparent;background:var(--bd2);border-radius:4px;user-select:none}
+.privacy-hidden .ri-sub{color:transparent!important;background:var(--bd2);border-radius:4px;user-select:none}
 .cod-copy:active{color:var(--gr)!important}
 .an-obs{font-size:11px;color:var(--t2);font-style:italic;border-top:1px solid var(--bd);padding-top:6px;margin-top:5px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 /* Buttons */
@@ -304,6 +307,12 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
   <div class="tb-sep"></div>
   <div class="tb-sub" id="tb-sub"></div>
   <div class="tb-right">
+    <button onclick="togglePrivacy()" id="privacy-btn" title="Ocultar dados sensíveis" style="background:none;border:none;cursor:pointer;padding:4px 6px;color:var(--t3);display:flex;align-items:center;border-radius:6px;transition:color .15s" onmouseover="this.style.color='var(--t)'" onmouseout="this.style.color='var(--t3)'">
+      <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    </button>
     <button onclick="syncUp(false)" title="Forçar sincronização com Supabase" style="font-family:var(--font);font-size:11px;font-weight:500;color:var(--t3);background:none;border:1px solid var(--bd);border-radius:6px;padding:3px 9px;cursor:pointer;margin-right:6px" id="sync-now-btn">↑↓ Sync</button><button onclick="toggleDark()" id="dark-btn" style="font-family:var(--font);font-size:14px;background:none;border:1px solid var(--bd);border-radius:6px;padding:2px 8px;cursor:pointer;margin-right:6px;color:var(--t2)" title="Modo escuro">☀️</button>
     
     <div id="sync-status" style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3);cursor:pointer" onclick="goTab('config')" title="Configurar Supabase">
@@ -1784,6 +1793,30 @@ function toggleTag(id,tag){
       <button class="tag-btn ${tg.pub?'on-pub':''}" data-id="${id}" data-tag="pub" onclick="toggleTagBtn(this)">📢 Publicidade</button>`
   }
   if(document.getElementById('p-anuncios').style.display!=='none')renderAnuncios()
+}
+
+var _privacyOn=false;
+function togglePrivacy(){
+  _privacyOn=!_privacyOn;
+  // Toggle class on dash-top and dash-bot containers
+  ['dash-top','dash-bot'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.classList.toggle('privacy-hidden',_privacyOn);
+  });
+  // Update eye icon
+  var icon=document.getElementById('eye-icon');
+  if(icon){
+    if(_privacyOn){
+      // Eye with slash (closed)
+      icon.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      // Eye open
+      icon.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+  // Update button color
+  var btn=document.getElementById('privacy-btn');
+  if(btn)btn.style.color=_privacyOn?'var(--pu)':'var(--t3)';
 }
 
 function copiarCod(cod){
