@@ -1799,7 +1799,7 @@ var _privacyOn=false;
 function togglePrivacy(){
   _privacyOn=!_privacyOn;
   // Toggle class on dash-top and dash-bot containers
-  ['dash-top','dash-bot'].forEach(function(id){
+  ['dash-geral-top','dash-geral-bot'].forEach(function(id){
     var el=document.getElementById(id);
     if(el)el.classList.toggle('privacy-hidden',_privacyOn);
   });
