@@ -758,12 +758,16 @@ async function doForgot(){
   msg.textContent='Link enviado! Verifique sua caixa de entrada.';msg.style.display='block';
 }
 
+let _loggingOut=false;
 async function doLogout(){
+  if(_loggingOut)return;
+  _loggingOut=true;
   await SB.auth.signOut();
   USER=null;PROFILE=null;CHANNELS=[];LISTINGS=[];
   document.getElementById('app').classList.remove('ready');
   document.getElementById('auth-screen').style.display='flex';
   showLogin();
+  setTimeout(()=>{_loggingOut=false;},1000);
 }
 
 async function onLogin(user){
@@ -1623,8 +1627,7 @@ async function init(){
   }
   // Listen for auth changes
   SB.auth.onAuthStateChange((event,session)=>{
-    if(event==='SIGNED_IN'&&session?.user)onLogin(session.user);
-    if(event==='SIGNED_OUT')doLogout();
+    if(event==='SIGNED_IN'&&session?.user&&!USER)onLogin(session.user);
   });
 }
 
