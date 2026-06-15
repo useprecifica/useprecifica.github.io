@@ -153,6 +153,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--mono);white-space:nowrap}
 .b-ok{background:#dcfce7;color:#15803d}
 .b-nok{background:#fee2e2;color:#dc2626}
+.b-warn{background:#fef3c7;color:#b45309}
 .b-am{background:#fef9c3;color:#a16207}
 .b-t{background:var(--sur2);color:var(--t2)}
 [data-theme="light"] .b-ok{background:#dcfce7;color:#15803d}
@@ -208,6 +209,20 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 
 /* ── TWO COL ── */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* ── CUSTO RULES (Mapear Custos) ── */
+.rule-row{display:flex;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.rule-row:last-child{border-bottom:none}
+.rule-order{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.rule-order button{padding:1px 6px;font-size:10px;line-height:1.3}
+.rule-produto{flex:1 1 140px;min-width:120px}
+.rule-inc{flex:2 1 200px;min-width:180px}
+.rule-exc{flex:1 1 130px;min-width:120px}
+.rule-custo{width:90px;text-align:right;flex-shrink:0}
+.rule-del{flex-shrink:0;color:var(--rd);border-color:var(--rd)}
+@media(max-width:860px){
+  .rule-produto,.rule-inc,.rule-exc{flex:1 1 100%}
+}
 
 /* ── OFFLINE BANNER ── */
 #offline-bar{display:none;background:#78350f;color:#fcd34d;font-size:12px;font-weight:500;text-align:center;padding:6px;flex-shrink:0}
@@ -373,6 +388,10 @@ select.tbl-inp{cursor:pointer}
         <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Insights
       </button>
+      <button class="ni" data-tab="custos" onclick="goTab('custos')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Mapear Custos
+      </button>
       <div class="sidebar-section">Canais</div>
       <div id="sidebar-channels"></div>
       <button class="ni" onclick="openAddChannel()" style="color:var(--pu);margin-top:4px">
@@ -461,6 +480,46 @@ select.tbl-inp{cursor:pointer}
           </div>
         </div>
 
+        <!-- MAPEAR CUSTOS -->
+        <div id="p-custos" style="display:none">
+          <div class="ph">
+            <div class="ph-left"><div class="ph-title">Mapear Custos</div><div class="ph-sub" id="custo-sub">Carregando...</div></div>
+            <div class="ph-actions">
+              <button class="btn btn-sm" onclick="loadDefaultCustoRules()">Carregar regras padrão</button>
+              <button class="btn btn-sm btn-p" onclick="addCustoRule()">+ Nova regra</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Regras de correspondência</div>
+            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">A primeira regra que bater no nome do anúncio (de cima pra baixo) define o custo sugerido. Em "Contém" e "Não contém" use palavras separadas por vírgula — acentos e maiúsculas não importam.</div>
+            <div id="custo-rules-list"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Pré-visualização</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+              <input type="search" id="custo-busca" placeholder="Buscar anúncio..." class="tbl-inp" style="flex:1;min-width:160px" oninput="renderCustoPreview()">
+              <select id="custo-fcanal" class="tbl-inp" onchange="renderCustoPreview()"><option value="">Todos os canais</option></select>
+              <select id="custo-fstatus" class="tbl-inp" onchange="renderCustoPreview()">
+                <option value="">Todos</option>
+                <option value="change">Vão mudar</option>
+                <option value="ok">Já corretos</option>
+                <option value="nomatch">Sem regra</option>
+              </select>
+            </div>
+            <div class="metrics" id="custo-metrics"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-sm" onclick="toggleCustoCheckAll(true)">Marcar todos</button>
+                <button class="btn btn-sm" onclick="toggleCustoCheckAll(false)">Desmarcar todos</button>
+              </div>
+              <button class="btn btn-p btn-sm" onclick="applyCustoMapping()">Aplicar custos selecionados</button>
+            </div>
+            <div id="custo-results"></div>
+          </div>
+        </div>
+
         <!-- CONFIG -->
         <div id="p-config" style="display:none">
           <div class="ph"><div class="ph-left"><div class="ph-title">Configurações</div></div></div>
@@ -542,6 +601,10 @@ select.tbl-inp{cursor:pointer}
     <button class="drawer-item" data-tab="insights" onclick="closeDrawers();goTab('insights')">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <div class="drawer-item-text"><strong>Insights</strong><span>Análise e sugestões</span></div>
+    </button>
+    <button class="drawer-item" data-tab="custos" onclick="closeDrawers();goTab('custos')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <div class="drawer-item-text"><strong>Mapear Custos</strong><span>Aplicar custos em lote</span></div>
     </button>
     <button class="drawer-item" data-tab="config" onclick="closeDrawers();goTab('config')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -670,6 +733,12 @@ let _privacyOn=false;
 const CUSTO_KEY='pfy2_custos';
 function getCustos(){try{return JSON.parse(localStorage.getItem(CUSTO_KEY)||'{}')}catch{return{}}}
 function saveCustos(obj){localStorage.setItem(CUSTO_KEY,JSON.stringify(obj))}
+
+// Mapeamento de custos por regra (aba "Mapear Custos")
+const CUSTO_RULES_KEY='pfy2_custo_rules';
+let _custoRules=[];
+let _custoRulesLoaded=false;
+let _custoMapChecks={};
 
 // ══════════════════════════════════════════════
 // UTILS
@@ -835,7 +904,7 @@ function goTab(tab,chId){
   document.querySelectorAll('[data-tab]').forEach(el=>{
     el.classList.toggle('active',el.dataset.tab===tab);
   });
-  const pages=['dash','channel','tags','insights','config','setup'];
+  const pages=['dash','channel','tags','insights','custos','config','setup'];
   pages.forEach(p=>{
     const el=document.getElementById('p-'+p);
     if(el)el.style.display='none';
@@ -846,6 +915,7 @@ function goTab(tab,chId){
   else if(tab==='channel'){_activeCh=chId||_activeCh;renderChannel();}
   else if(tab==='tags')renderTags();
   else if(tab==='insights')renderInsights();
+  else if(tab==='custos')renderCustoMap();
   else if(tab==='config')updateConfig();
   document.querySelector('.content').scrollTop=0;
 }
@@ -1541,6 +1611,262 @@ function removeCusto(key){
   delete c[key];
   saveCustos(c);
   renderCustos();
+}
+
+// ══════════════════════════════════════════════
+// MAPEAR CUSTOS (regras de correspondência)
+// ══════════════════════════════════════════════
+const DEFAULT_CUSTO_RULES=[
+  {produto:'KIT 2 LUMINÁRIA ÁUSTRIA',inc:['KIT','2','AUSTRIA','LUMINARIA'],exc:[],custo:243.80},
+  {produto:'KIT 2 ABAJUR AUSTRIA',inc:['KIT','2','AUSTRIA','ABAJUR'],exc:[],custo:128.30},
+  {produto:'KIT ÁUSTRIA ABAJUR + LUMINÁRIA',inc:['KIT','AUSTRIA','ABAJUR','LUMINARIA'],exc:['2'],custo:186.05},
+  {produto:'LUMINÁRIA ÁUSTRIA C/ 2 CÚPULAS',inc:['AUSTRIA','LUMINARIA','CUPULA'],exc:['KIT'],custo:153.90},
+  {produto:'ABAJUR AUSTRIA',inc:['ABAJUR','AUSTRIA'],exc:['KIT'],custo:64.15},
+  {produto:'LUMINÁRIA ÁUSTRIA',inc:['LUMINARIA','AUSTRIA'],exc:['KIT','CUPULA'],custo:121.90},
+  {produto:'KIT 2 WOOD',inc:['KIT','2','WOOD'],exc:[],custo:213.00},
+  {produto:'ABAJUR WOOD',inc:['ABAJUR','WOOD'],exc:['KIT'],custo:106.41},
+  {produto:'KIT 2 MINE',inc:['KIT','2','MINE'],exc:[],custo:74.58},
+  {produto:'ABAJUR MINE',inc:['ABAJUR','MINE'],exc:['KIT'],custo:37.29},
+  {produto:'ABAJUR SKY',inc:['ABAJUR','SKY'],exc:[],custo:106.41},
+  {produto:'KIT 2 SLIM',inc:['KIT','2','SLIM'],exc:[],custo:86.50},
+  {produto:'ABAJUR SLIM',inc:['ABAJUR','SLIM'],exc:['KIT'],custo:43.25},
+  {produto:'KIT 2 MONÂCOS',inc:['KIT','2','MONACO'],exc:[],custo:211.74},
+  {produto:'CÚPULA MONÂCO',inc:['CUPULA','MONACO'],exc:[],custo:30.00},
+  {produto:'LUMINÁRIA MONÂCO',inc:['MONACO'],exc:['KIT','CUPULA'],custo:105.87},
+  {produto:'LUMINÁRIA RIPADA',inc:['RIPADA'],exc:[],custo:133.21},
+  {produto:'LUMINÁRIA IPANEMA',inc:['IPANEMA'],exc:[],custo:106.78},
+  {produto:'ABAJUR WELLS',inc:['ABAJUR','WELLS'],exc:[],custo:52.86},
+  {produto:'LUMINÁRIA WELLS',inc:['WELLS'],exc:['ABAJUR'],custo:108.33},
+  {produto:'LUMINÁRIA VIENA',inc:['VIENA'],exc:[],custo:112.09},
+  {produto:'LUMINÁRIA FLORIPA',inc:['FLORIPA'],exc:[],custo:117.02},
+  {produto:'CÚPULA 40',inc:['CUPULA','40'],exc:[],custo:32.00},
+  {produto:'PENDENTE CONE SISAL',inc:['PENDENTE','CONE','SISAL'],exc:[],custo:52.50},
+  {produto:'PENDENTE CÚPULA CONE',inc:['PENDENTE','CUPULA','CONE'],exc:['SISAL'],custo:48.00},
+  {produto:'PENDENTE CÚPULA CILINDRICA',inc:['PENDENTE','CUPULA','CILINDRICA'],exc:[],custo:49.00},
+  {produto:'VASO ROMA 80CM',inc:['VASO','ROMA'],exc:[],custo:340.00},
+  {produto:'VASO VIETNAMITA 60CM',inc:['VASO','VIETNAMITA'],exc:[],custo:350.00},
+  {produto:'VASO XINA 65',inc:['VASO','XINA'],exc:[],custo:219.00},
+  {produto:'BACIA M FIBRA DE VIDRO',inc:['BACIA'],exc:[],custo:220.00},
+  {produto:'SUPORTE PORTA GUARDANAPO',inc:['SUPORTE','GUARDANAPO'],exc:[],custo:6.00},
+  {produto:'ADEGA MINIMALISTA',inc:['ADEGA'],exc:[],custo:15.00},
+];
+
+// Normaliza: remove acentos, maiúsculas, e troca qualquer separador por espaço único
+function normCusto(str){
+  return (str||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();
+}
+
+function loadCustoRules(){
+  try{
+    const raw=localStorage.getItem(CUSTO_RULES_KEY);
+    if(!raw)return[];
+    const arr=JSON.parse(raw);
+    return Array.isArray(arr)?arr:[];
+  }catch{return[]}
+}
+function saveCustoRules(){
+  localStorage.setItem(CUSTO_RULES_KEY,JSON.stringify(_custoRules));
+}
+
+// Retorna a primeira regra (na ordem) cujo "contém" bate e "não contém" não bate
+function matchCustoRule(nomeNorm){
+  for(const r of _custoRules){
+    const inc=(r.inc||[]).map(normCusto).filter(Boolean);
+    if(!inc.length)continue;
+    const exc=(r.exc||[]).map(normCusto).filter(Boolean);
+    if(inc.every(k=>nomeNorm.includes(k))&&exc.every(k=>!nomeNorm.includes(k)))return r;
+  }
+  return null;
+}
+
+function renderCustoMap(){
+  if(!_custoRulesLoaded){
+    _custoRules=loadCustoRules();
+    _custoRulesLoaded=true;
+    if(!_custoRules.length){
+      _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
+      saveCustoRules();
+    }
+  }
+  renderCustoRulesEditor();
+  const fcanal=document.getElementById('custo-fcanal');
+  if(fcanal&&fcanal.options.length<=1){
+    fcanal.innerHTML='<option value="">Todos os canais</option>'+CHANNELS.map(c=>`<option value="${c.id}">${sanitize(c.name)}</option>`).join('');
+  }
+  renderCustoPreview();
+}
+
+function renderCustoRulesEditor(){
+  const div=document.getElementById('custo-rules-list');
+  if(!div)return;
+  if(!_custoRules.length){
+    div.innerHTML='<div class="empty">Nenhuma regra ainda. Clique em "Carregar regras padrão" ou "+ Nova regra".</div>';
+    return;
+  }
+  div.innerHTML=_custoRules.map((r,i)=>`
+    <div class="rule-row">
+      <div class="rule-order">
+        <button class="btn btn-sm" onclick="moveCustoRule(${i},-1)" ${i===0?'disabled':''} title="Subir prioridade">↑</button>
+        <button class="btn btn-sm" onclick="moveCustoRule(${i},1)" ${i===_custoRules.length-1?'disabled':''} title="Baixar prioridade">↓</button>
+      </div>
+      <input class="tbl-inp rule-produto" placeholder="Produto (referência)" value="${sanitize(r.produto||'')}" onchange="updateCustoRule(${i},'produto',this.value)">
+      <input class="tbl-inp rule-inc" placeholder="Contém: ex. KIT, 2, AUSTRIA" value="${sanitize((r.inc||[]).join(', '))}" onchange="updateCustoRule(${i},'inc',this.value)">
+      <input class="tbl-inp rule-exc" placeholder="Não contém (opcional)" value="${sanitize((r.exc||[]).join(', '))}" onchange="updateCustoRule(${i},'exc',this.value)">
+      <input class="tbl-inp rule-custo" type="number" step=".01" min="0" placeholder="0,00" value="${r.custo||''}" onchange="updateCustoRule(${i},'custo',this.value)">
+      <button class="btn btn-sm rule-del" onclick="removeCustoRule(${i})" title="Remover regra">×</button>
+    </div>`).join('');
+}
+
+function updateCustoRule(i,field,val){
+  if(!_custoRules[i])return;
+  if(field==='inc'||field==='exc'){
+    _custoRules[i][field]=val.split(',').map(x=>x.trim()).filter(Boolean);
+  }else if(field==='custo'){
+    _custoRules[i][field]=parseFloat(val)||0;
+  }else{
+    _custoRules[i][field]=val;
+  }
+  saveCustoRules();
+  _custoMapChecks={};
+  renderCustoPreview();
+}
+
+function addCustoRule(){
+  _custoRules.push({produto:'',inc:[],exc:[],custo:0});
+  saveCustoRules();
+  _custoMapChecks={};
+  renderCustoMap();
+}
+
+function removeCustoRule(i){
+  _custoRules.splice(i,1);
+  saveCustoRules();
+  _custoMapChecks={};
+  renderCustoMap();
+}
+
+function moveCustoRule(i,dir){
+  const j=i+dir;
+  if(j<0||j>=_custoRules.length)return;
+  const tmp=_custoRules[i];_custoRules[i]=_custoRules[j];_custoRules[j]=tmp;
+  saveCustoRules();
+  _custoMapChecks={};
+  renderCustoMap();
+}
+
+function loadDefaultCustoRules(){
+  if(_custoRules.length&&!confirm('Isso vai substituir as regras atuais pelas regras padrão (ÁUSTRIA, WOOD, MINE, MONÂCO, SLIM, CÚPULA, etc). As regras atuais serão perdidas. Continuar?'))return;
+  _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
+  saveCustoRules();
+  _custoMapChecks={};
+  renderCustoMap();
+}
+
+// Para cada anúncio: regra que bateu, custo atual, custo sugerido e status
+function computeCustoPreview(){
+  return LISTINGS.map(l=>{
+    const ch=CHANNELS.find(c=>c.id===l.channel_id);
+    const nomeNorm=normCusto(l.nome);
+    const rule=matchCustoRule(nomeNorm);
+    const custoAtual=+l.custo||0;
+    const custoNovo=rule?(+rule.custo||0):null;
+    let status;
+    if(!rule)status='nomatch';
+    else if(Math.abs(custoNovo-custoAtual)<0.005)status='ok';
+    else status='change';
+    return{id:l.id,nome:l.nome,channel_id:l.channel_id,chName:ch?.name||'',custoAtual,custoNovo,rule,status};
+  });
+}
+
+function getFilteredCustoPreview(data){
+  const q=normCusto(document.getElementById('custo-busca')?.value||'');
+  const fc=document.getElementById('custo-fcanal')?.value||'';
+  const fs=document.getElementById('custo-fstatus')?.value||'';
+  let filtered=data;
+  if(q)filtered=filtered.filter(r=>normCusto(r.nome).includes(q));
+  if(fc)filtered=filtered.filter(r=>r.channel_id===fc);
+  if(fs)filtered=filtered.filter(r=>r.status===fs);
+  return filtered;
+}
+
+function renderCustoPreview(){
+  const data=computeCustoPreview();
+  data.forEach(r=>{
+    if(_custoMapChecks[r.id]===undefined)_custoMapChecks[r.id]=(r.status==='change');
+  });
+
+  const total=data.length;
+  const change=data.filter(r=>r.status==='change').length;
+  const ok=data.filter(r=>r.status==='ok').length;
+  const nomatch=data.filter(r=>r.status==='nomatch').length;
+
+  const met=document.getElementById('custo-metrics');
+  if(met)met.innerHTML=`
+    <div class="met"><div class="met-label">Total</div><div class="met-val">${total}</div><div class="met-sub">anúncios</div></div>
+    <div class="met"><div class="met-label" style="color:var(--am)">Vão mudar</div><div class="met-val" style="color:${change?'var(--am)':'var(--t)'}">${change}</div><div class="met-sub">com regra nova</div></div>
+    <div class="met"><div class="met-label" style="color:var(--gr)">Já corretos</div><div class="met-val" style="color:var(--gr)">${ok}</div><div class="met-sub">custo confere</div></div>
+    <div class="met"><div class="met-label" style="color:var(--rd)">Sem regra</div><div class="met-val" style="color:${nomatch?'var(--rd)':'var(--t)'}">${nomatch}</div><div class="met-sub">revisar manualmente</div></div>`;
+
+  const sub=document.getElementById('custo-sub');
+  if(sub)sub.textContent=`${_custoRules.length} regra${_custoRules.length!==1?'s':''} · ${change} para atualizar · ${nomatch} sem correspondência`;
+
+  const filtered=getFilteredCustoPreview(data);
+  const cont=document.getElementById('custo-results');
+  if(!cont)return;
+  if(!filtered.length){cont.innerHTML='<div class="empty">Nenhum anúncio encontrado</div>';return;}
+  cont.innerHTML=filtered.map(r=>{
+    let right;
+    if(r.status==='nomatch'){
+      right=`<span class="badge b-nok">Sem regra</span><div class="ri-sub">${fmt(r.custoAtual)}</div>`;
+    }else{
+      const badge=r.status==='ok'?'b-ok':'b-warn';
+      right=`<span class="badge ${badge}">${r.rule.produto?sanitize(r.rule.produto):'regra'}</span><div class="ri-sub">${fmt(r.custoAtual)} → ${fmt(r.custoNovo)}</div>`;
+    }
+    return `<div class="ri" style="cursor:default">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+        <input type="checkbox" ${r.status==='nomatch'?'disabled':''} ${_custoMapChecks[r.id]?'checked':''} onchange="toggleCustoCheck('${r.id}',this.checked)" style="width:16px;height:16px;flex-shrink:0;accent-color:var(--pu)">
+        <div style="min-width:0;flex:1">
+          <div class="ri-name">${sanitize(r.nome)}</div>
+          <div style="font-size:11px;color:var(--t3)">${sanitize(r.chName)}</div>
+        </div>
+      </div>
+      <div class="ri-right">${right}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCustoCheck(id,val){
+  _custoMapChecks[id]=val;
+}
+
+function toggleCustoCheckAll(val){
+  const data=computeCustoPreview();
+  const filtered=getFilteredCustoPreview(data);
+  filtered.forEach(r=>{if(r.status!=='nomatch')_custoMapChecks[r.id]=val;});
+  renderCustoPreview();
+}
+
+async function applyCustoMapping(){
+  const data=computeCustoPreview();
+  const toApply=data.filter(r=>_custoMapChecks[r.id]&&r.status==='change');
+  if(!toApply.length){alert('Nenhum item marcado precisa de atualização.');return;}
+  if(!confirm(`Atualizar o custo de ${toApply.length} anúncio(s)? Apenas o campo "Custo" será sobrescrito no Supabase.`))return;
+  setSyncStatus('syncing');
+  let ok=0,err=0;
+  for(const r of toApply){
+    try{
+      const{error}=await SB.from('listings').update({custo:r.custoNovo,updated_at:new Date().toISOString()}).eq('id',r.id);
+      if(error)throw error;
+      const idx=LISTINGS.findIndex(l=>l.id===r.id);
+      if(idx>=0)LISTINGS[idx].custo=r.custoNovo;
+      ok++;
+    }catch(e){err++;}
+  }
+  setSyncStatus(err?'err':'ok');
+  alert(`${ok} anúncio(s) atualizado(s)${err?` · ${err} com erro`:''}.`);
+  renderCustoMap();
+  renderDash();
+  if(_activeCh)renderChannel();
 }
 
 // ══════════════════════════════════════════════
