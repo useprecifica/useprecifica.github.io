@@ -210,7 +210,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 /* ── TWO COL ── */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 
-/* ── CUSTO RULES (Mapear Custos) ── */
+/* ── CUSTO RULES (Custos) ── */
 .rule-row{display:flex;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
 .rule-row:last-child{border-bottom:none}
 .rule-order{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
@@ -390,7 +390,7 @@ select.tbl-inp{cursor:pointer}
       </button>
       <button class="ni" data-tab="custos" onclick="goTab('custos')">
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        Mapear Custos
+        Custos
       </button>
       <div class="sidebar-section">Canais</div>
       <div id="sidebar-channels"></div>
@@ -483,40 +483,35 @@ select.tbl-inp{cursor:pointer}
         <!-- MAPEAR CUSTOS -->
         <div id="p-custos" style="display:none">
           <div class="ph">
-            <div class="ph-left"><div class="ph-title">Mapear Custos</div><div class="ph-sub" id="custo-sub">Carregando...</div></div>
-            <div class="ph-actions">
-              <button class="btn btn-sm" onclick="loadDefaultCustoRules()">Carregar regras padrão</button>
-              <button class="btn btn-sm btn-p" onclick="addCustoRule()">+ Nova regra</button>
+            <div class="ph-left"><div class="ph-title">Custos</div><div class="ph-sub" id="custo-sub">Carregando...</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Catálogo de Produtos</div>
+            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Custo base de cada produto. Ao alterar o custo aqui, todos os anúncios vinculados a ele são atualizados automaticamente — em qualquer canal.</div>
+            <div id="produtos-list"></div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn btn-sm" onclick="addProduto()">+ Novo produto</button>
+              <button class="btn btn-sm" onclick="seedProdutosPadrao()">Carregar tabela padrão</button>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-title">Regras de correspondência</div>
-            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">A primeira regra que bater no nome do anúncio (de cima pra baixo) define o custo sugerido. Em "Contém" e "Não contém" use palavras separadas por vírgula — acentos e maiúsculas não importam.</div>
+            <div class="card-title">Regras de sugestão</div>
+            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Usadas só para sugerir o vínculo entre anúncios e produtos, com base em palavras do nome do anúncio. A primeira regra que bater (de cima pra baixo) é sugerida. "Contém"/"Não contém" aceitam várias palavras separadas por vírgula — acentos e maiúsculas não importam.</div>
             <div id="custo-rules-list"></div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn btn-sm" onclick="addCustoRule()">+ Nova regra</button>
+              <button class="btn btn-sm" onclick="loadDefaultCustoRules()">Carregar regras padrão</button>
+            </div>
           </div>
 
           <div class="card">
-            <div class="card-title">Pré-visualização</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-              <input type="search" id="custo-busca" placeholder="Buscar anúncio..." class="tbl-inp" style="flex:1;min-width:160px" oninput="renderCustoPreview()">
-              <select id="custo-fcanal" class="tbl-inp" onchange="renderCustoPreview()"><option value="">Todos os canais</option></select>
-              <select id="custo-fstatus" class="tbl-inp" onchange="renderCustoPreview()">
-                <option value="">Todos</option>
-                <option value="change">Vão mudar</option>
-                <option value="ok">Já corretos</option>
-                <option value="nomatch">Sem regra</option>
-              </select>
-            </div>
-            <div class="metrics" id="custo-metrics"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
-              <div style="display:flex;gap:8px">
-                <button class="btn btn-sm" onclick="toggleCustoCheckAll(true)">Marcar todos</button>
-                <button class="btn btn-sm" onclick="toggleCustoCheckAll(false)">Desmarcar todos</button>
-              </div>
-              <button class="btn btn-p btn-sm" onclick="applyCustoMapping()">Aplicar custos selecionados</button>
-            </div>
-            <div id="custo-results"></div>
+            <div class="card-title">Vincular Anúncios</div>
+            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Vincule cada anúncio a um produto do catálogo. Ao vincular, o custo do anúncio é sincronizado agora — e fica sincronizado para sempre, mesmo que o custo do produto mude depois.</div>
+            <div class="metrics" id="vinculo-metrics"></div>
+            <div id="vinculo-sugestoes"></div>
+            <div id="vinculo-manual"></div>
           </div>
         </div>
 
@@ -604,7 +599,7 @@ select.tbl-inp{cursor:pointer}
     </button>
     <button class="drawer-item" data-tab="custos" onclick="closeDrawers();goTab('custos')">
       <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <div class="drawer-item-text"><strong>Mapear Custos</strong><span>Aplicar custos em lote</span></div>
+      <div class="drawer-item-text"><strong>Custos</strong><span>Catálogo e vínculos</span></div>
     </button>
     <button class="drawer-item" data-tab="config" onclick="closeDrawers();goTab('config')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -724,7 +719,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 // STATE
 // ══════════════════════════════════════════════
 let SB=null, USER=null, PROFILE=null;
-let CHANNELS=[], LISTINGS=[];
+let CHANNELS=[], LISTINGS=[], PRODUTOS=[];
 let _activeTab='dash', _activeCh=null;
 let _editListingId=null, _editChannelId=null;
 let _privacyOn=false;
@@ -734,11 +729,10 @@ const CUSTO_KEY='pfy2_custos';
 function getCustos(){try{return JSON.parse(localStorage.getItem(CUSTO_KEY)||'{}')}catch{return{}}}
 function saveCustos(obj){localStorage.setItem(CUSTO_KEY,JSON.stringify(obj))}
 
-// Mapeamento de custos por regra (aba "Mapear Custos")
+// Mapeamento de custos por regra (aba "Custos")
 const CUSTO_RULES_KEY='pfy2_custo_rules';
 let _custoRules=[];
 let _custoRulesLoaded=false;
-let _custoMapChecks={};
 
 // ══════════════════════════════════════════════
 // UTILS
@@ -832,7 +826,7 @@ async function doLogout(){
   if(_loggingOut)return;
   _loggingOut=true;
   await SB.auth.signOut();
-  USER=null;PROFILE=null;CHANNELS=[];LISTINGS=[];
+  USER=null;PROFILE=null;CHANNELS=[];LISTINGS=[];PRODUTOS=[];
   document.getElementById('app').classList.remove('ready');
   document.getElementById('auth-screen').style.display='flex';
   showLogin();
@@ -869,6 +863,11 @@ async function loadAll(){
     const {data:ls,error:e2}=await SB.from('listings').select('*').order('created_at');
     if(e2)throw e2;
     LISTINGS=ls||[];
+
+    // Load catálogo de produtos (custo base) — tolera tabela ainda não criada
+    const {data:prods,error:e3}=await SB.from('produtos_custo').select('*').order('nome');
+    PRODUTOS=e3?[]:(prods||[]);
+    if(e3)console.warn('produtos_custo indisponível (rode o SQL de setup):',e3.message);
 
     // Load profile
     const {data:prof}=await SB.from('profiles').select('*').eq('id',USER.id).single();
@@ -1689,11 +1688,8 @@ function renderCustoMap(){
     }
   }
   renderCustoRulesEditor();
-  const fcanal=document.getElementById('custo-fcanal');
-  if(fcanal&&fcanal.options.length<=1){
-    fcanal.innerHTML='<option value="">Todos os canais</option>'+CHANNELS.map(c=>`<option value="${c.id}">${sanitize(c.name)}</option>`).join('');
-  }
-  renderCustoPreview();
+  renderProdutosList();
+  renderVinculoSection();
 }
 
 function renderCustoRulesEditor(){
@@ -1727,21 +1723,18 @@ function updateCustoRule(i,field,val){
     _custoRules[i][field]=val;
   }
   saveCustoRules();
-  _custoMapChecks={};
-  renderCustoPreview();
+  renderVinculoSection();
 }
 
 function addCustoRule(){
   _custoRules.push({produto:'',inc:[],exc:[],custo:0});
   saveCustoRules();
-  _custoMapChecks={};
   renderCustoMap();
 }
 
 function removeCustoRule(i){
   _custoRules.splice(i,1);
   saveCustoRules();
-  _custoMapChecks={};
   renderCustoMap();
 }
 
@@ -1750,7 +1743,6 @@ function moveCustoRule(i,dir){
   if(j<0||j>=_custoRules.length)return;
   const tmp=_custoRules[i];_custoRules[i]=_custoRules[j];_custoRules[j]=tmp;
   saveCustoRules();
-  _custoMapChecks={};
   renderCustoMap();
 }
 
@@ -1758,116 +1750,220 @@ function loadDefaultCustoRules(){
   if(_custoRules.length&&!confirm('Isso vai substituir as regras atuais pelas regras padrão (ÁUSTRIA, WOOD, MINE, MONÂCO, SLIM, CÚPULA, etc). As regras atuais serão perdidas. Continuar?'))return;
   _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
   saveCustoRules();
-  _custoMapChecks={};
   renderCustoMap();
 }
 
-// Para cada anúncio: regra que bateu, custo atual, custo sugerido e status
-function computeCustoPreview(){
-  return LISTINGS.map(l=>{
-    const ch=CHANNELS.find(c=>c.id===l.channel_id);
-    const nomeNorm=normCusto(l.nome);
-    const rule=matchCustoRule(nomeNorm);
-    const custoAtual=+l.custo||0;
-    const custoNovo=rule?(+rule.custo||0):null;
-    let status;
-    if(!rule)status='nomatch';
-    else if(Math.abs(custoNovo-custoAtual)<0.005)status='ok';
-    else status='change';
-    return{id:l.id,nome:l.nome,channel_id:l.channel_id,chName:ch?.name||'',custoAtual,custoNovo,rule,status};
-  });
-}
-
-function getFilteredCustoPreview(data){
-  const q=normCusto(document.getElementById('custo-busca')?.value||'');
-  const fc=document.getElementById('custo-fcanal')?.value||'';
-  const fs=document.getElementById('custo-fstatus')?.value||'';
-  let filtered=data;
-  if(q)filtered=filtered.filter(r=>normCusto(r.nome).includes(q));
-  if(fc)filtered=filtered.filter(r=>r.channel_id===fc);
-  if(fs)filtered=filtered.filter(r=>r.status===fs);
-  return filtered;
-}
-
-function renderCustoPreview(){
-  const data=computeCustoPreview();
-  data.forEach(r=>{
-    if(_custoMapChecks[r.id]===undefined)_custoMapChecks[r.id]=(r.status==='change');
-  });
-
-  const total=data.length;
-  const change=data.filter(r=>r.status==='change').length;
-  const ok=data.filter(r=>r.status==='ok').length;
-  const nomatch=data.filter(r=>r.status==='nomatch').length;
-
-  const met=document.getElementById('custo-metrics');
-  if(met)met.innerHTML=`
-    <div class="met"><div class="met-label">Total</div><div class="met-val">${total}</div><div class="met-sub">anúncios</div></div>
-    <div class="met"><div class="met-label" style="color:var(--am)">Vão mudar</div><div class="met-val" style="color:${change?'var(--am)':'var(--t)'}">${change}</div><div class="met-sub">com regra nova</div></div>
-    <div class="met"><div class="met-label" style="color:var(--gr)">Já corretos</div><div class="met-val" style="color:var(--gr)">${ok}</div><div class="met-sub">custo confere</div></div>
-    <div class="met"><div class="met-label" style="color:var(--rd)">Sem regra</div><div class="met-val" style="color:${nomatch?'var(--rd)':'var(--t)'}">${nomatch}</div><div class="met-sub">revisar manualmente</div></div>`;
-
-  const sub=document.getElementById('custo-sub');
-  if(sub)sub.textContent=`${_custoRules.length} regra${_custoRules.length!==1?'s':''} · ${change} para atualizar · ${nomatch} sem correspondência`;
-
-  const filtered=getFilteredCustoPreview(data);
-  const cont=document.getElementById('custo-results');
-  if(!cont)return;
-  if(!filtered.length){cont.innerHTML='<div class="empty">Nenhum anúncio encontrado</div>';return;}
-  cont.innerHTML=filtered.map(r=>{
-    let right;
-    if(r.status==='nomatch'){
-      right=`<span class="badge b-nok">Sem regra</span><div class="ri-sub">${fmt(r.custoAtual)}</div>`;
-    }else{
-      const badge=r.status==='ok'?'b-ok':'b-warn';
-      right=`<span class="badge ${badge}">${r.rule.produto?sanitize(r.rule.produto):'regra'}</span><div class="ri-sub">${fmt(r.custoAtual)} → ${fmt(r.custoNovo)}</div>`;
-    }
+// ══════════════════════════════════════════════
+// CATÁLOGO DE PRODUTOS (produtos_custo)
+// ══════════════════════════════════════════════
+function renderProdutosList(){
+  const div=document.getElementById('produtos-list');
+  if(!div)return;
+  if(!PRODUTOS.length){
+    div.innerHTML='<div class="empty">Nenhum produto no catálogo ainda. Clique em "Carregar tabela padrão" ou "+ Novo produto".</div>';
+    return;
+  }
+  div.innerHTML=PRODUTOS.map(p=>{
+    const cnt=LISTINGS.filter(l=>l.produto_id===p.id).length;
     return `<div class="ri" style="cursor:default">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
-        <input type="checkbox" ${r.status==='nomatch'?'disabled':''} ${_custoMapChecks[r.id]?'checked':''} onchange="toggleCustoCheck('${r.id}',this.checked)" style="width:16px;height:16px;flex-shrink:0;accent-color:var(--pu)">
-        <div style="min-width:0;flex:1">
-          <div class="ri-name">${sanitize(r.nome)}</div>
-          <div style="font-size:11px;color:var(--t3)">${sanitize(r.chName)}</div>
-        </div>
+      <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
+        <input class="tbl-inp" style="flex:1;min-width:120px" value="${sanitize(p.nome)}" onchange="updateProdutoNome('${p.id}',this.value)">
+        <span style="font-size:11px;color:var(--t3);flex-shrink:0;white-space:nowrap">${cnt} anúncio${cnt!==1?'s':''}</span>
       </div>
-      <div class="ri-right">${right}</div>
+      <div class="ri-right" style="flex-direction:row;align-items:center;gap:6px">
+        <input class="tbl-inp" type="number" step=".01" min="0" style="width:90px;text-align:right" value="${p.custo}" onchange="updateProdutoCusto('${p.id}',this.value)">
+        <button class="btn btn-sm rule-del" onclick="removeProduto('${p.id}')" title="Remover do catálogo">×</button>
+      </div>
     </div>`;
   }).join('');
 }
 
-function toggleCustoCheck(id,val){
-  _custoMapChecks[id]=val;
+async function addProduto(){
+  const nome=prompt('Nome do produto:');
+  if(!nome||!nome.trim())return;
+  const custoStr=prompt('Custo (R$):','0');
+  const custo=parseFloat((custoStr||'0').replace(',','.'))||0;
+  try{
+    const{data,error}=await SB.from('produtos_custo').insert({user_id:USER.id,nome:nome.trim(),custo}).select().single();
+    if(error)throw error;
+    PRODUTOS.push(data);
+    PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
+    renderCustoMap();
+  }catch(e){alert('Erro ao criar produto: '+e.message+'\n\nVerifique se a tabela "produtos_custo" já foi criada no Supabase (veja o SQL de setup).');}
 }
 
-function toggleCustoCheckAll(val){
-  const data=computeCustoPreview();
-  const filtered=getFilteredCustoPreview(data);
-  filtered.forEach(r=>{if(r.status!=='nomatch')_custoMapChecks[r.id]=val;});
-  renderCustoPreview();
+async function updateProdutoNome(id,val){
+  const nome=val.trim();
+  if(!nome)return;
+  try{
+    const{error}=await SB.from('produtos_custo').update({nome,updated_at:new Date().toISOString()}).eq('id',id);
+    if(error)throw error;
+    const p=PRODUTOS.find(x=>x.id===id);
+    if(p)p.nome=nome;
+    renderVinculoSection();
+  }catch(e){alert('Erro ao salvar: '+e.message);}
 }
 
-async function applyCustoMapping(){
-  const data=computeCustoPreview();
-  const toApply=data.filter(r=>_custoMapChecks[r.id]&&r.status==='change');
-  if(!toApply.length){alert('Nenhum item marcado precisa de atualização.');return;}
-  if(!confirm(`Atualizar o custo de ${toApply.length} anúncio(s)? Apenas o campo "Custo" será sobrescrito no Supabase.`))return;
+async function updateProdutoCusto(id,val){
+  const custo=parseFloat(String(val).replace(',','.'))||0;
+  try{
+    const{error}=await SB.from('produtos_custo').update({custo,updated_at:new Date().toISOString()}).eq('id',id);
+    if(error)throw error;
+    const p=PRODUTOS.find(x=>x.id===id);
+    if(p)p.custo=custo;
+    // A trigger no Supabase já propagou esse custo para os anúncios vinculados — espelha localmente
+    LISTINGS.forEach(l=>{if(l.produto_id===id)l.custo=custo;});
+    renderCustoMap();
+    renderDash();
+    if(_activeCh)renderChannel();
+  }catch(e){alert('Erro ao salvar: '+e.message+'\n\nVerifique se a tabela "produtos_custo" e a trigger de sincronização já foram criadas no Supabase (veja o SQL de setup).');}
+}
+
+async function removeProduto(id){
+  const cnt=LISTINGS.filter(l=>l.produto_id===id).length;
+  if(!confirm(`Remover este produto do catálogo?${cnt?` ${cnt} anúncio(s) vinculado(s) ficarão sem vínculo (o custo atual deles é mantido).`:''}`))return;
+  try{
+    const{error}=await SB.from('produtos_custo').delete().eq('id',id);
+    if(error)throw error;
+    PRODUTOS=PRODUTOS.filter(p=>p.id!==id);
+    LISTINGS.forEach(l=>{if(l.produto_id===id)l.produto_id=null;});
+    renderCustoMap();
+  }catch(e){alert('Erro ao remover: '+e.message);}
+}
+
+async function seedProdutosPadrao(){
+  const existing=new Set(PRODUTOS.map(p=>normCusto(p.nome)));
+  const novos=DEFAULT_CUSTO_RULES.filter(r=>!existing.has(normCusto(r.produto))).map(r=>({user_id:USER.id,nome:r.produto,custo:r.custo}));
+  if(!novos.length){alert('Todos os produtos da tabela padrão já estão no catálogo.');return;}
+  if(!confirm(`Adicionar ${novos.length} produto(s) ao catálogo?`))return;
+  try{
+    const{data,error}=await SB.from('produtos_custo').insert(novos).select();
+    if(error)throw error;
+    PRODUTOS.push(...(data||[]));
+    PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
+    renderCustoMap();
+  }catch(e){alert('Erro ao carregar tabela padrão: '+e.message+'\n\nVerifique se a tabela "produtos_custo" já foi criada no Supabase (veja o SQL de setup).');}
+}
+
+// ══════════════════════════════════════════════
+// VÍNCULO ANÚNCIO ↔ PRODUTO
+// ══════════════════════════════════════════════
+
+// Agrupa anúncios sem vínculo por sugestão (1ª regra que bater -> produto correspondente no catálogo)
+function computeVinculoSugestoes(){
+  const unlinked=LISTINGS.filter(l=>!l.produto_id);
+  const groupsMap={};
+  const semSugestao=[];
+  unlinked.forEach(l=>{
+    const nomeNorm=normCusto(l.nome);
+    const rule=matchCustoRule(nomeNorm);
+    const produto=rule?PRODUTOS.find(p=>normCusto(p.nome)===normCusto(rule.produto)):null;
+    if(produto){
+      if(!groupsMap[produto.id])groupsMap[produto.id]={produto,listings:[]};
+      groupsMap[produto.id].listings.push(l);
+    }else{
+      semSugestao.push(l);
+    }
+  });
+  return{groups:Object.values(groupsMap),semSugestao};
+}
+
+function renderVinculoSection(){
+  const{groups,semSugestao}=computeVinculoSugestoes();
+  const total=LISTINGS.length;
+  const linked=LISTINGS.filter(l=>l.produto_id).length;
+  const sugTotal=groups.reduce((s,g)=>s+g.listings.length,0);
+
+  const met=document.getElementById('vinculo-metrics');
+  if(met)met.innerHTML=`
+    <div class="met"><div class="met-label">Total</div><div class="met-val">${total}</div><div class="met-sub">anúncios</div></div>
+    <div class="met"><div class="met-label" style="color:var(--gr)">Vinculados</div><div class="met-val" style="color:var(--gr)">${linked}</div><div class="met-sub">com produto</div></div>
+    <div class="met"><div class="met-label" style="color:var(--am)">Sugestões</div><div class="met-val" style="color:${sugTotal?'var(--am)':'var(--t)'}">${sugTotal}</div><div class="met-sub">${groups.length} grupo${groups.length!==1?'s':''}</div></div>
+    <div class="met"><div class="met-label" style="color:var(--rd)">Sem sugestão</div><div class="met-val" style="color:${semSugestao.length?'var(--rd)':'var(--t)'}">${semSugestao.length}</div><div class="met-sub">vincular manual</div></div>`;
+
+  const sub=document.getElementById('custo-sub');
+  if(sub)sub.textContent=`${PRODUTOS.length} produto${PRODUTOS.length!==1?'s':''} no catálogo · ${linked}/${total} anúncios vinculados`;
+
+  const sug=document.getElementById('vinculo-sugestoes');
+  if(sug){
+    if(!groups.length){
+      sug.innerHTML='';
+    }else{
+      sug.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">Sugestões de vínculo</div>'+
+        groups.map(g=>`
+          <div class="card" style="margin-bottom:10px;background:var(--sur2)">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+              <div style="font-size:13px"><strong>${sanitize(g.produto.nome)}</strong> · ${fmt(g.produto.custo)} · ${g.listings.length} anúncio${g.listings.length!==1?'s':''}</div>
+              <button class="btn btn-sm btn-p" onclick="vincularGrupo('${g.produto.id}')">Vincular todos</button>
+            </div>
+            <div style="font-size:12px;color:var(--t2);line-height:1.6">${g.listings.slice(0,6).map(l=>sanitize(l.nome)).join('<br>')}${g.listings.length>6?`<br>… e mais ${g.listings.length-6}`:''}</div>
+          </div>`).join('');
+    }
+  }
+
+  const man=document.getElementById('vinculo-manual');
+  if(man){
+    if(!semSugestao.length){
+      man.innerHTML='';
+    }else{
+      const opts='<option value="">Selecione um produto...</option>'+PRODUTOS.map(p=>`<option value="${p.id}">${sanitize(p.nome)} — ${fmt(p.custo)}</option>`).join('');
+      man.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">Sem sugestão — vincular manualmente</div>'+
+        semSugestao.map(l=>{
+          const ch=CHANNELS.find(c=>c.id===l.channel_id);
+          return `<div class="ri" style="cursor:default">
+            <div style="min-width:0;flex:1">
+              <div class="ri-name">${sanitize(l.nome)}</div>
+              <div style="font-size:11px;color:var(--t3)">${sanitize(ch?.name||'')} · Custo atual ${fmt(l.custo)}</div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap">
+              <select class="tbl-inp" id="manual-sel-${l.id}" style="max-width:220px">${opts}</select>
+              <button class="btn btn-sm" onclick="vincularManual('${l.id}')">Vincular</button>
+            </div>
+          </div>`;
+        }).join('');
+    }
+  }
+}
+
+async function vincularGrupo(produtoId){
+  const{groups}=computeVinculoSugestoes();
+  const grp=groups.find(g=>g.produto.id===produtoId);
+  if(!grp)return;
+  if(!confirm(`Vincular ${grp.listings.length} anúncio(s) ao produto "${grp.produto.nome}" (custo ${fmt(grp.produto.custo)})? O custo desses anúncios será atualizado agora e ficará sincronizado com este produto a partir de hoje.`))return;
   setSyncStatus('syncing');
   let ok=0,err=0;
-  for(const r of toApply){
+  for(const l of grp.listings){
     try{
-      const{error}=await SB.from('listings').update({custo:r.custoNovo,updated_at:new Date().toISOString()}).eq('id',r.id);
+      const{error}=await SB.from('listings').update({produto_id:produtoId,custo:grp.produto.custo,updated_at:new Date().toISOString()}).eq('id',l.id);
       if(error)throw error;
-      const idx=LISTINGS.findIndex(l=>l.id===r.id);
-      if(idx>=0)LISTINGS[idx].custo=r.custoNovo;
+      l.produto_id=produtoId;l.custo=grp.produto.custo;
       ok++;
     }catch(e){err++;}
   }
   setSyncStatus(err?'err':'ok');
-  alert(`${ok} anúncio(s) atualizado(s)${err?` · ${err} com erro`:''}.`);
+  if(err)alert(`${ok} vinculado(s), ${err} com erro.`);
   renderCustoMap();
   renderDash();
   if(_activeCh)renderChannel();
 }
+
+async function vincularManual(listingId){
+  const sel=document.getElementById('manual-sel-'+listingId);
+  const produtoId=sel?.value;
+  if(!produtoId)return;
+  const produto=PRODUTOS.find(p=>p.id===produtoId);
+  if(!produto)return;
+  try{
+    const{error}=await SB.from('listings').update({produto_id:produtoId,custo:produto.custo,updated_at:new Date().toISOString()}).eq('id',listingId);
+    if(error)throw error;
+    const l=LISTINGS.find(x=>x.id===listingId);
+    if(l){l.produto_id=produtoId;l.custo=produto.custo;}
+    renderCustoMap();
+    renderDash();
+    if(_activeCh)renderChannel();
+  }catch(e){alert('Erro ao vincular: '+e.message);}
+}
+
 
 // ══════════════════════════════════════════════
 // PRIVACY
