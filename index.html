@@ -261,7 +261,10 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .ins-icon.ml{background:rgba(245,158,11,.12);color:#f59e0b}
 .ins-icon.sh{background:rgba(249,115,22,.12);color:#f97316}
 
-/* ── CUSTO RULES (Custos) ── */
+/* ── PRIVACY MODE ── */
+.prv{transition:filter .2s var(--ease),opacity .2s var(--ease);border-radius:4px}
+.privacy-mode .prv{filter:blur(7px);opacity:.5;user-select:none;pointer-events:none}
+
 .rule-row{display:flex;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
 .rule-row:last-child{border-bottom:none}
 .rule-order{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
@@ -691,7 +694,7 @@ select.tbl-inp{cursor:pointer}
     <div id="listing-result" style="display:none;margin-bottom:16px">
       <div class="rbox" id="listing-rbox"></div>
       <div class="bd-toggle" id="bd-toggle" onclick="toggleBreakdown()">Ver detalhamento em R$ ▾</div>
-      <div class="bd-detail" id="listing-breakdown"></div>
+      <div class="bd-detail prv" id="listing-breakdown"></div>
     </div>
 
     <div class="fg2" style="margin-bottom:10px">
@@ -1097,7 +1100,7 @@ function renderDash(){
   const met=document.getElementById('dash-metrics');
   if(met)met.innerHTML=`
     <div class="met"><div class="met-label">Total</div><div class="met-val" data-final="${all.length}" data-fmt="int">0</div><div class="met-sub">anúncios</div></div>
-    <div class="met"><div class="met-label">Margem média</div><div class="met-val" data-final="${avgMarg}" data-fmt="pct1" style="color:${avgMarg>=16?'var(--gr)':'var(--rd)'}">0%</div><div class="met-sub">geral</div></div>
+    <div class="met"><div class="met-label">Margem média</div><div class="met-val prv" data-final="${avgMarg}" data-fmt="pct1" style="color:${avgMarg>=16?'var(--gr)':'var(--rd)'}">0%</div><div class="met-sub">geral</div></div>
     <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" data-final="${ok.length}" data-fmt="int" style="color:var(--gr)">0</div><div class="met-sub">${all.length?(ok.length/all.length*100).toFixed(0):0}% do total</div></div>
     <div class="met"><div class="met-label" style="color:var(--rd)">Críticos</div><div class="met-val" data-final="${crit.length}" data-fmt="int" style="color:${crit.length?'var(--rd)':'var(--t)'}">0</div><div class="met-sub">margem &lt;10%</div></div>`;
   animateMetrics(met);
@@ -1106,19 +1109,17 @@ function renderDash(){
   const sorted=[...all].sort((a,b)=>b.margem-a.margem);
   const mkRI=(a)=>`<div class="ri privacy-item" onclick="goChannel('${a.channel_id}')">
     <div style="min-width:0;flex:1">
-      <div class="ri-name privacy-name">${sanitize(a.nome)}</div>
+      <div class="ri-name prv">${sanitize(a.nome)}</div>
       <div class="ri-cod" onclick="event.stopPropagation();copyCod('${a.cod}')" title="Copiar">${a.cod}</div>
       <div style="font-size:11px;color:var(--t3)">${sanitize(a._chName)}</div>
     </div>
-    <div class="ri-right"><span class="badge ${a.margem>=16?'b-ok':'b-nok'} privacy-badge">${a.margem.toFixed(1)}%</span><div class="ri-sub privacy-val">${fmt(a.lucro)}</div></div>
+    <div class="ri-right"><span class="badge ${a.margem>=16?'b-ok':'b-nok'} prv">${a.margem.toFixed(1)}%</span><div class="ri-sub prv">${fmt(a.lucro)}</div></div>
   </div>`;
 
   const top=document.getElementById('dash-top');
   const bot=document.getElementById('dash-bot');
   if(top)top.innerHTML=sorted.slice(0,5).map(mkRI).join('')||'<div class="empty">Sem dados</div>';
   if(bot)bot.innerHTML=sorted.slice(-5).reverse().map(mkRI).join('')||'<div class="empty">Sem dados</div>';
-
-  // Per channel
   const chDiv=document.getElementById('dash-channels');
   if(chDiv)chDiv.innerHTML=CHANNELS.map(ch=>{
     const chL=all.filter(a=>a.channel_id===ch.id);
@@ -1130,13 +1131,11 @@ function renderDash(){
         <div style="font-size:11px;color:var(--t3)">${chL.length} anúncios</div>
       </div>
       <div class="ri-right">
-        <span class="badge ${chAvg>=16?'b-ok':'b-nok'}">${chAvg.toFixed(1)}%</span>
-        <div class="ri-sub">${fmt(chL.reduce((s,a)=>s+a.lucro,0))} lucro total</div>
+        <span class="badge ${chAvg>=16?'b-ok':'b-nok'} prv">${chAvg.toFixed(1)}%</span>
+        <div class="ri-sub prv">${fmt(chL.reduce((s,a)=>s+a.lucro,0))} lucro total</div>
       </div>
     </div>`;
   }).join('');
-
-  applyPrivacy();
 }
 
 // ══════════════════════════════════════════════
@@ -1176,9 +1175,9 @@ function renderChannel(){
   const met=document.getElementById('ch-metrics');
   if(met)met.innerHTML=`
     <div class="met"><div class="met-label">Total</div><div class="met-val" data-final="${listings.length}" data-fmt="int">0</div></div>
-    <div class="met"><div class="met-label">Margem média</div><div class="met-val" data-final="${avg}" data-fmt="pct1" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">0%</div></div>
+    <div class="met"><div class="met-label">Margem média</div><div class="met-val prv" data-final="${avg}" data-fmt="pct1" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">0%</div></div>
     <div class="met"><div class="met-label" style="color:var(--gr)">Saudáveis</div><div class="met-val" data-final="${ok}" data-fmt="int" style="color:var(--gr)">0</div></div>
-    <div class="met"><div class="met-label">Faturamento</div><div class="met-val" data-final="${listings.reduce((s,l)=>s+(l.pv||0),0)}" data-fmt="currency" style="font-size:16px">R$\u00a00,00</div></div>`;
+    <div class="met"><div class="met-label">Faturamento</div><div class="met-val prv" data-final="${listings.reduce((s,l)=>s+(l.pv||0),0)}" data-fmt="currency" style="font-size:16px">R$\u00a00,00</div></div>`;
   animateMetrics(met);
 
   // Tags header
@@ -1211,11 +1210,11 @@ function renderChannel(){
           <td style="font-family:var(--mono);font-size:11px;color:var(--t3)" class="cod-cell" data-cod="${l.cod}" title="Copiar" onclick="event.stopPropagation();copyCod('${l.cod}')" style="cursor:pointer;text-decoration:underline dotted">${l.cod}</td>
           <td style="font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(l.nome)}${tags?'<br><span style="display:inline-flex;gap:2px;margin-top:2px">'+tags+'</span>':''}</td>
           ${ch.type==='ml'?`<td>${tipoBadge}</td>`:''}
-          <td style="font-family:var(--mono)">${fmt(l.precoD>0?l.precoD:l.preco)}</td>
-          <td style="font-family:var(--mono)">${fmt(l.custo)}</td>
-          ${ch.type==='ml'?`<td style="font-family:var(--mono)">${fmt(l.frete)}</td>`:''}
-          <td style="font-weight:500;color:${l.lucro>=0?'var(--gr)':'var(--rd)'};font-family:var(--mono)">${fmt(l.lucro)}</td>
-          <td><span class="badge ${l.margem>=16?'b-ok':'b-nok'}">${l.margem.toFixed(1)}%</span></td>
+          <td style="font-family:var(--mono)" class="prv">${fmt(l.precoD>0?l.precoD:l.preco)}</td>
+          <td style="font-family:var(--mono)" class="prv">${fmt(l.custo)}</td>
+          ${ch.type==='ml'?`<td style="font-family:var(--mono)" class="prv">${fmt(l.frete)}</td>`:''}
+          <td style="font-weight:500;color:${l.lucro>=0?'var(--gr)':'var(--rd)'};font-family:var(--mono)" class="prv">${fmt(l.lucro)}</td>
+          <td><span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span></td>
           <td><button class="btn btn-sm" onclick="event.stopPropagation();openListing('${l.id}')">Editar</button></td>
         </tr>`;
       }).join('');
@@ -1230,14 +1229,14 @@ function renderChannel(){
       return`<div class="an-card" onclick="openListing('${l.id}')">
         <div class="an-hdr">
           <div class="an-name">${sanitize(l.nome)}</div>
-          <span class="badge ${l.margem>=16?'b-ok':'b-nok'}">${l.margem.toFixed(1)}%</span>
+          <span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span>
         </div>
         <div class="an-cod" onclick="event.stopPropagation();copyCod('${l.cod}')" title="Copiar">${l.cod}</div>
         ${tags?`<div class="an-tags">${tags}</div>`:''}
         <div class="an-stats">
-          <span>PV: <strong>${fmt(l.precoD>0?l.precoD:l.preco)}</strong></span>
-          <span>Custo: <strong>${fmt(l.custo)}</strong></span>
-          <span>Lucro: <strong style="color:${l.lucro>=0?'var(--gr)':'var(--rd)'}">${fmt(l.lucro)}</strong></span>
+          <span>PV: <strong class="prv">${fmt(l.precoD>0?l.precoD:l.preco)}</strong></span>
+          <span>Custo: <strong class="prv">${fmt(l.custo)}</strong></span>
+          <span>Lucro: <strong class="prv" style="color:${l.lucro>=0?'var(--gr)':'var(--rd)'}">${fmt(l.lucro)}</strong></span>
         </div>
       </div>`;
     }).join('');
@@ -1375,7 +1374,7 @@ function renderInsights(){
   // Metrics
   const met=document.getElementById('ins-metrics');
   if(met)met.innerHTML=`
-    <div class="met"><div class="met-label">Margem média</div><div class="met-val" data-final="${avg}" data-fmt="pct1" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">0%</div></div>
+    <div class="met"><div class="met-label">Margem média</div><div class="met-val prv" data-final="${avg}" data-fmt="pct1" style="color:${avg>=16?'var(--gr)':'var(--rd)'}">0%</div></div>
     <div class="met"><div class="met-label">Saudáveis ≥16%</div><div class="met-val" data-final="${all.filter(a=>a.margem>=16).length}" data-fmt="int" style="color:var(--gr)">0</div></div>
     <div class="met"><div class="met-label">Críticos &lt;10%</div><div class="met-val" data-final="${all.filter(a=>a.margem<10).length}" data-fmt="int" style="color:${all.filter(a=>a.margem<10).length?'var(--rd)':'var(--t)'}">0</div></div>
     <div class="met"><div class="met-label">Oportunidades ≥25%</div><div class="met-val" data-final="${all.filter(a=>a.margem>=25).length}" data-fmt="int" style="color:var(--gr)">0</div></div>`;
@@ -1404,7 +1403,7 @@ function renderInsights(){
               <div style="font-size:11px;color:var(--t3)">${sanitize(a._ch?.name||'')}</div>
             </div>
           </div>
-          <span class="badge b-nok">${a.margem.toFixed(1)}%</span>
+          <span class="badge b-nok prv">${a.margem.toFixed(1)}%</span>
         </div>`).join('');
     }
   }
@@ -1460,7 +1459,7 @@ function renderInsights(){
           <div style="height:5px;background:var(--bd);border-radius:3px;margin-top:5px;max-width:160px"><div style="height:5px;border-radius:3px;background:${chAvg>=16?'var(--gr)':'var(--rd)'};width:${Math.min(chAvg*2,100)}%;transition:width .5s var(--ease)"></div></div>
         </div>
       </div>
-      <span class="badge ${chAvg>=16?'b-ok':'b-nok'}">${chAvg.toFixed(1)}%</span>
+      <span class="badge ${chAvg>=16?'b-ok':'b-nok'} prv">${chAvg.toFixed(1)}%</span>
     </div>`;
   }).join('');
 
@@ -1648,9 +1647,9 @@ function listingCalcLive(){
   res.style.display='';
   const ok=r.margem>=16;
   rbox.innerHTML=`
-    <div><div class="rbox-label">Preço efetivo</div><div class="rbox-val">${fmt(r.pv)}</div></div>
-    <div><div class="rbox-label">Lucro líquido</div><div class="rbox-val" style="color:${r.lucro>=0?'var(--gr)':'var(--rd)'}">${fmt(r.lucro)}</div></div>
-    <div><div class="rbox-label">Margem</div><div class="rbox-val" style="color:${ok?'var(--gr)':'var(--rd)'}">${r.margem.toFixed(1)}%</div><div class="mbar"><div class="mbar-fill" id="listing-mbar-fill" style="width:0%;background:${ok?'var(--gr)':'var(--rd)'}"></div></div></div>`;
+    <div><div class="rbox-label">Preço efetivo</div><div class="rbox-val prv">${fmt(r.pv)}</div></div>
+    <div><div class="rbox-label">Lucro líquido</div><div class="rbox-val prv" style="color:${r.lucro>=0?'var(--gr)':'var(--rd)'}">${fmt(r.lucro)}</div></div>
+    <div><div class="rbox-label">Margem</div><div class="rbox-val prv" style="color:${ok?'var(--gr)':'var(--rd)'}">${r.margem.toFixed(1)}%</div><div class="mbar"><div class="mbar-fill" id="listing-mbar-fill" style="width:0%;background:${ok?'var(--gr)':'var(--rd)'}"></div></div></div>`;
   const mbarFill=document.getElementById('listing-mbar-fill');
   if(mbarFill)requestAnimationFrame(()=>requestAnimationFrame(()=>{mbarFill.style.width=Math.min(Math.max(r.margem*2,0),100)+'%';}));
   renderBreakdownDetail(r,ch.type==='ml');
@@ -2182,8 +2181,7 @@ function togglePrivacy(){
 }
 
 function applyPrivacy(){
-  document.querySelectorAll('.privacy-name').forEach(el=>{el.style.filter=_privacyOn?'blur(6px)':'';el.style.userSelect=_privacyOn?'none':'';});
-  document.querySelectorAll('.privacy-badge,.privacy-val').forEach(el=>{el.style.filter=_privacyOn?'blur(6px)':'';});
+  document.body.classList.toggle('privacy-mode',_privacyOn);
 }
 
 // ══════════════════════════════════════════════
