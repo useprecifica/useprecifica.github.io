@@ -1210,10 +1210,10 @@ function renderChannel(){
           <td style="font-family:var(--mono);font-size:11px;color:var(--t3)" class="cod-cell" data-cod="${l.cod}" title="Copiar" onclick="event.stopPropagation();copyCod('${l.cod}')" style="cursor:pointer;text-decoration:underline dotted">${l.cod}</td>
           <td style="font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(l.nome)}${tags?'<br><span style="display:inline-flex;gap:2px;margin-top:2px">'+tags+'</span>':''}</td>
           ${ch.type==='ml'?`<td>${tipoBadge}</td>`:''}
-          <td style="font-family:var(--mono)" class="prv">${fmt(l.precoD>0?l.precoD:l.preco)}</td>
-          <td style="font-family:var(--mono)" class="prv">${fmt(l.custo)}</td>
-          ${ch.type==='ml'?`<td style="font-family:var(--mono)" class="prv">${fmt(l.frete)}</td>`:''}
-          <td style="font-weight:500;color:${l.lucro>=0?'var(--gr)':'var(--rd)'};font-family:var(--mono)" class="prv">${fmt(l.lucro)}</td>
+          <td style="font-family:var(--mono)"><span class="prv">${fmt(l.precoD>0?l.precoD:l.preco)}</span></td>
+          <td style="font-family:var(--mono)"><span class="prv">${fmt(l.custo)}</span></td>
+          ${ch.type==='ml'?`<td style="font-family:var(--mono)"><span class="prv">${fmt(l.frete)}</span></td>`:''}
+          <td style="font-weight:500;color:${l.lucro>=0?'var(--gr)':'var(--rd)'};font-family:var(--mono)"><span class="prv">${fmt(l.lucro)}</span></td>
           <td><span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span></td>
           <td><button class="btn btn-sm" onclick="event.stopPropagation();openListing('${l.id}')">Editar</button></td>
         </tr>`;
