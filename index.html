@@ -2569,8 +2569,32 @@ async function fetchSimDolar(){
   btn.textContent='↻ Atualizar';btn.disabled=false;
 }
 
-function simIMParaML(){if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}document.getElementById('sim-ml-custo').value=_simIMCusto.toFixed(2);goSimTab('ml');calcSimML();}
-function simIMParaSH(){if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}document.getElementById('sim-sh-custo').value=_simIMCusto.toFixed(2);goSimTab('sh');calcSimSH();}
+function simIMParaML(){
+  if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
+  const nome=gs('sim-im-nome');
+  if(nome)document.getElementById('sim-ml-nome').value=nome;
+  document.getElementById('sim-ml-custo').value=_simIMCusto.toFixed(2);
+  // Limpa preço pra forçar o usuário preencher só o que falta
+  document.getElementById('sim-ml-pv').value='';
+  document.getElementById('sim-ml-pvd').value='';
+  document.getElementById('sim-ml-result').style.display='none';
+  goSimTab('ml');
+  // Foca no campo de preço de venda (único que falta)
+  setTimeout(()=>document.getElementById('sim-ml-pv')?.focus(),100);
+}
+
+function simIMParaSH(){
+  if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
+  const nome=gs('sim-im-nome');
+  if(nome)document.getElementById('sim-sh-nome').value=nome;
+  document.getElementById('sim-sh-custo').value=_simIMCusto.toFixed(2);
+  // Limpa preço pra forçar o usuário preencher só o que falta
+  document.getElementById('sim-sh-pv').value='';
+  document.getElementById('sim-sh-pvd').value='';
+  document.getElementById('sim-sh-result').style.display='none';
+  goSimTab('sh');
+  setTimeout(()=>document.getElementById('sim-sh-pv')?.focus(),100);
+}
 function simPortarParaSH(){document.getElementById('sim-sh-pv').value=gs('sim-ml-pv');document.getElementById('sim-sh-pvd').value=gs('sim-ml-pvd');document.getElementById('sim-sh-custo').value=gs('sim-ml-custo');document.getElementById('sim-sh-frete').value=gs('sim-ml-frete');goSimTab('sh');calcSimSH();}
 function simPortarParaML(){document.getElementById('sim-ml-pv').value=gs('sim-sh-pv');document.getElementById('sim-ml-pvd').value=gs('sim-sh-pvd');document.getElementById('sim-ml-custo').value=gs('sim-sh-custo');document.getElementById('sim-ml-frete').value=gs('sim-sh-frete');goSimTab('ml');calcSimML();}
 
@@ -2673,7 +2697,7 @@ async function renderSimHist(){
     const bTxt=s.type==='ml'?'Mercado Livre':s.type==='sh'?'Shopee':'Importação';
     let meta='';
     if(s.type==='im'){
-      meta=`<span>Custo unit. <b style="color:var(--gr)">${fmt(s.custo_unit)}</b></span><span>${s.data?.qty||1} unid · USD @ R$${s.data?.dolar||'?'}</span>`;
+      meta=`<span>Custo unit. <b style="color:var(--gr)">${fmt(s.custo_unit)}</b></span><span>${s.data?.qty||1} unid · câmbio R$${Number(s.data?.dolar||0).toFixed(2)}</span>`;
     }else{
       meta=`<span>PV <b>${fmt(s.pv)}</b></span><span>Custo <b>${fmt(s.custo)}</b></span><span>Lucro <b style="color:${mC(s.margem)}">${fmt(s.lucro)}</b></span><span>Margem <b style="color:${mC(s.margem)}">${(s.margem||0).toFixed(1)}%</b></span>`;
     }
