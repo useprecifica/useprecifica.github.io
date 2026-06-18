@@ -673,7 +673,7 @@ select.tbl-inp{cursor:pointer}
             </div>
             <div id="sim-ml-result" class="sim-result" style="display:none"></div>
             <div style="display:flex;gap:8px">
-              <button class="btn btn-sm" onclick="simPortarParaSH()">↔ Portfar para Shopee</button>
+              <button class="btn btn-sm" onclick="simPortarParaSH()">↔ Portar para Shopee</button>
               <button class="btn btn-p" style="flex:1" onclick="saveSimulation('ml')">Salvar simulação</button>
             </div>
           </div>
@@ -2427,8 +2427,9 @@ async function vincularManual(listingId){
 // ══════════════════════════════════════════════
 // PRIVACY
 // ══════════════════════════════════════════════
-function togglePrivacy(){
 
+// ══════════════════════════════════════════════
+// SIMULADORA — armazenamento no Supabase
 // ══════════════════════════════════════════════
 // SIMULADORA — armazenamento no Supabase
 // ══════════════════════════════════════════════
@@ -2691,258 +2692,11 @@ async function renderSimHist(){
 
 
 
-function renderSim(){
-  goSimTab(document.querySelector('.sim-tab.active')?.id?.replace('simtab-','') || 'ml', true);
-}
 
-function goSimTab(tab, silent){
-  document.querySelectorAll('.sim-tab').forEach(b=>{b.classList.toggle('active',b.id==='simtab-'+tab);});
-  document.querySelectorAll('.sim-page').forEach(p=>{p.classList.toggle('active',p.id==='sim-p-'+tab);});
-  if(tab==='hist')renderSimHist();
-}
-
-function simSetTipo(tipo){
-  _simTipo=tipo;
-  document.getElementById('sim-ml-cl').classList.toggle('active',tipo==='classico');
-  document.getElementById('sim-ml-pr').classList.toggle('active',tipo==='premium');
-  const com=tipo==='classico'?11.5:16.5;
-  document.getElementById('sim-ml-com').value=com;
-  calcSimML();
-}
-
-function gn(id){return parseFloat(document.getElementById(id)?.value)||0;}
-function gs(id){return document.getElementById(id)?.value||'';}
-
-function simResultHTML(r, isML){
-  const mColor=m=>m>=20?'var(--gr)':m>=10?'var(--am)':'var(--rd)';
-  const fmtNeg=v=>`<span style="color:var(--rd)">−${fmt(v)}</span>`;
-  const fmtPos=v=>`<span style="color:var(--gr)">+${fmt(v)}</span>`;
-  let html='';
-  const rr=(l,v,cls='')=>`<div class="sim-rrow ${cls}"><span class="l">${l}</span><span class="v">${v}</span></div>`;
-  const rs=(l,v)=>`<div class="sim-rrow sub"><span class="l">${l}</span><span class="v">${v}</span></div>`;
-  const rt=(l,v,col='')=>`<div class="sim-rrow total"><span class="l">${l}</span><span class="v" style="${col?'color:'+col:''}">${v}</span></div>`;
-
-  html+=rr('Preço de venda', fmt(r.pv));
-  if(isML){
-    html+=rr(`Comissão (${r.comPct}%)`, fmtNeg(r.comissao));
-    if(r.frete)html+=rr('Frete', fmtNeg(r.frete));
-    if(r.ajml)html+=rr('Ajuste ML', fmtPos(r.ajml));
-    if(r.desconto)html+=rr(`Desconto (${r.descPct}%, máx ${fmt(r.descMax)})`, fmtNeg(r.desconto));
-  }else{
-    html+=rr(`Comissão (${r.comPct}%)`, fmtNeg(r.comissao-r.fixo));
-    html+=rr('Taxa fixa por venda', fmtNeg(r.fixo));
-    if(r.frete)html+=rr('Frete', fmtNeg(r.frete));
-    if(r.outros)html+=rr('Outros', fmtNeg(r.outros));
-    if(r.desconto)html+=rr(`Desconto (${r.descPct}%, máx ${fmt(r.descMax)})`, fmtNeg(r.desconto));
-  }
-  html+=rt('Valor que a plataforma paga', fmt(r.valorPlataforma));
-  html+=rs(`Antecipação (${r.antPct}%)`, fmtNeg(r.antecip));
-  html+=rs(`Imposto (${r.impPct}%)`, fmtNeg(r.imposto));
-  html+=rt('Líquido total', fmt(r.liquido));
-  html+=rs('Custo do produto', fmtNeg(r.custo));
-
-  const mInfo=r.margem>=20?'Excelente ✦':r.margem>=15?'Saudável':r.margem>=10?'Atenção':'Crítico';
-  html+=`<div class="sim-rrow total"><span class="l">Lucro</span><span class="v" style="color:${mColor(r.margem)}">${fmt(r.lucro)} <small style="font-size:10px">${r.margem.toFixed(1)}% · ${mInfo}</small></span></div>`;
-  return html;
-}
-
-function calcSimML(){
-  const pv=gn('sim-ml-pvd')>0?gn('sim-ml-pvd'):gn('sim-ml-pv');
-  if(!pv){document.getElementById('sim-ml-result').style.display='none';return;}
-  const a={
-    preco:gn('sim-ml-pv'), preco_d:gn('sim-ml-pvd'),
-    custo:gn('sim-ml-custo'), com:gn('sim-ml-com'), ant:gn('sim-ml-ant'),
-    imp:gn('sim-ml-imp'), frete:gn('sim-ml-frete'), aj_ml:gn('sim-ml-ajml'),
-    desc_pct:gn('sim-ml-desc'), desc_max:gn('sim-ml-dmax')
-  };
-  const r=calcML(a);
-  const el=document.getElementById('sim-ml-result');
-  el.style.display='';
-  el.innerHTML=simResultHTML(r, true);
-}
-
-function calcSimSH(){
-  const pv=gn('sim-sh-pvd')>0?gn('sim-sh-pvd'):gn('sim-sh-pv');
-  if(!pv){document.getElementById('sim-sh-result').style.display='none';return;}
-
-  // Taxa info
-  let comPct,fixo,taxaDesc;
-  if(pv<=80){comPct=20;fixo=4;taxaDesc=`≤ R$80 → 20% + R$4 de taxa fixa`;}
-  else if(pv<=100){comPct=17.5;fixo=16;taxaDesc=`R$80-100 → 17,5% + R$16 de taxa fixa`;}
-  else if(pv<=200){comPct=17;fixo=20;taxaDesc=`R$100-200 → 17% + R$20 de taxa fixa`;}
-  else{comPct=17;fixo=26;taxaDesc=`> R$200 → 17% + R$26 de taxa fixa`;}
-  const taxaTotal=pv*(comPct/100)+fixo;
-  document.getElementById('sim-sh-taxa-info').innerHTML=`<strong>${taxaDesc}</strong><br>Taxa total estimada: <strong>${fmt(taxaTotal)}</strong> (${(taxaTotal/pv*100).toFixed(1)}% do preço)`;
-
-  const a={
-    preco:gn('sim-sh-pv'), preco_d:gn('sim-sh-pvd'),
-    custo:gn('sim-sh-custo'), ant:gn('sim-sh-ant'),
-    imp:gn('sim-sh-imp'), frete:gn('sim-sh-frete'), outros:gn('sim-sh-outros'),
-    desc_pct:gn('sim-sh-desc'), desc_max:gn('sim-sh-dmax')
-  };
-  const r=calcSH(a);
-  const el=document.getElementById('sim-sh-result');
-  el.style.display='';
-  el.innerHTML=simResultHTML(r, false);
-}
-
-function calcSimIM(){
-  const prodUSD=gn('sim-im-prod'), freteUSD=gn('sim-im-frete'),
-        segUSD=gn('sim-im-seg'), qty=gn('sim-im-qty')||1,
-        dolar=gn('sim-im-dolar')||5.80, ii=gn('sim-im-ii'),
-        icms=gn('sim-im-icms'), adm=gn('sim-im-adm');
-  if(!prodUSD){document.getElementById('sim-im-unit').style.display='none';document.getElementById('sim-im-result').style.display='none';return;}
-  const custoUSD=prodUSD+freteUSD+segUSD;
-  const custoBRL=custoUSD*dolar;
-  const impostoII=custoBRL*(ii/100);
-  const impostoICMS=(custoBRL+impostoII)*(icms/100);
-  const totalBRL=custoBRL+impostoII+impostoICMS+adm;
-  const custoUnit=totalBRL/qty;
-  _simIMCusto=custoUnit;
-
-  const unitEl=document.getElementById('sim-im-unit');
-  unitEl.style.display='';
-  document.getElementById('sim-im-unit-val').textContent=fmt(custoUnit);
-  document.getElementById('sim-im-unit-sub').textContent=`${qty} unid · Total ${fmt(totalBRL)}`;
-
-  const resEl=document.getElementById('sim-im-result');
-  resEl.style.display='';
-  resEl.innerHTML=`
-    <div class="sim-rrow"><span class="l">Valor produtos (USD $${prodUSD.toFixed(2)})</span><span class="v">${fmt(prodUSD*dolar)}</span></div>
-    <div class="sim-rrow"><span class="l">Frete internacional</span><span class="v">${fmt(freteUSD*dolar)}</span></div>
-    ${segUSD?`<div class="sim-rrow"><span class="l">Seguro</span><span class="v">${fmt(segUSD*dolar)}</span></div>`:''}
-    <div class="sim-rrow sub"><span class="l">Câmbio: 1 USD = R$ ${dolar.toFixed(2)}</span><span class="v"></span></div>
-    <div class="sim-rrow total"><span class="l">Valor aduaneiro</span><span class="v">${fmt(custoBRL)}</span></div>
-    <div class="sim-rrow sub"><span class="l">II (${ii}%)</span><span class="v" style="color:var(--rd)">+${fmt(impostoII)}</span></div>
-    <div class="sim-rrow sub"><span class="l">ICMS (${icms}%)</span><span class="v" style="color:var(--rd)">+${fmt(impostoICMS)}</span></div>
-    ${adm?`<div class="sim-rrow sub"><span class="l">Taxa ADM</span><span class="v" style="color:var(--rd)">+${fmt(adm)}</span></div>`:''}
-    <div class="sim-rrow total"><span class="l">Total desembaraço</span><span class="v">${fmt(totalBRL)}</span></div>
-    <div class="sim-rrow total"><span class="l">Custo por unidade</span><span class="v" style="color:var(--gr)">${fmt(custoUnit)}</span></div>`;
-}
-
-async function fetchSimDolar(){
-  const btn=document.getElementById('sim-dolar-btn');
-  const info=document.getElementById('sim-dolar-info');
-  btn.textContent='↻ Buscando...'; btn.disabled=true;
-  try{
-    const res=await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
-    const data=await res.json();
-    const rate=parseFloat(data.USDBRL?.bid||0);
-    if(rate){
-      document.getElementById('sim-im-dolar').value=rate.toFixed(2);
-      info.textContent=`Cotação em tempo real: R$ ${rate.toFixed(4)} — ${new Date().toLocaleTimeString('pt-BR')}`;
-      calcSimIM();
-    }
-  }catch(e){info.textContent='Não foi possível buscar a cotação. Insira manualmente.';}
-  btn.textContent='↻ Atualizar'; btn.disabled=false;
-}
-
-function simIMParaML(){
-  if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
-  document.getElementById('sim-ml-custo').value=_simIMCusto.toFixed(2);
-  goSimTab('ml');
-  calcSimML();
-}
-function simIMParaSH(){
-  if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
-  document.getElementById('sim-sh-custo').value=_simIMCusto.toFixed(2);
-  goSimTab('sh');
-  calcSimSH();
-}
-function simPortarParaSH(){
-  document.getElementById('sim-sh-pv').value=gs('sim-ml-pv');
-  document.getElementById('sim-sh-pvd').value=gs('sim-ml-pvd');
-  document.getElementById('sim-sh-custo').value=gs('sim-ml-custo');
-  document.getElementById('sim-sh-frete').value=gs('sim-ml-frete');
-  goSimTab('sh'); calcSimSH();
-}
-function simPortarParaML(){
-  document.getElementById('sim-ml-pv').value=gs('sim-sh-pv');
-  document.getElementById('sim-ml-pvd').value=gs('sim-sh-pvd');
-  document.getElementById('sim-ml-custo').value=gs('sim-sh-custo');
-  document.getElementById('sim-ml-frete').value=gs('sim-sh-frete');
-  goSimTab('ml'); calcSimML();
-}
-
-function saveSimulation(type){
-  const sims=loadSims();
-  const now=new Date();
-  const id=Date.now().toString(36);
-  let entry={id, type, date:now.toLocaleString('pt-BR')};
-
-  if(type==='ml'){
-    const pv=gn('sim-ml-pvd')>0?gn('sim-ml-pvd'):gn('sim-ml-pv');
-    if(!pv){alert('Preencha pelo menos o preço de venda.');return;}
-    const a={preco:gn('sim-ml-pv'),preco_d:gn('sim-ml-pvd'),custo:gn('sim-ml-custo'),com:gn('sim-ml-com'),ant:gn('sim-ml-ant'),imp:gn('sim-ml-imp'),frete:gn('sim-ml-frete'),aj_ml:gn('sim-ml-ajml'),desc_pct:gn('sim-ml-desc'),desc_max:gn('sim-ml-dmax')};
-    const r=calcML(a);
-    entry={...entry,nome:gs('sim-ml-nome')||'Simulação ML',pv,custo:a.custo,lucro:r.lucro,margem:r.margem,tipo:_simTipo,data:a};
-  }else if(type==='sh'){
-    const pv=gn('sim-sh-pvd')>0?gn('sim-sh-pvd'):gn('sim-sh-pv');
-    if(!pv){alert('Preencha pelo menos o preço de venda.');return;}
-    const a={preco:gn('sim-sh-pv'),preco_d:gn('sim-sh-pvd'),custo:gn('sim-sh-custo'),ant:gn('sim-sh-ant'),imp:gn('sim-sh-imp'),frete:gn('sim-sh-frete'),outros:gn('sim-sh-outros'),desc_pct:gn('sim-sh-desc'),desc_max:gn('sim-sh-dmax')};
-    const r=calcSH(a);
-    entry={...entry,nome:gs('sim-sh-nome')||'Simulação Shopee',pv,custo:a.custo,lucro:r.lucro,margem:r.margem,data:a};
-  }else{
-    if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
-    entry={...entry,nome:gs('sim-im-nome')||'Simulação Importação',custoUnit:_simIMCusto,qty:gn('sim-im-qty')||1,dolar:gn('sim-im-dolar')};
-  }
-
-  sims.unshift(entry);
-  saveSims(sims.slice(0,100));
-  goSimTab('hist');
-  renderSimHist();
-}
-
-function setSimFilter(f){
-  _simFilter=f;
-  document.querySelectorAll('#sim-hist-filters .btn').forEach(b=>{b.classList.toggle('active',b.dataset.hf===f);});
-  renderSimHist();
-}
-
-function clearSimHist(){
-  if(!confirm('Apagar todas as simulações salvas?'))return;
-  saveSims([]);
-  renderSimHist();
-}
-
-function deleteSimulation(id){
-  const sims=loadSims().filter(s=>s.id!==id);
-  saveSims(sims);
-  renderSimHist();
-}
-
-function renderSimHist(){
-  const el=document.getElementById('sim-hist-list');
-  if(!el)return;
-  let sims=loadSims();
-  if(_simFilter!=='all')sims=sims.filter(s=>s.type===_simFilter);
-  if(!sims.length){
-    el.innerHTML=`<div class="sim-empty"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Nenhuma simulação salva ainda.<br><small>Faça uma simulação e clique em "Salvar".</small></div>`;
-    return;
-  }
-  const mColor=m=>m>=20?'var(--gr)':m>=10?'var(--am)':'var(--rd)';
-  el.innerHTML=sims.map(s=>{
-    let meta='';
-    if(s.type==='ml'||s.type==='sh'){
-      meta=`<span>PV <b>${fmt(s.pv)}</b></span><span>Custo <b>${fmt(s.custo)}</b></span><span>Lucro <b style="color:${mColor(s.margem)}">${fmt(s.lucro)}</b></span><span>Margem <b style="color:${mColor(s.margem)}">${s.margem.toFixed(1)}%</b></span>`;
-    }else{
-      meta=`<span>Custo unit. <b style="color:var(--gr)">${fmt(s.custoUnit)}</b></span><span>${s.qty} unid · USD @ R$${s.dolar}</span>`;
-    }
-    const badgeCls=s.type==='ml'?'ml':s.type==='sh'?'sh':'im';
-    const badgeTxt=s.type==='ml'?'ML':s.type==='sh'?'Shopee':'Importação';
-    return `<div class="sim-card">
-      <div class="sim-card-top">
-        <div class="sim-card-name">${sanitize(s.nome||'Simulação')}</div>
-        <span class="sim-badge ${badgeCls}">${badgeTxt}</span>
-        <button onclick="deleteSimulation('${s.id}')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;line-height:1;padding:0 2px;flex-shrink:0" title="Apagar">×</button>
-      </div>
-      <div class="sim-card-meta">${meta}</div>
-      <div style="font-size:11px;color:var(--t3);margin-top:6px">${s.date}</div>
-    </div>`;
-  }).join('');
-}
-
-
+// ══════════════════════════════════════════════
+// PRIVACY
+// ══════════════════════════════════════════════
+function togglePrivacy(){
   _privacyOn=!_privacyOn;
   applyPrivacy();
   const icon=document.getElementById('eye-icon');
@@ -2952,6 +2706,7 @@ function renderSimHist(){
     '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
   if(btn)btn.style.color=_privacyOn?'var(--pu)':'';
 }
+
 
 function applyPrivacy(){
   document.body.classList.toggle('privacy-mode',_privacyOn);
