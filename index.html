@@ -6,6 +6,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Precifica</title>
+<!-- PWA / Adicionar à tela inicial -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8257f5">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Precifica">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+<link rel="shortcut icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
@@ -265,6 +276,50 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .prv{transition:filter .2s var(--ease),opacity .2s var(--ease);border-radius:4px}
 .privacy-mode .prv{filter:blur(7px);opacity:.5;user-select:none;pointer-events:none}
 
+/* ── SIMULADORA ── */
+.sim-tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs2);padding:5px}
+.sim-tab{flex:1;padding:8px 4px;border-radius:9px;border:none;background:none;color:var(--t3);font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;text-align:center;line-height:1.3}
+.sim-tab span{display:block;font-size:10px;font-weight:400;opacity:.7}
+.sim-tab.active{background:var(--sur2);color:var(--t)}
+.sim-tab:active{transform:scale(.97)}
+.sim-page{display:none}.sim-page.active{display:block}
+.sim-field{margin-bottom:10px}
+.sim-field label{display:block;font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.sim-field input,.sim-field select{width:100%;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;color:var(--t);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+.sim-field input:focus,.sim-field select:focus{border-color:var(--pu);box-shadow:0 0 0 3px var(--pu-glow)}
+.sim-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sim-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.sim-result{background:var(--sur2);border-radius:var(--rs);margin-bottom:14px;overflow:hidden}
+.sim-rrow{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;font-size:12.5px;border-bottom:1px solid var(--bd)}
+.sim-rrow:last-child{border-bottom:none}
+.sim-rrow .l{color:var(--t2)}
+.sim-rrow .v{font-weight:600;font-variant-numeric:tabular-nums}
+.sim-rrow.sub .l{color:var(--t3);font-size:11.5px;padding-left:10px}
+.sim-rrow.sub .v{font-size:11.5px}
+.sim-rrow.total{background:var(--sur);border-top:1px solid var(--bd2);font-size:13.5px}
+.sim-rrow.total .l{font-weight:700;color:var(--t)}
+.sim-rrow.total .v{font-size:15px;font-weight:800}
+.sim-unit-box{background:rgba(34,197,94,.07);border:1.5px solid rgba(34,197,94,.3);border-radius:var(--rs2);padding:16px;text-align:center;margin-bottom:14px}
+.sim-unit-label{font-size:10px;font-weight:700;color:var(--gr);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.sim-unit-val{font-size:32px;font-weight:800;color:var(--gr);letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.sim-unit-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.sim-card{background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs2);padding:14px 16px;margin-bottom:8px;transition:border-color .15s}
+.sim-card:hover{border-color:var(--bd2)}
+.sim-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+.sim-card-name{font-size:13px;font-weight:700;color:var(--t);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sim-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums}
+.sim-badge.ml{background:rgba(255,224,102,.12);color:#ffe066;border:1px solid rgba(255,224,102,.3)}
+.sim-badge.sh{background:rgba(249,115,22,.12);color:#f97316;border:1px solid rgba(249,115,22,.3)}
+.sim-badge.im{background:rgba(34,197,94,.12);color:var(--gr);border:1px solid rgba(34,197,94,.3)}
+.sim-card-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--t2)}
+.sim-card-meta b{color:var(--t);font-weight:600}
+.sim-empty{text-align:center;padding:48px 20px;color:var(--t3);font-size:13px}
+.sim-empty svg{width:40px;height:40px;stroke:var(--bd2);margin-bottom:12px;display:block;margin-left:auto;margin-right:auto}
+.sim-tipo-seg{display:flex;gap:6px;margin-bottom:14px}
+.sim-tipo-btn{flex:1;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--sur2);color:var(--t3);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
+.sim-tipo-btn.active{background:var(--sur3);border-color:var(--pu);color:var(--t)}
+@media(max-width:860px){.sim-grid3{grid-template-columns:1fr 1fr}.sim-tabs{gap:4px}}
+
 .rule-row{display:flex;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);flex-wrap:wrap}
 .rule-row:last-child{border-bottom:none}
 .rule-order{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
@@ -446,6 +501,10 @@ select.tbl-inp{cursor:pointer}
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Custos
       </button>
+      <button class="ni" data-tab="sim" onclick="goTab('sim')">
+        <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+        Simuladora
+      </button>
       <div class="sidebar-section">Canais</div>
       <div id="sidebar-channels"></div>
       <button class="ni" onclick="openAddChannel()" style="color:var(--pu);margin-top:4px">
@@ -569,8 +628,148 @@ select.tbl-inp{cursor:pointer}
           </div>
         </div>
 
+        <!-- SIMULADORA -->
+        <div id="p-sim" style="display:none">
+          <div class="ph">
+            <div class="ph-left"><div class="ph-title">Simuladora</div><div class="ph-sub">Teste cenários de precificação sem afetar seus anúncios</div></div>
+          </div>
+
+          <!-- Sub-tabs -->
+          <div class="sim-tabs">
+            <button class="sim-tab active" id="simtab-ml" onclick="goSimTab('ml')">ML<span>Mercado Livre</span></button>
+            <button class="sim-tab" id="simtab-sh" onclick="goSimTab('sh')">Shopee<span>Calculadora</span></button>
+            <button class="sim-tab" id="simtab-im" onclick="goSimTab('im')">Importação<span>Custo unit.</span></button>
+            <button class="sim-tab" id="simtab-hist" onclick="goSimTab('hist')">Histórico<span>Simulações</span></button>
+          </div>
+
+          <!-- ── ML ── -->
+          <div id="sim-p-ml" class="sim-page active">
+            <div class="card">
+              <div class="card-title">Tipo de anúncio</div>
+              <div class="sim-tipo-seg">
+                <button class="sim-tipo-btn active" id="sim-ml-cl" onclick="simSetTipo('classico')">Clássico <small style="font-weight:400;font-size:11px">11,5%</small></button>
+                <button class="sim-tipo-btn" id="sim-ml-pr" onclick="simSetTipo('premium')">Premium <small style="font-weight:400;font-size:11px">16,5%</small></button>
+              </div>
+              <div class="sim-field"><label>Nome do produto (opcional)</label><input type="text" id="sim-ml-nome" placeholder="Ex: Luminária Áustria Cedro"></div>
+              <div class="sim-grid2">
+                <div class="sim-field"><label>Preço de venda (R$)</label><input type="number" id="sim-ml-pv" step=".01" placeholder="0,00" oninput="calcSimML()"></div>
+                <div class="sim-field"><label>Preço c/ desc (R$)</label><input type="number" id="sim-ml-pvd" step=".01" placeholder="0,00" oninput="calcSimML()"></div>
+              </div>
+              <div class="sim-field"><label>Custo do produto (R$)</label><input type="number" id="sim-ml-custo" step=".01" placeholder="0,00" oninput="calcSimML()"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Taxas e encargos</div>
+              <div class="sim-grid3">
+                <div class="sim-field"><label>Comissão (%)</label><input type="number" id="sim-ml-com" value="11.5" step=".1" oninput="calcSimML()"></div>
+                <div class="sim-field"><label>Antecipação (%)</label><input type="number" id="sim-ml-ant" value="4.2" step=".1" oninput="calcSimML()"></div>
+                <div class="sim-field"><label>Imposto (%)</label><input type="number" id="sim-ml-imp" value="10" step=".1" oninput="calcSimML()"></div>
+              </div>
+              <div class="sim-grid3">
+                <div class="sim-field"><label>Desconto (%)</label><input type="number" id="sim-ml-desc" value="5" step=".1" oninput="calcSimML()"></div>
+                <div class="sim-field"><label>Desc máx (R$)</label><input type="number" id="sim-ml-dmax" value="10" step=".01" oninput="calcSimML()"></div>
+                <div class="sim-field"><label>Frete (R$)</label><input type="number" id="sim-ml-frete" value="0" step=".01" oninput="calcSimML()"></div>
+              </div>
+              <div class="sim-field"><label>Ajuste ML / Estorno (R$)</label><input type="number" id="sim-ml-ajml" value="0" step=".01" oninput="calcSimML()"></div>
+            </div>
+            <div id="sim-ml-result" class="sim-result" style="display:none"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm" onclick="simPortarParaSH()">↔ Portfar para Shopee</button>
+              <button class="btn btn-p" style="flex:1" onclick="saveSimulation('ml')">Salvar simulação</button>
+            </div>
+          </div>
+
+          <!-- ── SHOPEE ── -->
+          <div id="sim-p-sh" class="sim-page">
+            <div class="card">
+              <div class="card-title">Produto</div>
+              <div class="sim-field"><label>Nome do produto (opcional)</label><input type="text" id="sim-sh-nome" placeholder="Ex: Luminária Mônaco Cedro"></div>
+              <div class="sim-grid2">
+                <div class="sim-field"><label>Preço de venda (R$)</label><input type="number" id="sim-sh-pv" step=".01" placeholder="0,00" oninput="calcSimSH()"></div>
+                <div class="sim-field"><label>Preço c/ desc (R$)</label><input type="number" id="sim-sh-pvd" step=".01" placeholder="0,00" oninput="calcSimSH()"></div>
+              </div>
+              <div class="sim-field"><label>Custo do produto (R$)</label><input type="number" id="sim-sh-custo" step=".01" placeholder="0,00" oninput="calcSimSH()"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Taxas e encargos</div>
+              <div id="sim-sh-taxa-info" style="background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;font-size:12px;color:var(--t2);margin-bottom:12px;line-height:1.6">
+                Preencha o preço para ver a taxa Shopee automática.
+              </div>
+              <div class="sim-grid3">
+                <div class="sim-field"><label>Antecipação (%)</label><input type="number" id="sim-sh-ant" value="2.5" step=".1" oninput="calcSimSH()"></div>
+                <div class="sim-field"><label>Imposto (%)</label><input type="number" id="sim-sh-imp" value="10" step=".1" oninput="calcSimSH()"></div>
+                <div class="sim-field"><label>Outros (%)</label><input type="number" id="sim-sh-outros" value="0" step=".1" oninput="calcSimSH()"></div>
+              </div>
+              <div class="sim-grid3">
+                <div class="sim-field"><label>Desconto (%)</label><input type="number" id="sim-sh-desc" value="5" step=".1" oninput="calcSimSH()"></div>
+                <div class="sim-field"><label>Desc máx (R$)</label><input type="number" id="sim-sh-dmax" value="10" step=".01" oninput="calcSimSH()"></div>
+                <div class="sim-field"><label>Frete (R$)</label><input type="number" id="sim-sh-frete" value="0" step=".01" oninput="calcSimSH()"></div>
+              </div>
+            </div>
+            <div id="sim-sh-result" class="sim-result" style="display:none"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm" onclick="simPortarParaML()">↔ Portar para ML</button>
+              <button class="btn btn-p" style="flex:1" onclick="saveSimulation('sh')">Salvar simulação</button>
+            </div>
+          </div>
+
+          <!-- ── IMPORTAÇÃO ── -->
+          <div id="sim-p-im" class="sim-page">
+            <div class="card">
+              <div class="card-title">Produto importado</div>
+              <div class="sim-field"><label>Nome do produto (opcional)</label><input type="text" id="sim-im-nome" placeholder="Ex: Dimmer rotativo 220v"></div>
+              <div class="sim-grid2">
+                <div class="sim-field"><label>Valor dos produtos (USD)</label><input type="number" id="sim-im-prod" step=".01" placeholder="0.00" oninput="calcSimIM()"></div>
+                <div class="sim-field"><label>Quantidade</label><input type="number" id="sim-im-qty" step="1" placeholder="1" oninput="calcSimIM()"></div>
+              </div>
+              <div class="sim-grid2">
+                <div class="sim-field"><label>Frete internacional (USD)</label><input type="number" id="sim-im-frete" step=".01" placeholder="0.00" oninput="calcSimIM()"></div>
+                <div class="sim-field"><label>Seguro (USD)</label><input type="number" id="sim-im-seg" step=".01" value="0" oninput="calcSimIM()"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Câmbio e impostos</div>
+              <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px">
+                <div class="sim-field" style="flex:1;margin-bottom:0"><label>Dólar (R$)</label><input type="number" id="sim-im-dolar" step=".01" value="5.80" oninput="calcSimIM()"></div>
+                <button class="btn btn-sm" id="sim-dolar-btn" onclick="fetchSimDolar()" style="margin-bottom:1px;white-space:nowrap">↻ Atualizar</button>
+              </div>
+              <div id="sim-dolar-info" style="font-size:11px;color:var(--t3);margin-bottom:10px"></div>
+              <div class="sim-grid3">
+                <div class="sim-field"><label>II (%)</label><input type="number" id="sim-im-ii" step=".1" value="60" oninput="calcSimIM()"></div>
+                <div class="sim-field"><label>ICMS (%)</label><input type="number" id="sim-im-icms" step=".1" value="18" oninput="calcSimIM()"></div>
+                <div class="sim-field"><label>Taxa ADM (R$)</label><input type="number" id="sim-im-adm" step=".01" value="0" oninput="calcSimIM()"></div>
+              </div>
+            </div>
+            <div id="sim-im-unit" style="display:none" class="sim-unit-box">
+              <div class="sim-unit-label">Custo unitário</div>
+              <div class="sim-unit-val" id="sim-im-unit-val">—</div>
+              <div class="sim-unit-sub" id="sim-im-unit-sub"></div>
+            </div>
+            <div id="sim-im-result" class="sim-result" style="display:none"></div>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <button class="btn btn-sm" style="flex:1" onclick="simIMParaML()">Simular no ML</button>
+              <button class="btn btn-sm" style="flex:1" onclick="simIMParaSH()">Simular na Shopee</button>
+            </div>
+            <button class="btn btn-p" style="width:100%" onclick="saveSimulation('im')">Salvar simulação</button>
+          </div>
+
+          <!-- ── HISTÓRICO ── -->
+          <div id="sim-p-hist" class="sim-page">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div style="display:flex;gap:6px" id="sim-hist-filters">
+                <button class="btn btn-sm active" data-hf="all" onclick="setSimFilter('all')">Todas</button>
+                <button class="btn btn-sm" data-hf="ml" onclick="setSimFilter('ml')">ML</button>
+                <button class="btn btn-sm" data-hf="sh" onclick="setSimFilter('sh')">Shopee</button>
+                <button class="btn btn-sm" data-hf="im" onclick="setSimFilter('im')">Importação</button>
+              </div>
+              <button class="btn btn-sm" style="color:var(--rd)" onclick="clearSimHist()">Limpar tudo</button>
+            </div>
+            <div id="sim-hist-list"></div>
+          </div>
+        </div>
+
         <!-- CONFIG -->
         <div id="p-config" style="display:none">
+
           <div class="ph"><div class="ph-left"><div class="ph-title">Configurações</div></div></div>
 
           <div class="card">
@@ -654,6 +853,10 @@ select.tbl-inp{cursor:pointer}
     <button class="drawer-item" data-tab="custos" onclick="closeDrawers();goTab('custos')">
       <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       <div class="drawer-item-text"><strong>Custos</strong><span>Catálogo e vínculos</span></div>
+    </button>
+    <button class="drawer-item" data-tab="sim" onclick="closeDrawers();goTab('sim')">
+      <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+      <div class="drawer-item-text"><strong>Simuladora</strong><span>Teste cenários de precificação</span></div>
     </button>
     <button class="drawer-item" data-tab="config" onclick="closeDrawers();goTab('config')">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -788,10 +991,67 @@ const CUSTO_KEY='pfy2_custos';
 function getCustos(){try{return JSON.parse(localStorage.getItem(CUSTO_KEY)||'{}')}catch{return{}}}
 function saveCustos(obj){localStorage.setItem(CUSTO_KEY,JSON.stringify(obj))}
 
-// Mapeamento de custos por regra (aba "Custos")
-const CUSTO_RULES_KEY='pfy2_custo_rules';
+// Mapeamento de custos por regra (aba "Custos") — armazenado no Supabase
+const CUSTO_RULES_KEY='pfy2_custo_rules'; // só usado pra migração one-time do localStorage
 let _custoRules=[];
 let _custoRulesLoaded=false;
+
+async function loadCustoRules(){
+  try{
+    const{data,error}=await SB.from('custo_rules').select('*').order('position');
+    if(error)throw error;
+    if(data&&data.length){
+      _custoRules=data.map(r=>({_id:r.id,produto:r.produto,inc:r.inc||[],exc:r.exc||[],custo:r.custo}));
+      localStorage.removeItem(CUSTO_RULES_KEY);
+      return;
+    }
+    // Migração one-time: tenta localStorage antigo
+    const raw=localStorage.getItem(CUSTO_RULES_KEY);
+    if(raw){
+      const arr=JSON.parse(raw);
+      if(Array.isArray(arr)&&arr.length){
+        _custoRules=arr;
+        await bulkSaveCustoRules();
+        localStorage.removeItem(CUSTO_RULES_KEY);
+        return;
+      }
+    }
+    // Sem dados: carrega padrão e salva no banco
+    _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
+    await bulkSaveCustoRules();
+  }catch(e){
+    // Supabase indisponível (tabela ainda não criada) — opera localmente
+    console.warn('[Precifica] custo_rules: usando padrão local —',e.message);
+    try{
+      const raw=localStorage.getItem(CUSTO_RULES_KEY);
+      const arr=raw?JSON.parse(raw):[];
+      _custoRules=Array.isArray(arr)&&arr.length?arr:DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
+    }catch{
+      _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
+    }
+  }
+}
+
+async function bulkSaveCustoRules(){
+  if(!USER?.id)return;
+  await SB.from('custo_rules').delete().eq('user_id',USER.id);
+  if(!_custoRules.length)return;
+  const rows=_custoRules.map((r,i)=>({user_id:USER.id,position:i,produto:r.produto||'',inc:r.inc||[],exc:r.exc||[],custo:+(r.custo)||0}));
+  const{data,error}=await SB.from('custo_rules').insert(rows).select('id');
+  if(error)throw error;
+  (data||[]).forEach((d,i)=>{if(_custoRules[i])_custoRules[i]._id=d.id;});
+}
+
+async function saveCustoRules(){
+  setSyncStatus('syncing');
+  try{await bulkSaveCustoRules();setSyncStatus('ok');}
+  catch(e){
+    setSyncStatus('err');
+    // Fallback gracioso: salva no localStorage
+    try{localStorage.setItem(CUSTO_RULES_KEY,JSON.stringify(_custoRules));}catch{}
+    console.error('[Precifica] saveCustoRules:',e.message);
+  }
+}
 
 // ══════════════════════════════════════════════
 // UTILS
@@ -930,6 +1190,7 @@ async function doLogout(){
   _loggingOut=true;
   await SB.auth.signOut();
   USER=null;PROFILE=null;CHANNELS=[];LISTINGS=[];PRODUTOS=[];
+  _custoRules=[];_custoRulesLoaded=false;_simCache=null;
   document.getElementById('app').classList.remove('ready');
   document.getElementById('auth-screen').style.display='flex';
   showLogin();
@@ -1006,7 +1267,7 @@ function goTab(tab,chId){
   document.querySelectorAll('[data-tab]').forEach(el=>{
     el.classList.toggle('active',el.dataset.tab===tab);
   });
-  const pages=['dash','channel','tags','insights','custos','config','setup'];
+  const pages=['dash','channel','tags','insights','custos','sim','config','setup'];
   pages.forEach(p=>{
     const el=document.getElementById('p-'+p);
     if(el)el.style.display='none';
@@ -1023,6 +1284,7 @@ function goTab(tab,chId){
   else if(tab==='tags')renderTags();
   else if(tab==='insights')renderInsights();
   else if(tab==='custos')renderCustoMap();
+  else if(tab==='sim')renderSim();
   else if(tab==='config')updateConfig();
   document.querySelector('.content').scrollTop=0;
 }
@@ -1879,14 +2141,10 @@ function matchCustoRule(nomeNorm){
   return null;
 }
 
-function renderCustoMap(){
+async function renderCustoMap(){
   if(!_custoRulesLoaded){
-    _custoRules=loadCustoRules();
     _custoRulesLoaded=true;
-    if(!_custoRules.length){
-      _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
-      saveCustoRules();
-    }
+    await loadCustoRules();
   }
   renderCustoRulesEditor();
   renderProdutosList();
@@ -2170,6 +2428,521 @@ async function vincularManual(listingId){
 // PRIVACY
 // ══════════════════════════════════════════════
 function togglePrivacy(){
+
+// ══════════════════════════════════════════════
+// SIMULADORA — armazenamento no Supabase
+// ══════════════════════════════════════════════
+let _simCache=null;
+let _simFilter='all';
+let _simTipo='classico';
+let _simIMCusto=0;
+const SIM_FREE_LIMIT=20;
+
+async function simLoad(){
+  try{
+    const{data,error}=await SB.from('simulations').select('*').order('created_at',{ascending:false}).limit(200);
+    if(error)throw error;
+    _simCache=data||[];
+  }catch(e){console.error('[Precifica] simLoad:',e.message);_simCache=[];}
+  return _simCache;
+}
+
+function renderSim(){
+  goSimTab(document.querySelector('.sim-tab.active')?.id?.replace('simtab-','') || 'ml', true);
+}
+
+function goSimTab(tab, silent){
+  document.querySelectorAll('.sim-tab').forEach(b=>{b.classList.toggle('active',b.id==='simtab-'+tab);});
+  document.querySelectorAll('.sim-page').forEach(p=>{p.classList.toggle('active',p.id==='sim-p-'+tab);});
+  if(tab==='hist')renderSimHist();
+}
+
+function simSetTipo(tipo){
+  _simTipo=tipo;
+  document.getElementById('sim-ml-cl').classList.toggle('active',tipo==='classico');
+  document.getElementById('sim-ml-pr').classList.toggle('active',tipo==='premium');
+  document.getElementById('sim-ml-com').value=tipo==='classico'?11.5:16.5;
+  calcSimML();
+}
+
+function gn(id){return parseFloat(document.getElementById(id)?.value)||0;}
+function gs(id){return document.getElementById(id)?.value||'';}
+
+function simResultHTML(r,isML){
+  const mColor=m=>m>=20?'var(--gr)':m>=10?'var(--am)':'var(--rd)';
+  const fN=v=>`<span style="color:var(--rd)">−${fmt(v)}</span>`;
+  const fP=v=>`<span style="color:var(--gr)">+${fmt(v)}</span>`;
+  const rr=(l,v)=>`<div class="sim-rrow"><span class="l">${l}</span><span class="v">${v}</span></div>`;
+  const rs=(l,v)=>`<div class="sim-rrow sub"><span class="l">${l}</span><span class="v">${v}</span></div>`;
+  const rt=(l,v,col)=>`<div class="sim-rrow total"><span class="l">${l}</span><span class="v"${col?` style="color:${col}"`:''}>${v}</span></div>`;
+  let h=rr('Preço de venda',fmt(r.pv));
+  if(isML){
+    h+=rr(`Comissão (${r.comPct}%)`,fN(r.comissao));
+    if(r.frete)h+=rr('Frete',fN(r.frete));
+    if(r.ajml)h+=rr('Ajuste ML (estorno)',fP(r.ajml));
+    if(r.desconto)h+=rr(`Desconto (${r.descPct}%, máx ${fmt(r.descMax)})`,fN(r.desconto));
+  }else{
+    h+=rr(`Comissão Shopee (${r.comPct}%)`,fN(r.comissao-r.fixo));
+    h+=rr('Taxa fixa',fN(r.fixo));
+    if(r.frete)h+=rr('Frete',fN(r.frete));
+    if(r.outros)h+=rr('Outros',fN(r.outros));
+    if(r.desconto)h+=rr(`Desconto (${r.descPct}%, máx ${fmt(r.descMax)})`,fN(r.desconto));
+  }
+  h+=rt('Valor que a plataforma paga',fmt(r.valorPlataforma));
+  h+=rs(`Antecipação (${r.antPct}%)`,fN(r.antecip));
+  h+=rs(`Imposto (${r.impPct}%)`,fN(r.imposto));
+  h+=rt('Líquido total',fmt(r.liquido));
+  h+=rs('Custo do produto',fN(r.custo));
+  const mInfo=r.margem>=20?'Excelente ✦':r.margem>=15?'Saudável':r.margem>=10?'Atenção':'Crítico';
+  h+=rt('Lucro',`${fmt(r.lucro)} <small style="font-size:10px;opacity:.7">${r.margem.toFixed(1)}% · ${mInfo}</small>`,mColor(r.margem));
+  return h;
+}
+
+function calcSimML(){
+  const pv=gn('sim-ml-pvd')>0?gn('sim-ml-pvd'):gn('sim-ml-pv');
+  const el=document.getElementById('sim-ml-result');
+  if(!pv){el.style.display='none';return;}
+  const a={preco:gn('sim-ml-pv'),preco_d:gn('sim-ml-pvd'),custo:gn('sim-ml-custo'),com:gn('sim-ml-com'),ant:gn('sim-ml-ant'),imp:gn('sim-ml-imp'),frete:gn('sim-ml-frete'),aj_ml:gn('sim-ml-ajml'),desc_pct:gn('sim-ml-desc'),desc_max:gn('sim-ml-dmax')};
+  const r=calcML(a);
+  el.style.display='';el.innerHTML=simResultHTML(r,true);
+}
+
+function calcSimSH(){
+  const pv=gn('sim-sh-pvd')>0?gn('sim-sh-pvd'):gn('sim-sh-pv');
+  const el=document.getElementById('sim-sh-result');
+  if(!pv){el.style.display='none';return;}
+  let comPct,fixo,desc;
+  if(pv<=80){comPct=20;fixo=4;desc=`≤ R$80 → 20% + R$4`;}
+  else if(pv<=100){comPct=17.5;fixo=16;desc=`R$80-100 → 17,5% + R$16`;}
+  else if(pv<=200){comPct=17;fixo=20;desc=`R$100-200 → 17% + R$20`;}
+  else{comPct=17;fixo=26;desc=`> R$200 → 17% + R$26`;}
+  const taxaTotal=pv*(comPct/100)+fixo;
+  document.getElementById('sim-sh-taxa-info').innerHTML=`<strong>${desc}</strong><br>Taxa estimada: <strong>${fmt(taxaTotal)}</strong> (${(taxaTotal/pv*100).toFixed(1)}% do preço)`;
+  const a={preco:gn('sim-sh-pv'),preco_d:gn('sim-sh-pvd'),custo:gn('sim-sh-custo'),ant:gn('sim-sh-ant'),imp:gn('sim-sh-imp'),frete:gn('sim-sh-frete'),outros:gn('sim-sh-outros'),desc_pct:gn('sim-sh-desc'),desc_max:gn('sim-sh-dmax')};
+  const r=calcSH(a);
+  el.style.display='';el.innerHTML=simResultHTML(r,false);
+}
+
+function calcSimIM(){
+  const prod=gn('sim-im-prod'),fr=gn('sim-im-frete'),seg=gn('sim-im-seg'),qty=gn('sim-im-qty')||1,dolar=gn('sim-im-dolar')||5.80,ii=gn('sim-im-ii'),icms=gn('sim-im-icms'),adm=gn('sim-im-adm');
+  const unitEl=document.getElementById('sim-im-unit');
+  const resEl=document.getElementById('sim-im-result');
+  if(!prod){unitEl.style.display='none';resEl.style.display='none';return;}
+  const totalUSD=prod+fr+seg;
+  const brl=totalUSD*dolar;
+  const impostoII=brl*(ii/100);
+  const impostoICMS=(brl+impostoII)*(icms/100);
+  const total=brl+impostoII+impostoICMS+adm;
+  const unit=total/qty;
+  _simIMCusto=unit;
+  unitEl.style.display='';
+  document.getElementById('sim-im-unit-val').textContent=fmt(unit);
+  document.getElementById('sim-im-unit-sub').textContent=`${qty} unid · Total ${fmt(total)}`;
+  resEl.style.display='';
+  resEl.innerHTML=`
+    <div class="sim-rrow"><span class="l">Produtos (USD $${prod.toFixed(2)} × R$${dolar})</span><span class="v">${fmt(prod*dolar)}</span></div>
+    ${fr?`<div class="sim-rrow"><span class="l">Frete internacional</span><span class="v">${fmt(fr*dolar)}</span></div>`:''}
+    ${seg?`<div class="sim-rrow"><span class="l">Seguro</span><span class="v">${fmt(seg*dolar)}</span></div>`:''}
+    <div class="sim-rrow total"><span class="l">Valor aduaneiro</span><span class="v">${fmt(brl)}</span></div>
+    <div class="sim-rrow sub"><span class="l">II (${ii}%)</span><span class="v" style="color:var(--rd)">+${fmt(impostoII)}</span></div>
+    <div class="sim-rrow sub"><span class="l">ICMS (${icms}%)</span><span class="v" style="color:var(--rd)">+${fmt(impostoICMS)}</span></div>
+    ${adm?`<div class="sim-rrow sub"><span class="l">Taxa ADM</span><span class="v" style="color:var(--rd)">+${fmt(adm)}</span></div>`:''}
+    <div class="sim-rrow total"><span class="l">Total desembaraço (${qty} unid)</span><span class="v">${fmt(total)}</span></div>
+    <div class="sim-rrow total"><span class="l">Custo por unidade</span><span class="v" style="color:var(--gr)">${fmt(unit)}</span></div>`;
+}
+
+async function fetchSimDolar(){
+  const btn=document.getElementById('sim-dolar-btn');
+  const info=document.getElementById('sim-dolar-info');
+  btn.textContent='↻ Buscando...';btn.disabled=true;
+  try{
+    const res=await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
+    const data=await res.json();
+    const rate=parseFloat(data.USDBRL?.bid||0);
+    if(rate){
+      document.getElementById('sim-im-dolar').value=rate.toFixed(2);
+      info.textContent=`Cotação ao vivo: R$ ${rate.toFixed(4)} — ${new Date().toLocaleTimeString('pt-BR')}`;
+      calcSimIM();
+    }
+  }catch{info.textContent='Sem conexão. Insira o câmbio manualmente.';}
+  btn.textContent='↻ Atualizar';btn.disabled=false;
+}
+
+function simIMParaML(){if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}document.getElementById('sim-ml-custo').value=_simIMCusto.toFixed(2);goSimTab('ml');calcSimML();}
+function simIMParaSH(){if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}document.getElementById('sim-sh-custo').value=_simIMCusto.toFixed(2);goSimTab('sh');calcSimSH();}
+function simPortarParaSH(){document.getElementById('sim-sh-pv').value=gs('sim-ml-pv');document.getElementById('sim-sh-pvd').value=gs('sim-ml-pvd');document.getElementById('sim-sh-custo').value=gs('sim-ml-custo');document.getElementById('sim-sh-frete').value=gs('sim-ml-frete');goSimTab('sh');calcSimSH();}
+function simPortarParaML(){document.getElementById('sim-ml-pv').value=gs('sim-sh-pv');document.getElementById('sim-ml-pvd').value=gs('sim-sh-pvd');document.getElementById('sim-ml-custo').value=gs('sim-sh-custo');document.getElementById('sim-ml-frete').value=gs('sim-sh-frete');goSimTab('ml');calcSimML();}
+
+async function saveSimulation(type){
+  // Verifica limite do plano Free
+  if(!_simCache)await simLoad();
+  const isPro=PROFILE?.plan_id==='pro';
+  if(!isPro&&_simCache.length>=SIM_FREE_LIMIT){
+    alert(`Limite de ${SIM_FREE_LIMIT} simulações no plano Free. Faça upgrade para Pro para salvar ilimitadas.`);
+    return;
+  }
+
+  let payload={user_id:USER.id,type,nome:'',data:{}};
+
+  if(type==='ml'){
+    const pv=gn('sim-ml-pvd')>0?gn('sim-ml-pvd'):gn('sim-ml-pv');
+    if(!pv){alert('Preencha pelo menos o preço de venda.');return;}
+    const a={preco:gn('sim-ml-pv'),preco_d:gn('sim-ml-pvd'),custo:gn('sim-ml-custo'),com:gn('sim-ml-com'),ant:gn('sim-ml-ant'),imp:gn('sim-ml-imp'),frete:gn('sim-ml-frete'),aj_ml:gn('sim-ml-ajml'),desc_pct:gn('sim-ml-desc'),desc_max:gn('sim-ml-dmax')};
+    const r=calcML(a);
+    payload.nome=gs('sim-ml-nome')||'Simulação ML';
+    payload.pv=pv;payload.custo=a.custo;payload.lucro=r.lucro;payload.margem=r.margem;
+    payload.data={...a,tipo:_simTipo};
+  }else if(type==='sh'){
+    const pv=gn('sim-sh-pvd')>0?gn('sim-sh-pvd'):gn('sim-sh-pv');
+    if(!pv){alert('Preencha pelo menos o preço de venda.');return;}
+    const a={preco:gn('sim-sh-pv'),preco_d:gn('sim-sh-pvd'),custo:gn('sim-sh-custo'),ant:gn('sim-sh-ant'),imp:gn('sim-sh-imp'),frete:gn('sim-sh-frete'),outros:gn('sim-sh-outros'),desc_pct:gn('sim-sh-desc'),desc_max:gn('sim-sh-dmax')};
+    const r=calcSH(a);
+    payload.nome=gs('sim-sh-nome')||'Simulação Shopee';
+    payload.pv=pv;payload.custo=a.custo;payload.lucro=r.lucro;payload.margem=r.margem;
+    payload.data=a;
+  }else{
+    if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
+    payload.nome=gs('sim-im-nome')||'Importação';
+    payload.custo_unit=_simIMCusto;
+    payload.data={prod:gn('sim-im-prod'),frete:gn('sim-im-frete'),seg:gn('sim-im-seg'),qty:gn('sim-im-qty')||1,dolar:gn('sim-im-dolar'),ii:gn('sim-im-ii'),icms:gn('sim-im-icms'),adm:gn('sim-im-adm')};
+  }
+
+  setSyncStatus('syncing');
+  try{
+    const{data,error}=await SB.from('simulations').insert(payload).select().single();
+    if(error)throw error;
+    _simCache=[data,...(_simCache||[])];
+    setSyncStatus('ok');
+    goSimTab('hist');
+    renderSimHist();
+  }catch(e){
+    setSyncStatus('err');
+    alert('Erro ao salvar: '+e.message+'\n\nVerifique se a tabela "simulations" foi criada no Supabase.');
+  }
+}
+
+function setSimFilter(f){
+  _simFilter=f;
+  document.querySelectorAll('#sim-hist-filters .btn').forEach(b=>{b.classList.toggle('active',b.dataset.hf===f);});
+  renderSimHist();
+}
+
+async function clearSimHist(){
+  if(!confirm('Apagar todas as simulações salvas? Esta ação não pode ser desfeita.'))return;
+  setSyncStatus('syncing');
+  try{
+    await SB.from('simulations').delete().eq('user_id',USER.id);
+    _simCache=[];
+    setSyncStatus('ok');
+    renderSimHist();
+  }catch(e){setSyncStatus('err');alert('Erro: '+e.message);}
+}
+
+async function deleteSimulation(id){
+  setSyncStatus('syncing');
+  try{
+    const{error}=await SB.from('simulations').delete().eq('id',id).eq('user_id',USER.id);
+    if(error)throw error;
+    _simCache=(_simCache||[]).filter(s=>s.id!==id);
+    setSyncStatus('ok');
+    renderSimHist();
+  }catch(e){setSyncStatus('err');alert('Erro: '+e.message);}
+}
+
+async function renderSimHist(){
+  const el=document.getElementById('sim-hist-list');
+  if(!el)return;
+
+  if(!_simCache){
+    el.innerHTML='<div class="empty" style="padding:40px">Carregando...</div>';
+    await simLoad();
+  }
+
+  let sims=_simCache||[];
+  if(_simFilter!=='all')sims=sims.filter(s=>s.type===_simFilter);
+
+  if(!sims.length){
+    el.innerHTML=`<div class="sim-empty"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Nenhuma simulação salva.<br><small>Faça uma simulação e clique em "Salvar".</small></div>`;
+    return;
+  }
+
+  const mC=m=>m>=20?'var(--gr)':m>=10?'var(--am)':'var(--rd)';
+  el.innerHTML=sims.map(s=>{
+    const bCls=s.type==='ml'?'ml':s.type==='sh'?'sh':'im';
+    const bTxt=s.type==='ml'?'Mercado Livre':s.type==='sh'?'Shopee':'Importação';
+    let meta='';
+    if(s.type==='im'){
+      meta=`<span>Custo unit. <b style="color:var(--gr)">${fmt(s.custo_unit)}</b></span><span>${s.data?.qty||1} unid · USD @ R$${s.data?.dolar||'?'}</span>`;
+    }else{
+      meta=`<span>PV <b>${fmt(s.pv)}</b></span><span>Custo <b>${fmt(s.custo)}</b></span><span>Lucro <b style="color:${mC(s.margem)}">${fmt(s.lucro)}</b></span><span>Margem <b style="color:${mC(s.margem)}">${(s.margem||0).toFixed(1)}%</b></span>`;
+    }
+    const date=new Date(s.created_at).toLocaleString('pt-BR');
+    return `<div class="sim-card">
+      <div class="sim-card-top">
+        <div class="sim-card-name">${sanitize(s.nome||'Simulação')}</div>
+        <span class="sim-badge ${bCls}">${bTxt}</span>
+        <button onclick="deleteSimulation('${s.id}')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;line-height:1;padding:0 2px;flex-shrink:0" title="Apagar">×</button>
+      </div>
+      <div class="sim-card-meta">${meta}</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:6px">${date}</div>
+    </div>`;
+  }).join('');
+}
+
+
+
+function renderSim(){
+  goSimTab(document.querySelector('.sim-tab.active')?.id?.replace('simtab-','') || 'ml', true);
+}
+
+function goSimTab(tab, silent){
+  document.querySelectorAll('.sim-tab').forEach(b=>{b.classList.toggle('active',b.id==='simtab-'+tab);});
+  document.querySelectorAll('.sim-page').forEach(p=>{p.classList.toggle('active',p.id==='sim-p-'+tab);});
+  if(tab==='hist')renderSimHist();
+}
+
+function simSetTipo(tipo){
+  _simTipo=tipo;
+  document.getElementById('sim-ml-cl').classList.toggle('active',tipo==='classico');
+  document.getElementById('sim-ml-pr').classList.toggle('active',tipo==='premium');
+  const com=tipo==='classico'?11.5:16.5;
+  document.getElementById('sim-ml-com').value=com;
+  calcSimML();
+}
+
+function gn(id){return parseFloat(document.getElementById(id)?.value)||0;}
+function gs(id){return document.getElementById(id)?.value||'';}
+
+function simResultHTML(r, isML){
+  const mColor=m=>m>=20?'var(--gr)':m>=10?'var(--am)':'var(--rd)';
+  const fmtNeg=v=>`<span style="color:var(--rd)">−${fmt(v)}</span>`;
+  const fmtPos=v=>`<span style="color:var(--gr)">+${fmt(v)}</span>`;
+  let html='';
+  const rr=(l,v,cls='')=>`<div class="sim-rrow ${cls}"><span class="l">${l}</span><span class="v">${v}</span></div>`;
+  const rs=(l,v)=>`<div class="sim-rrow sub"><span class="l">${l}</span><span class="v">${v}</span></div>`;
+  const rt=(l,v,col='')=>`<div class="sim-rrow total"><span class="l">${l}</span><span class="v" style="${col?'color:'+col:''}">${v}</span></div>`;
+
+  html+=rr('Preço de venda', fmt(r.pv));
+  if(isML){
+    html+=rr(`Comissão (${r.comPct}%)`, fmtNeg(r.comissao));
+    if(r.frete)html+=rr('Frete', fmtNeg(r.frete));
+    if(r.ajml)html+=rr('Ajuste ML', fmtPos(r.ajml));
+    if(r.desconto)html+=rr(`Desconto (${r.descPct}%, máx ${fmt(r.descMax)})`, fmtNeg(r.desconto));
+  }else{
+    html+=rr(`Comissão (${r.comPct}%)`, fmtNeg(r.comissao-r.fixo));
+    html+=rr('Taxa fixa por venda', fmtNeg(r.fixo));
+    if(r.frete)html+=rr('Frete', fmtNeg(r.frete));
+    if(r.outros)html+=rr('Outros', fmtNeg(r.outros));
+    if(r.desconto)html+=rr(`Desconto (${r.descPct}%, máx ${fmt(r.descMax)})`, fmtNeg(r.desconto));
+  }
+  html+=rt('Valor que a plataforma paga', fmt(r.valorPlataforma));
+  html+=rs(`Antecipação (${r.antPct}%)`, fmtNeg(r.antecip));
+  html+=rs(`Imposto (${r.impPct}%)`, fmtNeg(r.imposto));
+  html+=rt('Líquido total', fmt(r.liquido));
+  html+=rs('Custo do produto', fmtNeg(r.custo));
+
+  const mInfo=r.margem>=20?'Excelente ✦':r.margem>=15?'Saudável':r.margem>=10?'Atenção':'Crítico';
+  html+=`<div class="sim-rrow total"><span class="l">Lucro</span><span class="v" style="color:${mColor(r.margem)}">${fmt(r.lucro)} <small style="font-size:10px">${r.margem.toFixed(1)}% · ${mInfo}</small></span></div>`;
+  return html;
+}
+
+function calcSimML(){
+  const pv=gn('sim-ml-pvd')>0?gn('sim-ml-pvd'):gn('sim-ml-pv');
+  if(!pv){document.getElementById('sim-ml-result').style.display='none';return;}
+  const a={
+    preco:gn('sim-ml-pv'), preco_d:gn('sim-ml-pvd'),
+    custo:gn('sim-ml-custo'), com:gn('sim-ml-com'), ant:gn('sim-ml-ant'),
+    imp:gn('sim-ml-imp'), frete:gn('sim-ml-frete'), aj_ml:gn('sim-ml-ajml'),
+    desc_pct:gn('sim-ml-desc'), desc_max:gn('sim-ml-dmax')
+  };
+  const r=calcML(a);
+  const el=document.getElementById('sim-ml-result');
+  el.style.display='';
+  el.innerHTML=simResultHTML(r, true);
+}
+
+function calcSimSH(){
+  const pv=gn('sim-sh-pvd')>0?gn('sim-sh-pvd'):gn('sim-sh-pv');
+  if(!pv){document.getElementById('sim-sh-result').style.display='none';return;}
+
+  // Taxa info
+  let comPct,fixo,taxaDesc;
+  if(pv<=80){comPct=20;fixo=4;taxaDesc=`≤ R$80 → 20% + R$4 de taxa fixa`;}
+  else if(pv<=100){comPct=17.5;fixo=16;taxaDesc=`R$80-100 → 17,5% + R$16 de taxa fixa`;}
+  else if(pv<=200){comPct=17;fixo=20;taxaDesc=`R$100-200 → 17% + R$20 de taxa fixa`;}
+  else{comPct=17;fixo=26;taxaDesc=`> R$200 → 17% + R$26 de taxa fixa`;}
+  const taxaTotal=pv*(comPct/100)+fixo;
+  document.getElementById('sim-sh-taxa-info').innerHTML=`<strong>${taxaDesc}</strong><br>Taxa total estimada: <strong>${fmt(taxaTotal)}</strong> (${(taxaTotal/pv*100).toFixed(1)}% do preço)`;
+
+  const a={
+    preco:gn('sim-sh-pv'), preco_d:gn('sim-sh-pvd'),
+    custo:gn('sim-sh-custo'), ant:gn('sim-sh-ant'),
+    imp:gn('sim-sh-imp'), frete:gn('sim-sh-frete'), outros:gn('sim-sh-outros'),
+    desc_pct:gn('sim-sh-desc'), desc_max:gn('sim-sh-dmax')
+  };
+  const r=calcSH(a);
+  const el=document.getElementById('sim-sh-result');
+  el.style.display='';
+  el.innerHTML=simResultHTML(r, false);
+}
+
+function calcSimIM(){
+  const prodUSD=gn('sim-im-prod'), freteUSD=gn('sim-im-frete'),
+        segUSD=gn('sim-im-seg'), qty=gn('sim-im-qty')||1,
+        dolar=gn('sim-im-dolar')||5.80, ii=gn('sim-im-ii'),
+        icms=gn('sim-im-icms'), adm=gn('sim-im-adm');
+  if(!prodUSD){document.getElementById('sim-im-unit').style.display='none';document.getElementById('sim-im-result').style.display='none';return;}
+  const custoUSD=prodUSD+freteUSD+segUSD;
+  const custoBRL=custoUSD*dolar;
+  const impostoII=custoBRL*(ii/100);
+  const impostoICMS=(custoBRL+impostoII)*(icms/100);
+  const totalBRL=custoBRL+impostoII+impostoICMS+adm;
+  const custoUnit=totalBRL/qty;
+  _simIMCusto=custoUnit;
+
+  const unitEl=document.getElementById('sim-im-unit');
+  unitEl.style.display='';
+  document.getElementById('sim-im-unit-val').textContent=fmt(custoUnit);
+  document.getElementById('sim-im-unit-sub').textContent=`${qty} unid · Total ${fmt(totalBRL)}`;
+
+  const resEl=document.getElementById('sim-im-result');
+  resEl.style.display='';
+  resEl.innerHTML=`
+    <div class="sim-rrow"><span class="l">Valor produtos (USD $${prodUSD.toFixed(2)})</span><span class="v">${fmt(prodUSD*dolar)}</span></div>
+    <div class="sim-rrow"><span class="l">Frete internacional</span><span class="v">${fmt(freteUSD*dolar)}</span></div>
+    ${segUSD?`<div class="sim-rrow"><span class="l">Seguro</span><span class="v">${fmt(segUSD*dolar)}</span></div>`:''}
+    <div class="sim-rrow sub"><span class="l">Câmbio: 1 USD = R$ ${dolar.toFixed(2)}</span><span class="v"></span></div>
+    <div class="sim-rrow total"><span class="l">Valor aduaneiro</span><span class="v">${fmt(custoBRL)}</span></div>
+    <div class="sim-rrow sub"><span class="l">II (${ii}%)</span><span class="v" style="color:var(--rd)">+${fmt(impostoII)}</span></div>
+    <div class="sim-rrow sub"><span class="l">ICMS (${icms}%)</span><span class="v" style="color:var(--rd)">+${fmt(impostoICMS)}</span></div>
+    ${adm?`<div class="sim-rrow sub"><span class="l">Taxa ADM</span><span class="v" style="color:var(--rd)">+${fmt(adm)}</span></div>`:''}
+    <div class="sim-rrow total"><span class="l">Total desembaraço</span><span class="v">${fmt(totalBRL)}</span></div>
+    <div class="sim-rrow total"><span class="l">Custo por unidade</span><span class="v" style="color:var(--gr)">${fmt(custoUnit)}</span></div>`;
+}
+
+async function fetchSimDolar(){
+  const btn=document.getElementById('sim-dolar-btn');
+  const info=document.getElementById('sim-dolar-info');
+  btn.textContent='↻ Buscando...'; btn.disabled=true;
+  try{
+    const res=await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
+    const data=await res.json();
+    const rate=parseFloat(data.USDBRL?.bid||0);
+    if(rate){
+      document.getElementById('sim-im-dolar').value=rate.toFixed(2);
+      info.textContent=`Cotação em tempo real: R$ ${rate.toFixed(4)} — ${new Date().toLocaleTimeString('pt-BR')}`;
+      calcSimIM();
+    }
+  }catch(e){info.textContent='Não foi possível buscar a cotação. Insira manualmente.';}
+  btn.textContent='↻ Atualizar'; btn.disabled=false;
+}
+
+function simIMParaML(){
+  if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
+  document.getElementById('sim-ml-custo').value=_simIMCusto.toFixed(2);
+  goSimTab('ml');
+  calcSimML();
+}
+function simIMParaSH(){
+  if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
+  document.getElementById('sim-sh-custo').value=_simIMCusto.toFixed(2);
+  goSimTab('sh');
+  calcSimSH();
+}
+function simPortarParaSH(){
+  document.getElementById('sim-sh-pv').value=gs('sim-ml-pv');
+  document.getElementById('sim-sh-pvd').value=gs('sim-ml-pvd');
+  document.getElementById('sim-sh-custo').value=gs('sim-ml-custo');
+  document.getElementById('sim-sh-frete').value=gs('sim-ml-frete');
+  goSimTab('sh'); calcSimSH();
+}
+function simPortarParaML(){
+  document.getElementById('sim-ml-pv').value=gs('sim-sh-pv');
+  document.getElementById('sim-ml-pvd').value=gs('sim-sh-pvd');
+  document.getElementById('sim-ml-custo').value=gs('sim-sh-custo');
+  document.getElementById('sim-ml-frete').value=gs('sim-sh-frete');
+  goSimTab('ml'); calcSimML();
+}
+
+function saveSimulation(type){
+  const sims=loadSims();
+  const now=new Date();
+  const id=Date.now().toString(36);
+  let entry={id, type, date:now.toLocaleString('pt-BR')};
+
+  if(type==='ml'){
+    const pv=gn('sim-ml-pvd')>0?gn('sim-ml-pvd'):gn('sim-ml-pv');
+    if(!pv){alert('Preencha pelo menos o preço de venda.');return;}
+    const a={preco:gn('sim-ml-pv'),preco_d:gn('sim-ml-pvd'),custo:gn('sim-ml-custo'),com:gn('sim-ml-com'),ant:gn('sim-ml-ant'),imp:gn('sim-ml-imp'),frete:gn('sim-ml-frete'),aj_ml:gn('sim-ml-ajml'),desc_pct:gn('sim-ml-desc'),desc_max:gn('sim-ml-dmax')};
+    const r=calcML(a);
+    entry={...entry,nome:gs('sim-ml-nome')||'Simulação ML',pv,custo:a.custo,lucro:r.lucro,margem:r.margem,tipo:_simTipo,data:a};
+  }else if(type==='sh'){
+    const pv=gn('sim-sh-pvd')>0?gn('sim-sh-pvd'):gn('sim-sh-pv');
+    if(!pv){alert('Preencha pelo menos o preço de venda.');return;}
+    const a={preco:gn('sim-sh-pv'),preco_d:gn('sim-sh-pvd'),custo:gn('sim-sh-custo'),ant:gn('sim-sh-ant'),imp:gn('sim-sh-imp'),frete:gn('sim-sh-frete'),outros:gn('sim-sh-outros'),desc_pct:gn('sim-sh-desc'),desc_max:gn('sim-sh-dmax')};
+    const r=calcSH(a);
+    entry={...entry,nome:gs('sim-sh-nome')||'Simulação Shopee',pv,custo:a.custo,lucro:r.lucro,margem:r.margem,data:a};
+  }else{
+    if(!_simIMCusto){alert('Calcule o custo de importação primeiro.');return;}
+    entry={...entry,nome:gs('sim-im-nome')||'Simulação Importação',custoUnit:_simIMCusto,qty:gn('sim-im-qty')||1,dolar:gn('sim-im-dolar')};
+  }
+
+  sims.unshift(entry);
+  saveSims(sims.slice(0,100));
+  goSimTab('hist');
+  renderSimHist();
+}
+
+function setSimFilter(f){
+  _simFilter=f;
+  document.querySelectorAll('#sim-hist-filters .btn').forEach(b=>{b.classList.toggle('active',b.dataset.hf===f);});
+  renderSimHist();
+}
+
+function clearSimHist(){
+  if(!confirm('Apagar todas as simulações salvas?'))return;
+  saveSims([]);
+  renderSimHist();
+}
+
+function deleteSimulation(id){
+  const sims=loadSims().filter(s=>s.id!==id);
+  saveSims(sims);
+  renderSimHist();
+}
+
+function renderSimHist(){
+  const el=document.getElementById('sim-hist-list');
+  if(!el)return;
+  let sims=loadSims();
+  if(_simFilter!=='all')sims=sims.filter(s=>s.type===_simFilter);
+  if(!sims.length){
+    el.innerHTML=`<div class="sim-empty"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Nenhuma simulação salva ainda.<br><small>Faça uma simulação e clique em "Salvar".</small></div>`;
+    return;
+  }
+  const mColor=m=>m>=20?'var(--gr)':m>=10?'var(--am)':'var(--rd)';
+  el.innerHTML=sims.map(s=>{
+    let meta='';
+    if(s.type==='ml'||s.type==='sh'){
+      meta=`<span>PV <b>${fmt(s.pv)}</b></span><span>Custo <b>${fmt(s.custo)}</b></span><span>Lucro <b style="color:${mColor(s.margem)}">${fmt(s.lucro)}</b></span><span>Margem <b style="color:${mColor(s.margem)}">${s.margem.toFixed(1)}%</b></span>`;
+    }else{
+      meta=`<span>Custo unit. <b style="color:var(--gr)">${fmt(s.custoUnit)}</b></span><span>${s.qty} unid · USD @ R$${s.dolar}</span>`;
+    }
+    const badgeCls=s.type==='ml'?'ml':s.type==='sh'?'sh':'im';
+    const badgeTxt=s.type==='ml'?'ML':s.type==='sh'?'Shopee':'Importação';
+    return `<div class="sim-card">
+      <div class="sim-card-top">
+        <div class="sim-card-name">${sanitize(s.nome||'Simulação')}</div>
+        <span class="sim-badge ${badgeCls}">${badgeTxt}</span>
+        <button onclick="deleteSimulation('${s.id}')" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;line-height:1;padding:0 2px;flex-shrink:0" title="Apagar">×</button>
+      </div>
+      <div class="sim-card-meta">${meta}</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:6px">${s.date}</div>
+    </div>`;
+  }).join('');
+}
+
+
   _privacyOn=!_privacyOn;
   applyPrivacy();
   const icon=document.getElementById('eye-icon');
