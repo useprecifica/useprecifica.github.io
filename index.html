@@ -283,6 +283,18 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 tr.locked-row,.an-card.locked-row{cursor:pointer}
 tr.locked-row:hover,.an-card.locked-row:hover{background:rgba(130,87,245,.06)}
 
+/* ── TAGS & FULL ── */
+.tags-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:860px){.tags-grid{grid-template-columns:1fr}}
+.tag-card-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.tag-card-title svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.remessa-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 0;margin-top:14px;border-top:1px solid var(--bd);user-select:none}
+.remessa-toggle svg.chev{width:14px;height:14px;stroke:var(--t3);margin-left:auto;transition:transform .2s;flex-shrink:0}
+.remessa-toggle.open svg.chev{transform:rotate(180deg)}
+.remessa-toggle span{font-size:12.5px;font-weight:600;color:var(--t2)}
+.remessa-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .25s var(--ease),opacity .2s var(--ease)}
+.remessa-body.open{max-height:900px;opacity:1;padding-top:12px}
+
 /* ── ONBOARDING CHECKLIST ── */
 .onb-card{background:var(--sur);border:1.5px solid var(--pu);border-radius:var(--rs2);padding:18px 20px;margin-bottom:18px;position:relative;animation:card-in .3s var(--ease)}
 .onb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
@@ -1780,27 +1792,47 @@ async function renderChannel(){
 // ══════════════════════════════════════════════
 // RENDER TAGS
 // ══════════════════════════════════════════════
-function renderTags(){
+async function renderTags(){
   const cont=document.getElementById('p-tags-content');
   if(!cont)return;
 
-  const all=LISTINGS.map(l=>{
-    const ch=CHANNELS.find(c=>c.id===l.channel_id);
-    const r=calcListing(l,ch?.type||'ml');
-    return{...l,...r,_ch:ch};
-  });
+  // Busca com prévia mascarada (igual ao Canal) — anúncios fora do limite
+  // Free aparecem borrados, sem dado financeiro real saindo do servidor.
+  let all=[];
+  for(const ch of CHANNELS){
+    try{
+      const{data,error}=await SB.rpc('get_listings_with_preview',{p_channel_id:ch.id});
+      if(error)throw error;
+      (data||[]).forEach(l=>{
+        if(l.locked){
+          all.push({...l,pv:0,custo:0,lucro:0,margem:0,_ch:ch,_locked:true});
+        }else{
+          const r=calcListing(l,ch.type);
+          all.push({...l,...r,_ch:ch,_locked:false});
+        }
+      });
+    }catch(e){
+      console.error('Erro ao carregar tags do canal',ch.name,e);
+    }
+  }
+
+  const ICO_FULL='<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>';
+  const ICO_OFERTA='<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>';
+  const ICO_PUB='<path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>';
 
   const tagTypes=[
-    {key:'tag_full',label:'📦 Full',color:'#2563eb'},
-    {key:'tag_oferta',label:'⚡ Oferta',color:'#d97706'},
-    {key:'tag_pub',label:'📢 Pub',color:'var(--pu)'},
+    {key:'tag_full',label:'Full',color:'#2563eb',icon:ICO_FULL},
+    {key:'tag_oferta',label:'Oferta',color:'#d97706',icon:ICO_OFERTA},
+    {key:'tag_pub',label:'Pub',color:'var(--pu)',icon:ICO_PUB},
   ];
 
-  let html='';
+  const lockBadge=`<span class="lock-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PRO</span>`;
+
+  let html='<div class="tags-grid">';
   tagTypes.forEach(tg=>{
     const items=all.filter(l=>l[tg.key]);
-    html+=`<div class="card" style="margin-bottom:16px">
-      <div class="card-title" style="color:${tg.color}">${tg.label} — ${items.length} anúncio${items!==1?'s':''}</div>`;
+    html+=`<div class="card">
+      <div class="tag-card-title" style="color:${tg.color}"><svg viewBox="0 0 24 24">${tg.icon}</svg>${tg.label} — ${items.length} anúncio${items.length!==1?'s':''}</div>`;
     if(!items.length){
       html+=`<div class="empty" style="padding:16px 0">Nenhum anúncio com essa tag</div>`;
     } else {
@@ -1808,39 +1840,46 @@ function renderTags(){
         const chItems=items.filter(l=>l.channel_id===ch.id);
         if(!chItems.length)return;
         html+=`<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px">${sanitize(ch.name)}</div>`;
-        html+=chItems.map(l=>`<div class="ri" onclick="openListing('${l.id}')">
-          <div style="flex:1;min-width:0">
-            <div class="ri-name">${sanitize(l.nome)}</div>
-            <div class="ri-cod" onclick="event.stopPropagation();copyCod('${l.cod}')">${l.cod}</div>
-          </div>
-          <div class="ri-right"><span class="badge ${l.margem>=16?'b-ok':'b-nok'}">${l.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(l.lucro)}</div></div>
-        </div>`).join('');
+        html+=chItems.map(l=>{
+          const click=l._locked?`openUpgradeModal('Anúncio bloqueado','Esse anúncio está fora do limite de ${PLAN_LIMITS.anunciosPorCanal} do plano Free. Faça upgrade para Pro e desbloqueie todos os seus anúncios.')`:`openListing('${l.id}')`;
+          return`<div class="ri" onclick="${click}">
+            <div style="flex:1;min-width:0">
+              <div class="ri-name">${sanitize(l.nome)}</div>
+              <div class="ri-cod" onclick="event.stopPropagation();${l._locked?'':`copyCod('${l.cod}')`}">${l.cod}</div>
+            </div>
+            <div class="ri-right">${l._locked?lockBadge:`<span class="badge ${l.margem>=16?'b-ok':'b-nok'}">${l.margem.toFixed(1)}%</span><div class="ri-sub">${fmt(l.lucro)}</div>`}</div>
+          </div>`;
+        }).join('');
       });
     }
 
-    // Remessa simulator for Full
+    // Simulador de Remessa — colapsado por padrão, só pra tag Full
     if(tg.key==='tag_full'){
-      html+=`<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--bd)">
-        <div style="font-size:12px;font-weight:600;margin-bottom:12px">📊 Simular Remessa</div>
-        <div id="remessa-list-${tg.key}" style="margin-bottom:12px"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--sur2);border-radius:var(--rs)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-          <span style="font-size:12px;color:var(--t2);flex:1">Frete coleta ML (R$)</span>
-          <input type="number" id="remessa-frete" min="0" step=".01" placeholder="0,00" class="tbl-inp" style="width:80px;text-align:right" oninput="calcRemessa()">
+      html+=`<div class="remessa-toggle" id="remessa-toggle" onclick="toggleRemessa()">
+          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;color:var(--t3)"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span>Simular remessa Full</span>
+          <svg class="chev" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
-        <div id="remessa-resultado" style="display:none"></div>
-      </div>`;
+        <div class="remessa-body" id="remessa-body">
+          <div id="remessa-list-${tg.key}" style="margin-bottom:12px"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:var(--sur2);border-radius:var(--rs)">
+            <span style="font-size:12px;color:var(--t2);flex:1">Frete coleta ML (R$)</span>
+            <input type="number" id="remessa-frete" min="0" step=".01" placeholder="0,00" class="tbl-inp" style="width:80px;text-align:right" oninput="calcRemessa()">
+          </div>
+          <div id="remessa-resultado" style="display:none"></div>
+        </div>`;
     }
     html+='</div>';
   });
+  html+='</div>';
 
   const sub=document.getElementById('tags-sub');
   if(sub)sub.textContent=`${all.filter(l=>l.tag_full||l.tag_oferta||l.tag_pub).length} anúncios com tag`;
 
   cont.innerHTML=html;
 
-  // Populate remessa
-  const fullItems=all.filter(l=>l.tag_full);
+  // Popula simulador de remessa (só com itens desbloqueados — trancado não tem custo real pra calcular)
+  const fullItems=all.filter(l=>l.tag_full&&!l._locked);
   window._remessaData=fullItems;
   const remList=document.getElementById('remessa-list-tag_full');
   if(remList){
@@ -1854,6 +1893,14 @@ function renderTags(){
       <span class="badge ${l.margem>=16?'b-ok':'b-nok'}" style="flex-shrink:0">${l.margem.toFixed(1)}%</span>
     </div>`).join('');
   }
+}
+
+function toggleRemessa(){
+  const toggle=document.getElementById('remessa-toggle');
+  const body=document.getElementById('remessa-body');
+  if(!toggle||!body)return;
+  const open=body.classList.toggle('open');
+  toggle.classList.toggle('open',open);
 }
 
 function calcRemessa(){
@@ -2134,9 +2181,9 @@ function renderTagBtns(tags){
   const cont=document.getElementById('lf-tags');
   if(!cont)return;
   cont.innerHTML=[
-    {key:'full',label:'📦 Full',cls:'on-full'},
-    {key:'oferta',label:'⚡ Oferta',cls:'on-oferta'},
-    {key:'pub',label:'📢 Pub',cls:'on-pub'},
+    {key:'full',label:'Full',cls:'on-full'},
+    {key:'oferta',label:'Oferta',cls:'on-oferta'},
+    {key:'pub',label:'Pub',cls:'on-pub'},
   ].map(t=>`<button type="button" class="tag-btn ${tags[t.key]?t.cls:''}" data-tag="${t.key}" onclick="toggleTagBtn(this)">${t.label}</button>`).join('');
 }
 
