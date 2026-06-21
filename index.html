@@ -517,9 +517,10 @@ select.tbl-inp{cursor:pointer}
         <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         Tags & Full
       </button>
-      <button class="ni" data-tab="insights" onclick="goTab('insights')">
+      <button class="ni" data-tab="insights" onclick="goTab('insights')" style="position:relative">
         <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Insights
+        <span id="ni-insights-badge" style="display:none;margin-left:auto;font-size:9px;font-weight:800;padding:1.5px 6px;border-radius:8px;background:var(--pu-grad);color:#fff;letter-spacing:.3px">PRO</span>
       </button>
       <button class="ni" data-tab="custos" onclick="goTab('custos')">
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -609,12 +610,24 @@ select.tbl-inp{cursor:pointer}
         <!-- INSIGHTS -->
         <div id="p-insights" style="display:none">
           <div class="ph"><div class="ph-left"><div class="ph-title">Insights</div><div class="ph-sub" id="ins-sub"></div></div></div>
-          <div class="metrics" id="ins-metrics"></div>
-          <div class="ins-grid">
-            <div class="card" id="ins-alertas-card"><div class="card-title">Alertas críticos</div><div id="ins-alertas"></div></div>
-            <div class="card" id="ins-sugestoes"></div>
-            <div class="card" id="ins-canais"></div>
-            <div class="card" id="ins-dist"></div>
+          <div id="ins-paywall" style="display:none">
+            <div class="card" style="text-align:center;padding:48px 24px">
+              <div style="width:52px;height:52px;border-radius:14px;background:var(--pu-grad);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:0 8px 24px -6px var(--pu-glow)">
+                <svg width="26" height="26" viewBox="0 0 24 24" stroke="#fff" fill="none" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div style="font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:8px">Insights é um recurso Pro</div>
+              <div style="font-size:13px;color:var(--t2);max-width:380px;margin:0 auto 22px;line-height:1.6">Alertas de margem crítica, sugestões de precificação, comparativo entre canais e distribuição de margem — tudo automático, atualizado em tempo real.</div>
+              <button class="btn btn-p" onclick="openUpgradeModal('Insights é Pro','Faça upgrade para desbloquear alertas, sugestões e análises automáticas da sua carteira de anúncios.')">Quero ser Pro</button>
+            </div>
+          </div>
+          <div id="ins-content">
+            <div class="metrics" id="ins-metrics"></div>
+            <div class="ins-grid">
+              <div class="card" id="ins-alertas-card"><div class="card-title">Alertas críticos</div><div id="ins-alertas"></div></div>
+              <div class="card" id="ins-sugestoes"></div>
+              <div class="card" id="ins-canais"></div>
+              <div class="card" id="ins-dist"></div>
+            </div>
           </div>
         </div>
 
@@ -802,9 +815,12 @@ select.tbl-inp{cursor:pointer}
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
               <div>
                 <div style="font-size:14px;font-weight:600" id="cfg-email"></div>
-                <div style="font-size:12px;color:var(--t3);margin-top:2px">Plano: <span id="cfg-plan" class="plan-badge free">Free</span></div>
+                <div style="font-size:12px;color:var(--t3);margin-top:2px">Plano: <span id="cfg-plan" class="plan-badge free">Free</span> <span id="cfg-plan-expiry" style="color:var(--t3)"></span></div>
               </div>
-              <button class="btn btn-sm" onclick="doLogout()" style="color:var(--rd);border-color:var(--rd)">Sair da conta</button>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-sm" onclick="openUpgradeModal('Gerenciar plano','Resgate um cupom ou conheça o plano Pro.')">Plano / Cupom</button>
+                <button class="btn btn-sm" onclick="doLogout()" style="color:var(--rd);border-color:var(--rd)">Sair da conta</button>
+              </div>
             </div>
           </div>
 
@@ -913,6 +929,29 @@ select.tbl-inp{cursor:pointer}
   </div>
 </div>
 
+<!-- ── MODAL: UPGRADE PRO ── -->
+<div class="overlay" id="modal-upgrade" onclick="if(event.target===this)closeModal('modal-upgrade')">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <div style="width:52px;height:52px;border-radius:14px;background:var(--pu-grad);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px -6px var(--pu-glow)">
+      <svg width="26" height="26" viewBox="0 0 24 24" stroke="#fff" fill="none" stroke-width="2"><path d="M12 2l2.4 7.2H22l-6 4.6 2.3 7.2L12 16.4l-6.3 4.6L8 13.8 2 9.2h7.6z"/></svg>
+    </div>
+    <div class="modal-title" id="upgrade-title" style="margin-bottom:8px">Esse recurso é Pro</div>
+    <div id="upgrade-msg" style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:20px">Faça upgrade para desbloquear.</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-p" style="flex:1" onclick="onUpgradeClick()">Quero ser Pro</button>
+      <button class="btn" onclick="closeModal('modal-upgrade')">Agora não</button>
+    </div>
+    <div id="coupon-toggle" style="font-size:12px;color:var(--pu);cursor:pointer;font-weight:600" onclick="toggleCouponBox()">Tenho um cupom</div>
+    <div id="coupon-box" style="display:none;margin-top:14px;gap:8px">
+      <div style="display:flex;gap:8px">
+        <input type="text" id="coupon-input" placeholder="CÓDIGO" style="flex:1;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 12px;color:var(--t);font-family:var(--mono);text-transform:uppercase;outline:none" onkeydown="if(event.key==='Enter')redeemCoupon()">
+        <button class="btn btn-p" onclick="redeemCoupon()">Resgatar</button>
+      </div>
+      <div id="coupon-feedback" style="font-size:12px;margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ── MODAL: LISTING ── -->
 <div class="overlay" id="modal-listing" onclick="if(event.target===this)closeModal('modal-listing')">
   <div class="modal" style="max-width:560px">
@@ -1007,6 +1046,76 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 // ══════════════════════════════════════════════
 let SB=null, USER=null, PROFILE=null;
 let CHANNELS=[], LISTINGS=[], PRODUTOS=[];
+
+// ══════════════════════════════════════════════
+// PLANO / LIMITES
+// ══════════════════════════════════════════════
+const PLAN_LIMITS={
+  canais:1,
+  anunciosPorCanal:20,
+  simulacoesSalvas:5,
+  produtosCatalogo:5,
+};
+
+function isPro(){
+  if(PROFILE?.plan_id!=='pro')return false;
+  if(PROFILE?.plan_expires_at&&new Date(PROFILE.plan_expires_at)<new Date())return false;
+  return true;
+}
+
+function openUpgradeModal(title,msg){
+  document.getElementById('upgrade-title').textContent=title||'Esse recurso é Pro';
+  document.getElementById('upgrade-msg').textContent=msg||'Faça upgrade para desbloquear este recurso.';
+  document.getElementById('coupon-box').style.display='none';
+  document.getElementById('coupon-input').value='';
+  document.getElementById('coupon-feedback').textContent='';
+  openModal('modal-upgrade');
+}
+
+function onUpgradeClick(){
+  // Pagamento ainda não integrado — por enquanto direciona pro contato
+  window.open('https://wa.me/?text=Quero%20saber%20mais%20sobre%20o%20plano%20Pro%20do%20Precifica','_blank');
+  closeModal('modal-upgrade');
+}
+
+function toggleCouponBox(){
+  const box=document.getElementById('coupon-box');
+  const open=box.style.display==='none'||!box.style.display;
+  box.style.display=open?'flex':'none';
+  box.style.flexDirection='column';
+  if(open)setTimeout(()=>document.getElementById('coupon-input')?.focus(),50);
+}
+
+async function redeemCoupon(){
+  const input=document.getElementById('coupon-input');
+  const fb=document.getElementById('coupon-feedback');
+  const code=input.value.trim();
+  if(!code){fb.style.color='var(--rd)';fb.textContent='Digite um código.';return;}
+  fb.style.color='var(--t3)';fb.textContent='Validando...';
+  try{
+    const{data,error}=await SB.rpc('redeem_coupon',{p_code:code});
+    if(error)throw error;
+    if(!data.success){
+      fb.style.color='var(--rd)';
+      fb.textContent=data.error||'Não foi possível resgatar esse cupom.';
+      return;
+    }
+    PROFILE.plan_id=data.plan;
+    PROFILE.plan_expires_at=data.expires_at;
+    fb.style.color='var(--gr)';
+    fb.textContent=data.permanent?'Cupom aplicado! Acesso Pro liberado.':`Cupom aplicado! Pro até ${new Date(data.expires_at).toLocaleDateString('pt-BR')}.`;
+    const insBadge=document.getElementById('ni-insights-badge');
+    if(insBadge)insBadge.style.display=isPro()?'none':'';
+    setTimeout(()=>{
+      closeModal('modal-upgrade');
+      if(_activeTab)goTab(_activeTab,_activeCh);
+    },1500);
+  }catch(e){
+    fb.style.color='var(--rd)';
+    fb.textContent='Erro: '+e.message;
+  }
+}
+
 let _activeTab='dash', _activeCh=null;
 let _editListingId=null, _editChannelId=null;
 let _privacyOn=false;
@@ -1261,6 +1370,9 @@ async function loadAll(){
     // Load profile
     const {data:prof}=await SB.from('profiles').select('*').eq('id',USER.id).single();
     PROFILE=prof;
+
+    const insBadge=document.getElementById('ni-insights-badge');
+    if(insBadge)insBadge.style.display=isPro()?'none':'';
 
     renderSidebar();
     renderDash();
@@ -1714,6 +1826,18 @@ function calcRemessa(){
 // RENDER INSIGHTS
 // ══════════════════════════════════════════════
 function renderInsights(){
+  const paywall=document.getElementById('ins-paywall');
+  const content=document.getElementById('ins-content');
+  if(!isPro()){
+    if(paywall)paywall.style.display='';
+    if(content)content.style.display='none';
+    const sub=document.getElementById('ins-sub');
+    if(sub)sub.textContent='Recurso exclusivo do plano Pro';
+    return;
+  }
+  if(paywall)paywall.style.display='none';
+  if(content)content.style.display='';
+
   const all=LISTINGS.map(l=>{
     const ch=CHANNELS.find(c=>c.id===l.channel_id);
     const r=calcListing(l,ch?.type||'ml');
@@ -1840,6 +1964,10 @@ function renderInsights(){
 // CHANNEL MODAL
 // ══════════════════════════════════════════════
 function openAddChannel(){
+  if(!isPro()&&CHANNELS.length>=PLAN_LIMITS.canais){
+    openUpgradeModal('Limite de canais atingido',`No plano Free você pode ter até ${PLAN_LIMITS.canais} canal. Faça upgrade para Pro e cadastre canais ilimitados.`);
+    return;
+  }
   _editChannelId=null;
   g('ch-f-name','');
   g('ch-f-type','ml');
@@ -1888,6 +2016,13 @@ async function deleteChannel(id){
 // LISTING MODAL
 // ══════════════════════════════════════════════
 function openListing(id){
+  if(!id&&!isPro()){
+    const countNoCanal=LISTINGS.filter(l=>l.channel_id===_activeCh).length;
+    if(countNoCanal>=PLAN_LIMITS.anunciosPorCanal){
+      openUpgradeModal('Limite de anúncios atingido',`No plano Free você pode ter até ${PLAN_LIMITS.anunciosPorCanal} anúncios por canal. Faça upgrade para Pro e cadastre quantos precisar.`);
+      return;
+    }
+  }
   _editListingId=id||null;
   const ch=CHANNELS.find(c=>c.id===_activeCh);
   if(!ch)return;
@@ -2094,11 +2229,19 @@ async function deleteListing(){
 function updateConfig(){
   const emailEl=document.getElementById('cfg-email');
   const planEl=document.getElementById('cfg-plan');
+  const expEl=document.getElementById('cfg-plan-expiry');
   if(emailEl)emailEl.textContent=USER?.email||'';
   if(planEl){
-    const plan=PROFILE?.plan_id||'free';
-    planEl.textContent=plan==='pro'?'Pro':'Free';
-    planEl.className='plan-badge'+(plan==='free'?' free':'');
+    const pro=isPro();
+    planEl.textContent=pro?'Pro':'Free';
+    planEl.className='plan-badge'+(pro?'':' free');
+  }
+  if(expEl){
+    if(isPro()&&PROFILE?.plan_expires_at){
+      expEl.textContent=`· até ${new Date(PROFILE.plan_expires_at).toLocaleDateString('pt-BR')}`;
+    }else{
+      expEl.textContent='';
+    }
   }
 
   const chDiv=document.getElementById('cfg-channels');
@@ -2331,6 +2474,10 @@ function renderProdutosList(){
 }
 
 async function addProduto(){
+  if(!isPro()&&PRODUTOS.length>=PLAN_LIMITS.produtosCatalogo){
+    openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos no catálogo de custos. Faça upgrade para Pro e cadastre quantos precisar.`);
+    return;
+  }
   const nome=prompt('Nome do produto:');
   if(!nome||!nome.trim())return;
   const custoStr=prompt('Custo (R$):','0');
@@ -2385,8 +2532,19 @@ async function removeProduto(id){
 
 async function seedProdutosPadrao(){
   const existing=new Set(PRODUTOS.map(p=>normCusto(p.nome)));
-  const novos=DEFAULT_CUSTO_RULES.filter(r=>!existing.has(normCusto(r.produto))).map(r=>({user_id:USER.id,nome:r.produto,custo:r.custo}));
+  let novos=DEFAULT_CUSTO_RULES.filter(r=>!existing.has(normCusto(r.produto))).map(r=>({user_id:USER.id,nome:r.produto,custo:r.custo}));
   if(!novos.length){alert('Todos os produtos da tabela padrão já estão no catálogo.');return;}
+  if(!isPro()){
+    const vagas=PLAN_LIMITS.produtosCatalogo-PRODUTOS.length;
+    if(vagas<=0){
+      openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos no catálogo de custos. Faça upgrade para Pro e cadastre quantos precisar.`);
+      return;
+    }
+    if(novos.length>vagas){
+      novos=novos.slice(0,vagas);
+      alert(`Plano Free: só dá pra adicionar mais ${vagas} produto(s) agora (limite de ${PLAN_LIMITS.produtosCatalogo} no catálogo). Os ${vagas} primeiros da tabela padrão serão adicionados.`);
+    }
+  }
   if(!confirm(`Adicionar ${novos.length} produto(s) ao catálogo?`))return;
   try{
     const{data,error}=await SB.from('produtos_custo').insert(novos).select();
@@ -2530,7 +2688,7 @@ let _simCache=null;
 let _simFilter='all';
 let _simTipo='classico';
 let _simIMCusto=0;
-const SIM_FREE_LIMIT=20;
+const SIM_FREE_LIMIT=PLAN_LIMITS.simulacoesSalvas;
 
 async function simLoad(){
   try{
@@ -2694,9 +2852,8 @@ function simPortarParaML(){document.getElementById('sim-ml-pv').value=gs('sim-sh
 async function saveSimulation(type){
   // Verifica limite do plano Free
   if(!_simCache)await simLoad();
-  const isPro=PROFILE?.plan_id==='pro';
-  if(!isPro&&_simCache.length>=SIM_FREE_LIMIT){
-    alert(`Limite de ${SIM_FREE_LIMIT} simulações no plano Free. Faça upgrade para Pro para salvar ilimitadas.`);
+  if(!isPro()&&_simCache.length>=SIM_FREE_LIMIT){
+    openUpgradeModal('Limite de simulações salvas',`No plano Free você pode salvar até ${SIM_FREE_LIMIT} simulações. Faça upgrade para Pro e salve quantas precisar.`);
     return;
   }
 
