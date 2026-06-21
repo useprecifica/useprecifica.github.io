@@ -335,6 +335,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .sim-badge.im{background:rgba(34,197,94,.12);color:var(--gr);border:1px solid rgba(34,197,94,.3)}
 .sim-card-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--t2)}
 .sim-card-meta b{color:var(--t);font-weight:600}
+.sim-card-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)}
+.sim-card-actions .btn{flex:1}
 .sim-empty{text-align:center;padding:48px 20px;color:var(--t3);font-size:13px}
 .sim-empty svg{width:40px;height:40px;stroke:var(--bd2);margin-bottom:12px;display:block;margin-left:auto;margin-right:auto}
 .sim-tipo-seg{display:flex;gap:6px;margin-bottom:14px}
@@ -2793,6 +2795,12 @@ async function renderSimHist(){
       meta=`<span>PV <b>${fmt(s.pv)}</b></span><span>Custo <b>${fmt(s.custo)}</b></span><span>Lucro <b style="color:${mC(s.margem)}">${fmt(s.lucro)}</b></span><span>Margem <b style="color:${mC(s.margem)}">${(s.margem||0).toFixed(1)}%</b></span>`;
     }
     const date=new Date(s.created_at).toLocaleString('pt-BR');
+    const custoDisponivel = s.type==='im' ? s.custo_unit : s.custo;
+    const actions = custoDisponivel ? `
+      <div class="sim-card-actions">
+        <button class="btn btn-sm" onclick="simHistParaCalc('${s.id}','ml')">→ Simular no ML</button>
+        <button class="btn btn-sm" onclick="simHistParaCalc('${s.id}','sh')">→ Simular na Shopee</button>
+      </div>` : '';
     return `<div class="sim-card">
       <div class="sim-card-top">
         <div class="sim-card-name">${sanitize(s.nome||'Simulação')}</div>
@@ -2801,8 +2809,38 @@ async function renderSimHist(){
       </div>
       <div class="sim-card-meta">${meta}</div>
       <div style="font-size:11px;color:var(--t3);margin-top:6px">${date}</div>
+      ${actions}
     </div>`;
   }).join('');
+}
+
+// Reaproveita o custo de qualquer simulação salva (importação, ML ou Shopee)
+// e leva pra Calculadora do canal escolhido, pronto pra só preencher o preço de venda.
+function simHistParaCalc(id, canal){
+  const rec=(_simCache||[]).find(s=>s.id===id);
+  if(!rec){alert('Simulação não encontrada.');return;}
+  const custo = rec.type==='im' ? rec.custo_unit : rec.custo;
+  if(!custo){alert('Esta simulação não tem custo definido.');return;}
+
+  _simIMCusto = custo; // mantém o estado interno consistente
+
+  if(canal==='ml'){
+    if(rec.nome)document.getElementById('sim-ml-nome').value=rec.nome;
+    document.getElementById('sim-ml-custo').value=custo.toFixed(2);
+    document.getElementById('sim-ml-pv').value='';
+    document.getElementById('sim-ml-pvd').value='';
+    document.getElementById('sim-ml-result').style.display='none';
+    goSimTab('ml');
+    setTimeout(()=>document.getElementById('sim-ml-pv')?.focus(),100);
+  }else{
+    if(rec.nome)document.getElementById('sim-sh-nome').value=rec.nome;
+    document.getElementById('sim-sh-custo').value=custo.toFixed(2);
+    document.getElementById('sim-sh-pv').value='';
+    document.getElementById('sim-sh-pvd').value='';
+    document.getElementById('sim-sh-result').style.display='none';
+    goSimTab('sh');
+    setTimeout(()=>document.getElementById('sim-sh-pv')?.focus(),100);
+  }
 }
 
 
