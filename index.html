@@ -276,6 +276,28 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .prv{transition:filter .2s var(--ease),opacity .2s var(--ease);border-radius:4px}
 .privacy-mode .prv{filter:blur(7px);opacity:.5;user-select:none;pointer-events:none}
 
+/* ── ONBOARDING CHECKLIST ── */
+.onb-card{background:var(--sur);border:1.5px solid var(--pu);border-radius:var(--rs2);padding:18px 20px;margin-bottom:18px;position:relative;animation:card-in .3s var(--ease)}
+.onb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.onb-title{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.onb-sub{font-size:12px;color:var(--t3);margin-bottom:14px}
+.onb-close{background:none;border:none;color:var(--t3);cursor:pointer;padding:4px;border-radius:6px;transition:color .15s,background .15s}
+.onb-close:hover{color:var(--t);background:var(--sur2)}
+.onb-list{display:flex;flex-direction:column;gap:2px}
+.onb-item{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:9px;transition:background .15s;cursor:pointer;text-decoration:none;color:inherit}
+.onb-item:hover{background:var(--sur2)}
+.onb-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--bd2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s var(--ease-spring),border-color .2s}
+.onb-check svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.5);transition:opacity .15s,transform .15s var(--ease-spring)}
+.onb-item.done .onb-check{background:var(--gr);border-color:var(--gr)}
+.onb-item.done .onb-check svg{opacity:1;transform:scale(1)}
+.onb-item-text{flex:1;min-width:0}
+.onb-item-title{font-size:13px;font-weight:600;color:var(--t)}
+.onb-item.done .onb-item-title{color:var(--t3);text-decoration:line-through;text-decoration-color:var(--bd2)}
+.onb-item-desc{font-size:11.5px;color:var(--t3);margin-top:1px}
+.onb-arrow{color:var(--t3);flex-shrink:0}
+.onb-progress{height:4px;background:var(--bd);border-radius:2px;margin:12px 0 16px;overflow:hidden}
+.onb-progress-fill{height:100%;background:var(--pu-grad);border-radius:2px;transition:width .4s var(--ease)}
+
 /* ── SIMULADORA ── */
 .sim-tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs2);padding:5px}
 .sim-tab{flex:1;padding:8px 4px;border-radius:9px;border:none;background:none;color:var(--t3);font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;text-align:center;line-height:1.3}
@@ -531,6 +553,7 @@ select.tbl-inp{cursor:pointer}
           <div class="ph">
             <div class="ph-left"><div class="ph-title">Painel</div><div class="ph-sub" id="dash-sub">Carregando...</div></div>
           </div>
+          <div id="onb-container"></div>
           <div class="metrics" id="dash-metrics"></div>
           <div class="two-col">
             <div class="card"><div class="card-title">Melhores margens</div><div id="dash-top"></div></div>
@@ -1337,6 +1360,68 @@ function renderSidebar(){
 }
 
 // ══════════════════════════════════════════════
+// ONBOARDING — checklist de primeiros passos
+// ══════════════════════════════════════════════
+const ONB_DISMISS_KEY='pfy2_onb_dismissed';
+
+function renderOnboarding(){
+  const el=document.getElementById('onb-container');
+  if(!el)return;
+
+  if(localStorage.getItem(ONB_DISMISS_KEY)==='1'){el.innerHTML='';return;}
+
+  const steps=[
+    {done:CHANNELS.length>0, title:'Criar seu primeiro canal', desc:'Mercado Livre ou Shopee'},
+    {done:LISTINGS.length>0, title:'Importar ou cadastrar anúncios', desc:'Pela extensão Chrome, ou manualmente no canal'},
+    {done:PRODUTOS.length>0, title:'Configurar custos dos produtos', desc:'Catálogo de custos com vínculo automático'},
+  ];
+
+  const allDone=steps.every(s=>s.done);
+  if(allDone){el.innerHTML='';return;}
+
+  const doneCount=steps.filter(s=>s.done).length;
+  const pct=Math.round(doneCount/steps.length*100);
+
+  el.innerHTML=`
+    <div class="onb-card">
+      <div class="onb-head">
+        <div class="onb-title">Primeiros passos</div>
+        <button class="onb-close" onclick="dismissOnboarding()" title="Ocultar">
+          <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="onb-sub">${doneCount} de ${steps.length} concluídos — vamos deixar o Precifica pronto pra você</div>
+      <div class="onb-progress"><div class="onb-progress-fill" style="width:${pct}%"></div></div>
+      <div class="onb-list">
+        ${steps.map((s,i)=>`
+          <div class="onb-item ${s.done?'done':''}" ${s.done?'':`onclick="onbStepClick(${i})"`}>
+            <div class="onb-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="onb-item-text">
+              <div class="onb-item-title">${s.title}</div>
+              <div class="onb-item-desc">${s.desc}</div>
+            </div>
+            ${!s.done?'<svg class="onb-arrow" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>':''}
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)">
+        <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--t3)" fill="none" stroke-width="1.8" style="flex-shrink:0"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <div style="font-size:12px;color:var(--t3)">Dica: instale a extensão Chrome pra importar anúncios e calcular margem direto no Mercado Livre/Shopee</div>
+      </div>
+    </div>`;
+}
+
+function onbStepClick(i){
+  if(i===1)goChannel(CHANNELS[0]?.id);
+  else if(i===2)goTab('custos');
+}
+
+function dismissOnboarding(){
+  localStorage.setItem(ONB_DISMISS_KEY,'1');
+  const el=document.getElementById('onb-container');
+  if(el)el.innerHTML='';
+}
+
+// ══════════════════════════════════════════════
 // RENDER DASH
 // ══════════════════════════════════════════════
 function renderDash(){
@@ -1344,6 +1429,8 @@ function renderDash(){
     goTab('setup');
     return;
   }
+
+  renderOnboarding();
 
   // Compute all with margins
   const all=LISTINGS.map(l=>{
@@ -1380,8 +1467,12 @@ function renderDash(){
 
   const top=document.getElementById('dash-top');
   const bot=document.getElementById('dash-bot');
-  if(top)top.innerHTML=sorted.slice(0,5).map(mkRI).join('')||'<div class="empty">Sem dados</div>';
-  if(bot)bot.innerHTML=sorted.slice(-5).reverse().map(mkRI).join('')||'<div class="empty">Sem dados</div>';
+  const emptyMsg=`<div class="empty" style="padding:30px 16px">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    Nenhum anúncio ainda<br><span style="font-size:11px;opacity:.75">Importe pela extensão ou cadastre manualmente no canal</span>
+  </div>`;
+  if(top)top.innerHTML=sorted.slice(0,5).map(mkRI).join('')||emptyMsg;
+  if(bot)bot.innerHTML=sorted.slice(-5).reverse().map(mkRI).join('')||emptyMsg;
   const chDiv=document.getElementById('dash-channels');
   if(chDiv)chDiv.innerHTML=CHANNELS.map(ch=>{
     const chL=all.filter(a=>a.channel_id===ch.id);
