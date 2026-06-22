@@ -276,6 +276,13 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .prv{transition:filter .2s var(--ease),opacity .2s var(--ease);border-radius:4px}
 .privacy-mode .prv{filter:blur(7px);opacity:.5;user-select:none;pointer-events:none}
 
+/* ── INATIVO ── */
+tr.inactive-row{opacity:.38}
+tr.inactive-row:hover{opacity:.5}
+.an-card.inactive-card{opacity:.38}
+.an-card.inactive-card:hover{opacity:.5}
+.inactive-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--sur2);border:1px solid var(--bd2);color:var(--t3);white-space:nowrap;flex-shrink:0}
+
 /* ── LOCKED (excedente do limite Free — valor já vem nulo do servidor) ── */
 .locked-val{filter:blur(4px);opacity:.4;user-select:none}
 .lock-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;background:var(--pu-grad);color:#fff;white-space:nowrap;letter-spacing:.3px}
@@ -1600,14 +1607,16 @@ function renderDash(){
 
   // O RLS do Supabase já filtra anúncios fora do limite Free antes de chegar
   // aqui — LISTINGS só contém o que o plano atual realmente permite ver.
-  const all=LISTINGS.map(l=>{
+  // Inativos são excluídos de todos os cálculos — só ativos contam.
+  const all=LISTINGS.filter(l=>l.status!=='inativo').map(l=>{
     const ch=CHANNELS.find(c=>c.id===l.channel_id);
     const r=calcListing(l,ch?.type||'ml');
     return{...l,...r,_chName:ch?.name||'',_chType:ch?.type||'ml'};
   });
+  const inactiveTotal=LISTINGS.filter(l=>l.status==='inativo').length;
 
   const sub=document.getElementById('dash-sub');
-  if(sub)sub.textContent=`${all.length} anúncios · ${CHANNELS.length} canal${CHANNELS.length!==1?'is':''}`;
+  if(sub)sub.textContent=`${all.length} anúncio${all.length!==1?'s':''} ativos${inactiveTotal?` · ${inactiveTotal} inativo${inactiveTotal!==1?'s':''}`:''} · ${CHANNELS.length} canal${CHANNELS.length!==1?'is':''}`;
 
   // Metrics
   const avgMarg=all.length?all.reduce((s,a)=>s+a.margem,0)/all.length:0;
@@ -1698,34 +1707,40 @@ async function renderChannel(){
     }
   }
 
-  const unlockedRows=rawRows.filter(r=>!r.locked).map(l=>{
+  // Separa: desbloqueados ativos, desbloqueados inativos, e trancados
+  const activeRows=rawRows.filter(r=>!r.locked&&r.status!=='inativo').map(l=>{
     const r=calcListing(l,ch.type);
-    return{...l,...r,_locked:false};
+    return{...l,...r,_locked:false,_inactive:false};
+  });
+  const inactiveRows=rawRows.filter(r=>!r.locked&&r.status==='inativo').map(l=>{
+    const r=calcListing(l,ch.type);
+    return{...l,...r,_locked:false,_inactive:true};
   });
   const lockedRows=rawRows.filter(r=>r.locked).map(l=>({
-    ...l,pv:0,custo:0,frete:0,lucro:0,margem:0,_locked:true
+    ...l,pv:0,custo:0,frete:0,lucro:0,margem:0,_locked:true,_inactive:false
   }));
 
-  // Filter (só nos desbloqueados — os trancados sempre aparecem no fim)
+  // Filtros e ordenação aplicados só nos ativos (inativos e trancados sempre no fim)
   const q=(document.getElementById('ch-busca')?.value||'').toLowerCase();
   const st=document.getElementById('ch-fstatus')?.value||'';
   const sort=document.getElementById('ch-fsort')?.value||'';
 
-  let listings=unlockedRows;
+  let listings=activeRows;
   if(q)listings=listings.filter(l=>l.nome.toLowerCase().includes(q)||(l.cod+'').includes(q));
   if(st==='ok')listings=listings.filter(l=>l.margem>=16);
-  else if(st==='nok')listings=listings.filter(l=>l.margem<16);
+  else if(st==='nok')listings=listings.filter(l=>l.margem<16&&l.margem>=10);
   else if(st==='crit')listings=listings.filter(l=>l.margem<10);
 
   if(sort==='margem_desc')listings.sort((a,b)=>b.margem-a.margem);
   else if(sort==='margem_asc')listings.sort((a,b)=>a.margem-b.margem);
   else if(sort==='nome_asc')listings.sort((a,b)=>a.nome.localeCompare(b.nome));
 
-  listings=[...listings,...lockedRows]; // trancados sempre no fim, fora dos filtros
+  listings=[...listings,...inactiveRows,...lockedRows]; // inativos e trancados sempre no fim
 
-  const avg=unlockedRows.length?unlockedRows.reduce((s,l)=>s+l.margem,0)/unlockedRows.length:0;
-  const ok=unlockedRows.filter(l=>l.margem>=16).length;
-  if(sub)sub.textContent=`${unlockedRows.length} anúncios · avg ${avg.toFixed(1)}%`;
+  const avg=activeRows.length?activeRows.reduce((s,l)=>s+l.margem,0)/activeRows.length:0;
+  const ok=activeRows.filter(l=>l.margem>=16).length;
+  const inCount=inactiveRows.length;
+  if(sub)sub.textContent=`${activeRows.length} ativos${inCount?` · ${inCount} inativo${inCount!==1?'s':''}`:''} · avg ${avg.toFixed(1)}%`;
 
   const met=document.getElementById('ch-metrics');
   if(met)met.innerHTML=`
@@ -1763,7 +1778,9 @@ async function renderChannel(){
         const tipoBadge=ch.type==='ml'?`<span class="badge b-t" style="font-size:10px">${l.tipo==='premium'?'Premium':'Clássico'}</span>`:'';
         const rowClick=l._locked?`openUpgradeModal('Anúncio bloqueado','Esse anúncio está fora do limite de ${PLAN_LIMITS.anunciosPorCanal} do plano Free. Faça upgrade para Pro e desbloqueie todos os seus anúncios, sem precisar reimportar nada.')`:`openListing('${l.id}')`;
         const lockBadge=`<span class="lock-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PRO</span>`;
-        return`<tr onclick="${rowClick}" class="${l._locked?'locked-row':''}">
+        const inactiveBadge=l._inactive?`<span class="inactive-badge">Inativo</span>`:'';
+        const rowClass=l._locked?'locked-row':l._inactive?'inactive-row':'';
+        return`<tr onclick="${rowClick}" class="${rowClass}">
           <td style="font-family:var(--mono);font-size:11px;color:var(--t3)" class="cod-cell" data-cod="${l.cod}" title="Copiar" onclick="event.stopPropagation();${l._locked?'':`copyCod('${l.cod}')`}" style="cursor:pointer;text-decoration:underline dotted">${l.cod}</td>
           <td style="font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sanitize(l.nome)}${tags?'<br><span style="display:inline-flex;gap:2px;margin-top:2px">'+tags+'</span>':''}</td>
           ${ch.type==='ml'?`<td>${tipoBadge}</td>`:''}
@@ -1771,8 +1788,8 @@ async function renderChannel(){
           <td style="font-family:var(--mono)"><span class="${l._locked?'locked-val':'prv'}">${l._locked?'R$\u00a0••••':fmt(l.custo)}</span></td>
           ${ch.type==='ml'?`<td style="font-family:var(--mono)"><span class="${l._locked?'locked-val':'prv'}">${l._locked?'R$\u00a0••••':fmt(l.frete)}</span></td>`:''}
           <td style="font-weight:500;color:${l._locked?'var(--t3)':(l.lucro>=0?'var(--gr)':'var(--rd)')};font-family:var(--mono)"><span class="${l._locked?'locked-val':'prv'}">${l._locked?'R$\u00a0••••':fmt(l.lucro)}</span></td>
-          <td>${l._locked?lockBadge:`<span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span>`}</td>
-          <td>${l._locked?'':`<button class="btn btn-sm" onclick="event.stopPropagation();openListing('${l.id}')">Editar</button>`}</td>
+          <td>${l._locked?lockBadge:l._inactive?inactiveBadge:`<span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span>`}</td>
+          <td>${l._locked||l._inactive?'':`<button class="btn btn-sm" onclick="event.stopPropagation();openListing('${l.id}')">Editar</button>`}${l._inactive?`<button class="btn btn-sm" onclick="event.stopPropagation();openListing('${l.id}')">Ver</button>`:''}</td>
         </tr>`;
       }).join('');
     }
@@ -1785,17 +1802,19 @@ async function renderChannel(){
       const tags=mkTags(l);
       const rowClick=l._locked?`openUpgradeModal('Anúncio bloqueado','Esse anúncio está fora do limite de ${PLAN_LIMITS.anunciosPorCanal} do plano Free. Faça upgrade para Pro e desbloqueie todos os seus anúncios, sem precisar reimportar nada.')`:`openListing('${l.id}')`;
       const lockBadge=`<span class="lock-badge"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PRO</span>`;
-      return`<div class="an-card${l._locked?' locked-row':''}" onclick="${rowClick}">
+      const inactiveBadge=`<span class="inactive-badge">Inativo</span>`;
+      const cardClass=l._locked?'locked-row':l._inactive?'inactive-card':'';
+      return`<div class="an-card ${cardClass}" onclick="${rowClick}">
         <div class="an-hdr">
           <div class="an-name">${sanitize(l.nome)}</div>
-          ${l._locked?lockBadge:`<span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span>`}
+          ${l._locked?lockBadge:l._inactive?inactiveBadge:`<span class="badge ${l.margem>=16?'b-ok':'b-nok'} prv">${l.margem.toFixed(1)}%</span>`}
         </div>
         <div class="an-cod" onclick="event.stopPropagation();${l._locked?'':`copyCod('${l.cod}')`}" title="Copiar">${l.cod}</div>
         ${tags?`<div class="an-tags">${tags}</div>`:''}
         <div class="an-stats">
           <span>PV: <strong class="${l._locked?'locked-val':'prv'}">${l._locked?'R$\u00a0••••':fmt(l.precoD>0?l.precoD:l.preco)}</strong></span>
           <span>Custo: <strong class="${l._locked?'locked-val':'prv'}">${l._locked?'R$\u00a0••••':fmt(l.custo)}</strong></span>
-          <span>Lucro: <strong class="${l._locked?'locked-val':'prv'}" style="color:${l._locked?'var(--t3)':(l.lucro>=0?'var(--gr)':'var(--rd)')}">${l._locked?'R$\u00a0••••':fmt(l.lucro)}</strong></span>
+          <span>Lucro: <strong class="${l._locked?'locked-val':'prv'}" style="color:${l._locked?'var(--t3)':l._inactive?'var(--t3)':(l.lucro>=0?'var(--gr)':'var(--rd)')}">${l._locked?'R$\u00a0••••':fmt(l.lucro)}</strong></span>
         </div>
       </div>`;
     }).join('');
@@ -1818,10 +1837,12 @@ async function renderTags(){
       if(error)throw error;
       (data||[]).forEach(l=>{
         if(l.locked){
-          all.push({...l,pv:0,custo:0,lucro:0,margem:0,_ch:ch,_locked:true});
+          all.push({...l,pv:0,custo:0,lucro:0,margem:0,_ch:ch,_locked:true,_inactive:false});
+        }else if(l.status==='inativo'){
+          // inativos não aparecem nas tags
         }else{
           const r=calcListing(l,ch.type);
-          all.push({...l,...r,_ch:ch,_locked:false});
+          all.push({...l,...r,_ch:ch,_locked:false,_inactive:false});
         }
       });
     }catch(e){
@@ -1965,7 +1986,7 @@ function renderInsights(){
   if(paywall)paywall.style.display='none';
   if(content)content.style.display='';
 
-  const all=LISTINGS.map(l=>{
+  const all=LISTINGS.filter(l=>l.status!=='inativo').map(l=>{
     const ch=CHANNELS.find(c=>c.id===l.channel_id);
     const r=calcListing(l,ch?.type||'ml');
     return{...l,...r,_ch:ch};
