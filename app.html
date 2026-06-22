@@ -1413,21 +1413,23 @@ async function loadAll(){
   try{
     // Load channels
     const {data:chs,error:e1}=await SB.from('channels').select('*').order('position');
-    if(e1)throw e1;
+    if(e1)throw Object.assign(new Error(e1.message||'channels error'), {step:'channels', detail:e1});
     CHANNELS=chs||[];
 
-    // Load listings
+    // Load listings — o RLS filtra automaticamente (Free vê só as 20 mais antigas
+    // por canal, Pro vê tudo). Não lança erro se vier menos do que o total real.
     const {data:ls,error:e2}=await SB.from('listings').select('*').order('created_at');
-    if(e2)throw e2;
+    if(e2)throw Object.assign(new Error(e2.message||'listings error'), {step:'listings', detail:e2});
     LISTINGS=ls||[];
 
     // Load catálogo de produtos (custo base) — tolera tabela ainda não criada
     const {data:prods,error:e3}=await SB.from('produtos_custo').select('*').order('nome');
     PRODUTOS=e3?[]:(prods||[]);
-    if(e3)console.warn('produtos_custo indisponível (rode o SQL de setup):',e3.message);
+    if(e3)console.warn('produtos_custo indisponível:',e3.message);
 
     // Load profile
-    const {data:prof}=await SB.from('profiles').select('*').eq('id',USER.id).single();
+    const {data:prof,error:e4}=await SB.from('profiles').select('*').eq('id',USER.id).single();
+    if(e4)throw Object.assign(new Error(e4.message||'profile error'), {step:'profile', detail:e4});
     PROFILE=prof;
 
     const insBadge=document.getElementById('ni-insights-badge');
@@ -1438,7 +1440,8 @@ async function loadAll(){
     updateConfig();
     setSyncStatus('ok');
   }catch(e){
-    console.error('loadAll error:',e);
+    const msg=e?.message||e?.error_description||JSON.stringify(e)||String(e);
+    console.error('loadAll error ['+(e?.step||'?')+']:', msg, e?.detail||e);
     setSyncStatus('err');
   }
 }
