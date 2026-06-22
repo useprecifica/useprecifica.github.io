@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Política de Privacidade — Precifica</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0c;--sur:#16161a;--bd:#2c2c33;--t:#f5f5f7;--t2:#9fa0aa;--t3:#56565f;--pu:#8257f5;--pu-grad:linear-gradient(135deg,#9166ff,#6d3ff0);--font:'Plus Jakarta Sans',sans-serif}
+body{background:var(--bg);color:var(--t);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.7}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:var(--sur);border-bottom:1px solid var(--bd)}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-dot{width:28px;height:28px;border-radius:8px;background:var(--pu-grad);display:flex;align-items:center;justify-content:center}
+.nav-dot svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2}
+.nav-name{font-size:15px;font-weight:800;color:var(--t)}
+.nav-back{color:var(--t2);text-decoration:none;font-size:13.5px;font-weight:500;padding:7px 12px;border-radius:8px;border:1px solid var(--bd);transition:color .15s}
+.nav-back:hover{color:var(--t)}
+.content{max-width:680px;margin:0 auto;padding:60px 24px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.date{font-size:13px;color:var(--t3);margin-bottom:40px}
+h2{font-size:17px;font-weight:700;margin:32px 0 10px;color:var(--t)}
+p{font-size:14.5px;color:var(--t2);margin-bottom:14px}
+ul{padding-left:20px;margin-bottom:14px}
+li{font-size:14.5px;color:var(--t2);margin-bottom:6px}
+a{color:var(--pu);text-decoration:none}
+a:hover{text-decoration:underline}
+.divider{height:1px;background:var(--bd);margin:32px 0}
+footer{border-top:1px solid var(--bd);padding:20px 24px;text-align:center;font-size:13px;color:var(--t3)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-brand">
+    <div class="nav-dot"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <span class="nav-name">Precifica</span>
+  </a>
+  <a href="/" class="nav-back">← Voltar</a>
+</nav>
+
+<div class="content">
+  <h1>Política de Privacidade</h1>
+  <p class="date">Última atualização: junho de 2026</p>
+
+  <p>Esta Política de Privacidade descreve como o <strong>Precifica</strong> ("nós", "nosso") coleta, usa e protege as informações dos usuários do aplicativo web e da extensão para Chrome disponíveis em <a href="https://useprecifica.github.io">useprecifica.github.io</a>.</p>
+
+  <h2>1. Informações que coletamos</h2>
+  <p>Coletamos apenas as informações necessárias para o funcionamento do serviço:</p>
+  <ul>
+    <li><strong>Dados de conta:</strong> endereço de e-mail e senha (armazenados de forma segura via Supabase Auth, a senha nunca é armazenada em texto puro).</li>
+    <li><strong>Dados de anúncios:</strong> títulos, códigos, preços e custos dos seus anúncios no Mercado Livre e Shopee, inseridos manualmente ou importados via extensão Chrome.</li>
+    <li><strong>Token de acesso do Mercado Livre:</strong> quando você conecta sua conta ML à extensão, armazenamos o token de acesso localmente no seu navegador (via Chrome Storage) para importar seus anúncios. Esse token nunca é enviado a servidores de terceiros além dos próprios servidores do Mercado Livre e do Supabase.</li>
+    <li><strong>Dados de uso:</strong> nenhum dado de navegação, rastreamento de comportamento ou analytics de terceiros é coletado.</li>
+  </ul>
+
+  <h2>2. Como usamos suas informações</h2>
+  <ul>
+    <li>Para calcular e exibir a margem dos seus anúncios</li>
+    <li>Para salvar seus anúncios, custos e simulações na sua conta</li>
+    <li>Para processar pagamentos e gerenciar seu plano (Free ou Pro) via Mercado Pago</li>
+    <li>Para enviar e-mails transacionais (confirmação de cadastro, redefinição de senha)</li>
+  </ul>
+
+  <h2>3. Compartilhamento de dados</h2>
+  <p>Não vendemos, alugamos nem compartilhamos seus dados pessoais com terceiros para fins de marketing. Seus dados podem ser compartilhados apenas com:</p>
+  <ul>
+    <li><strong>Supabase:</strong> plataforma de banco de dados e autenticação que hospeda seus dados com criptografia em repouso.</li>
+    <li><strong>Mercado Pago:</strong> para processar pagamentos de assinatura Pro. Só transmitimos seu e-mail para facilitar a identificação da assinatura.</li>
+  </ul>
+
+  <h2>4. Extensão Chrome — permissões</h2>
+  <p>A extensão Precifica solicita as seguintes permissões e as utiliza exclusivamente para:</p>
+  <ul>
+    <li><strong>storage:</strong> salvar sua sessão de login e token ML localmente no navegador</li>
+    <li><strong>tabs:</strong> abrir uma aba temporária do Mercado Livre para realizar buscas de produtos (a aba é fechada automaticamente)</li>
+    <li><strong>activeTab:</strong> ler dados da página do Alibaba/1688 quando você clica no botão Comparar</li>
+    <li><strong>host_permissions (mercadolivre.com.br, alibaba.com, 1688.com):</strong> injetar o painel flutuante nessas páginas</li>
+  </ul>
+  <p>A extensão não lê, coleta ou transmite o conteúdo de nenhuma outra página que você visitar.</p>
+
+  <h2>5. Retenção de dados</h2>
+  <p>Seus dados ficam armazenados enquanto sua conta estiver ativa. Você pode solicitar a exclusão completa da sua conta e dados a qualquer momento pelo e-mail abaixo.</p>
+
+  <h2>6. Segurança</h2>
+  <p>Utilizamos RLS (Row Level Security) do PostgreSQL para garantir que cada usuário acesse apenas seus próprios dados. Toda comunicação é feita via HTTPS com certificados SSL.</p>
+
+  <h2>7. Seus direitos</h2>
+  <p>De acordo com a LGPD (Lei Geral de Proteção de Dados — Lei nº 13.709/2018), você tem direito a:</p>
+  <ul>
+    <li>Acessar seus dados pessoais</li>
+    <li>Corrigir dados incompletos ou incorretos</li>
+    <li>Solicitar a exclusão dos seus dados</li>
+    <li>Revogar o consentimento a qualquer momento</li>
+  </ul>
+
+  <h2>8. Contato</h2>
+  <p>Para exercer seus direitos ou tirar dúvidas sobre esta política, entre em contato:<br>
+  <a href="mailto:contato@useprecifica.com.br">contato@useprecifica.com.br</a></p>
+
+  <div class="divider"></div>
+  <p style="font-size:13px;color:var(--t3)">Esta política pode ser atualizada periodicamente. Alterações significativas serão comunicadas por e-mail.</p>
+</div>
+
+<footer>Precifica © 2026 · <a href="/">Voltar ao início</a></footer>
+</body>
+</html>
