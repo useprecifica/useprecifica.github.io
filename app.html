@@ -983,7 +983,28 @@ select.tbl-inp{cursor:pointer}
   </div>
 </div>
 
-<!-- ── MODAL: UPGRADE PRO ── -->
+<!-- ── MODAL: PRODUTO (catálogo de custos) ── -->
+<div class="overlay" id="modal-produto" onclick="if(event.target===this)closeModal('modal-produto')">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-title" id="modal-produto-title">Novo produto</div>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:18px;line-height:1.5" id="modal-produto-desc">Cadastre o custo base deste produto. Todos os anúncios vinculados a ele serão atualizados automaticamente quando o custo mudar.</p>
+    <div class="field">
+      <label>Nome do produto</label>
+      <input type="text" id="prod-f-nome" placeholder="Ex: Luminária Áustria, Cinto para pet..." autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('prod-f-custo').focus()">
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">Use um nome fácil de reconhecer — vai aparecer no dropdown ao editar anúncios</div>
+    </div>
+    <div class="field">
+      <label>Custo (R$)</label>
+      <input type="number" id="prod-f-custo" placeholder="0,00" step="0.01" min="0" onkeydown="if(event.key==='Enter')saveProduto()">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-p" style="flex:1" onclick="saveProduto()">Salvar</button>
+      <button class="btn" onclick="closeModal('modal-produto')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
 <div class="overlay" id="modal-upgrade" onclick="if(event.target===this)closeModal('modal-upgrade')">
   <div class="modal" style="max-width:420px;text-align:center">
     <div style="width:52px;height:52px;border-radius:14px;background:var(--pu-grad);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px -6px var(--pu-glow)">
@@ -2515,39 +2536,52 @@ function renderProdutosList(){
     </tbody></table></div>`;
 }
 
+let _editProdutoId=null;
+
 async function addProduto(){
   if(!isPro()&&PRODUTOS.length>=PLAN_LIMITS.produtosCatalogo){
     openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos no catálogo. Faça upgrade para Pro.`);
     return;
   }
-  const nome=prompt('Nome do produto:');
-  if(!nome?.trim())return;
-  const custoStr=prompt(`Custo de "${nome.trim()}" (R$):`);
-  const custo=parseFloat((custoStr||'').replace(',','.'));
-  if(isNaN(custo)||custo<0){alert('Custo inválido.');return;}
-  try{
-    const{data,error}=await SB.from('produtos_custo').insert({user_id:USER.id,nome:nome.trim(),custo}).select().single();
-    if(error)throw error;
-    PRODUTOS.push(data);
-    PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
-    renderProdutosList();
-  }catch(e){alert('Erro ao salvar: '+e.message);}
+  _editProdutoId=null;
+  document.getElementById('modal-produto-title').textContent='Novo produto';
+  document.getElementById('modal-produto-desc').textContent='Cadastre o custo base deste produto. Todos os anúncios vinculados a ele serão atualizados automaticamente quando o custo mudar.';
+  document.getElementById('prod-f-nome').value='';
+  document.getElementById('prod-f-custo').value='';
+  openModal('modal-produto');
+  setTimeout(()=>document.getElementById('prod-f-nome').focus(),100);
 }
 
 async function editProduto(id){
   const p=PRODUTOS.find(x=>x.id===id);
   if(!p)return;
-  const nome=prompt('Nome do produto:',p.nome);
-  if(!nome?.trim())return;
-  const custoStr=prompt(`Custo de "${nome.trim()}" (R$):`,p.custo);
-  const custo=parseFloat((custoStr||'').replace(',','.'));
-  if(isNaN(custo)||custo<0){alert('Custo inválido.');return;}
+  _editProdutoId=id;
+  document.getElementById('modal-produto-title').textContent='Editar produto';
+  document.getElementById('modal-produto-desc').textContent='Atualize o nome ou custo. Se alterar o custo, todos os anúncios vinculados a este produto serão atualizados automaticamente.';
+  document.getElementById('prod-f-nome').value=p.nome;
+  document.getElementById('prod-f-custo').value=p.custo;
+  openModal('modal-produto');
+  setTimeout(()=>document.getElementById('prod-f-custo').focus(),100);
+}
+
+async function saveProduto(){
+  const nome=document.getElementById('prod-f-nome').value.trim();
+  const custo=parseFloat(document.getElementById('prod-f-custo').value);
+  if(!nome){alert('Informe o nome do produto.');return;}
+  if(isNaN(custo)||custo<0){alert('Informe um custo válido.');return;}
   try{
-    const{error}=await SB.from('produtos_custo').update({nome:nome.trim(),custo}).eq('id',id);
-    if(error)throw error;
-    const idx=PRODUTOS.findIndex(x=>x.id===id);
-    if(idx>=0)PRODUTOS[idx]={...PRODUTOS[idx],nome:nome.trim(),custo};
+    if(_editProdutoId){
+      const{error}=await SB.from('produtos_custo').update({nome,custo}).eq('id',_editProdutoId);
+      if(error)throw error;
+      const idx=PRODUTOS.findIndex(x=>x.id===_editProdutoId);
+      if(idx>=0)PRODUTOS[idx]={...PRODUTOS[idx],nome,custo};
+    }else{
+      const{data,error}=await SB.from('produtos_custo').insert({user_id:USER.id,nome,custo}).select().single();
+      if(error)throw error;
+      PRODUTOS.push(data);
+    }
     PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
+    closeModal('modal-produto');
     renderProdutosList();
   }catch(e){alert('Erro ao salvar: '+e.message);}
 }
