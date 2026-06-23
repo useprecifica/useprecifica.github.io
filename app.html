@@ -2327,7 +2327,13 @@ let _pfyProdutoActive=-1;
 function populateProdutoDropdown(selectedId){
   const searchEl=document.getElementById('lf-produto-search');
   const hiddenEl=document.getElementById('lf-produto');
+  const list=document.getElementById('lf-produto-list');
   if(!searchEl||!hiddenEl)return;
+
+  // Sempre limpa primeiro — cada anúncio começa do zero
+  searchEl.value='';
+  hiddenEl.value='';
+  if(list)list.style.display='none';
 
   // Se já tem vínculo salvo, mostra o nome do produto
   if(selectedId){
@@ -2354,8 +2360,6 @@ function populateProdutoDropdown(selectedId){
       const custoEl=document.getElementById('lf-custo');
       if(custoEl&&!+custoEl.value){custoEl.value=prod.custo;listingCalcLive();}
     }
-  } else {
-    searchEl.value='';
   }
 }
 
@@ -2432,42 +2436,7 @@ function pfyProdutoClose(){
 
 function onProdutoSelect(){} // compat — não mais usado
 
-function populateProdutoDropdown(selectedId){
-  const sel=document.getElementById('lf-produto');
-  if(!sel)return;
 
-  // Se não tem vínculo salvo, tenta sugerir o produto mais parecido com o nome do anúncio
-  let autoId=selectedId;
-  if(!autoId){
-    const nomeAnuncio=normCusto(s('lf-nome'));
-    if(nomeAnuncio&&PRODUTOS.length){
-      // Pontua cada produto: quantas palavras do produto aparecem no nome do anúncio
-      let bestScore=0,bestId='';
-      PRODUTOS.forEach(p=>{
-        const palavras=normCusto(p.nome).split(' ').filter(Boolean);
-        const score=palavras.filter(w=>nomeAnuncio.includes(w)).length;
-        // Exige pelo menos 50% das palavras do produto batendo
-        if(score>bestScore&&score/palavras.length>=0.5){
-          bestScore=score;bestId=p.id;
-        }
-      });
-      autoId=bestId;
-    }
-  }
-
-  sel.innerHTML='<option value="">— Sem vínculo (custo manual) —</option>'+
-    PRODUTOS.map(p=>`<option value="${p.id}"${p.id===autoId?' selected':''}>${sanitize(p.nome)} — ${fmt(p.custo)}</option>`).join('');
-
-  // Se auto-selecionou um produto, preenche o custo automaticamente
-  if(autoId&&!selectedId){
-    const prod=PRODUTOS.find(p=>p.id===autoId);
-    if(prod){
-      const custoEl=document.getElementById('lf-custo');
-      if(custoEl&&!+custoEl.value)custoEl.value=prod.custo;
-      listingCalcLive();
-    }
-  }
-}
 
 function listingAutoFill(){
   // Auto-fill simples: se o nome bater exatamente com um produto do catálogo, sugere o custo
