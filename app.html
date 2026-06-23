@@ -283,6 +283,8 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 /* ── PRIVACY MODE ── */
 .prv{transition:filter .2s var(--ease),opacity .2s var(--ease);border-radius:4px}
 .privacy-mode .prv{filter:blur(7px);opacity:.5;user-select:none;pointer-events:none}
+.pfy-prod-opt{padding:9px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;transition:background .1s}
+.pfy-prod-opt:hover,.pfy-prod-opt.active{background:rgba(130,87,245,.15)}
 
 /* ── INATIVO ── */
 tr.inactive-row{opacity:.38}
@@ -1051,11 +1053,11 @@ select.tbl-inp{cursor:pointer}
     </div>
     <div class="field" style="margin-bottom:14px;position:relative">
       <label>Produto do catálogo <span style="font-weight:400;color:var(--t3)">(opcional — vincula o custo)</span></label>
-      <input type="text" id="lf-produto-search" placeholder="Buscar produto..." autocomplete="off"
+      <input type="text" id="lf-produto-search" placeholder="Digite para buscar ou deixe em branco..." autocomplete="off"
         oninput="pfyProdutoFilter()"
         onfocus="pfyProdutoOpen()"
-        onkeydown="pfyProdutoKey(event)"
-        style="cursor:pointer">
+        onblur="setTimeout(pfyProdutoClose,150)"
+        onkeydown="pfyProdutoKey(event)">
       <input type="hidden" id="lf-produto">
       <div id="lf-produto-list" style="
         display:none;position:absolute;left:0;right:0;top:100%;z-index:200;
@@ -2318,6 +2320,117 @@ function onProdutoSelect(){
   const prod=PRODUTOS.find(p=>p.id===prodId);
   if(prod){custoEl.value=prod.custo;listingCalcLive();}
 }
+
+// ── Combobox de produto do catálogo ──
+let _pfyProdutoActive=-1;
+
+function populateProdutoDropdown(selectedId){
+  const searchEl=document.getElementById('lf-produto-search');
+  const hiddenEl=document.getElementById('lf-produto');
+  if(!searchEl||!hiddenEl)return;
+
+  // Se já tem vínculo salvo, mostra o nome do produto
+  if(selectedId){
+    const prod=PRODUTOS.find(p=>p.id===selectedId);
+    if(prod){searchEl.value=prod.nome;hiddenEl.value=selectedId;return;}
+  }
+
+  // Sem vínculo salvo — tenta sugerir pelo nome do anúncio
+  const nomeAnuncio=normCusto(s('lf-nome'));
+  let autoId='',bestScore=0;
+  if(nomeAnuncio){
+    PRODUTOS.forEach(p=>{
+      const palavras=normCusto(p.nome).split(' ').filter(Boolean);
+      const score=palavras.filter(w=>nomeAnuncio.includes(w)).length;
+      if(score>bestScore&&score/palavras.length>=0.5){bestScore=score;autoId=p.id;}
+    });
+  }
+
+  hiddenEl.value=autoId;
+  if(autoId){
+    const prod=PRODUTOS.find(p=>p.id===autoId);
+    if(prod){
+      searchEl.value=prod.nome;
+      const custoEl=document.getElementById('lf-custo');
+      if(custoEl&&!+custoEl.value){custoEl.value=prod.custo;listingCalcLive();}
+    }
+  } else {
+    searchEl.value='';
+  }
+}
+
+function pfyProdutoOpen(){
+  pfyProdutoFilter();
+}
+
+function pfyProdutoFilter(){
+  const searchEl=document.getElementById('lf-produto-search');
+  const list=document.getElementById('lf-produto-list');
+  if(!list||!searchEl)return;
+  const q=normCusto(searchEl.value);
+  const filtered=PRODUTOS.filter(p=>!q||normCusto(p.nome).includes(q));
+  _pfyProdutoActive=-1;
+
+  list.innerHTML=[
+    `<div class="pfy-prod-opt" data-id="" onmousedown="pfyProdutoSelect('','— Sem vínculo —')" style="color:var(--t3);font-style:italic">— Sem vínculo (custo manual) —</div>`,
+    ...filtered.map(p=>`<div class="pfy-prod-opt" data-id="${p.id}" onmousedown="pfyProdutoSelect('${p.id}','${p.nome.replace(/'/g,"\\'")}',${p.custo})">`+
+      `<span style="font-weight:600">${sanitize(p.nome)}</span>`+
+      `<span style="color:var(--t3);margin-left:8px;font-size:12px">${fmt(p.custo)}</span></div>`)
+  ].join('');
+
+  list.style.display=filtered.length||true?'block':'none';
+}
+
+function pfyProdutoSelect(id,nome,custo){
+  const searchEl=document.getElementById('lf-produto-search');
+  const hiddenEl=document.getElementById('lf-produto');
+  const list=document.getElementById('lf-produto-list');
+  if(searchEl)searchEl.value=id?nome:'';
+  if(hiddenEl)hiddenEl.value=id||'';
+  if(list)list.style.display='none';
+  if(id&&custo!=null){
+    const custoEl=document.getElementById('lf-custo');
+    if(custoEl){custoEl.value=custo;listingCalcLive();}
+  }
+}
+
+function pfyProdutoKey(e){
+  const list=document.getElementById('lf-produto-list');
+  if(!list||list.style.display==='none')return;
+  const opts=list.querySelectorAll('.pfy-prod-opt');
+  if(!opts.length)return;
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    _pfyProdutoActive=Math.min(_pfyProdutoActive+1,opts.length-1);
+    opts.forEach((o,i)=>o.classList.toggle('active',i===_pfyProdutoActive));
+    opts[_pfyProdutoActive]?.scrollIntoView({block:'nearest'});
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    _pfyProdutoActive=Math.max(_pfyProdutoActive-1,0);
+    opts.forEach((o,i)=>o.classList.toggle('active',i===_pfyProdutoActive));
+    opts[_pfyProdutoActive]?.scrollIntoView({block:'nearest'});
+  } else if(e.key==='Enter'&&_pfyProdutoActive>=0){
+    e.preventDefault();
+    opts[_pfyProdutoActive]?.dispatchEvent(new Event('mousedown'));
+  } else if(e.key==='Escape'){
+    list.style.display='none';
+  }
+}
+
+function pfyProdutoClose(){
+  const list=document.getElementById('lf-produto-list');
+  if(list)list.style.display='none';
+  // Se o campo ficou com texto que não corresponde a nenhum produto, limpa o vínculo
+  const searchEl=document.getElementById('lf-produto-search');
+  const hiddenEl=document.getElementById('lf-produto');
+  if(!searchEl||!hiddenEl)return;
+  const q=normCusto(searchEl.value);
+  if(!q){hiddenEl.value='';return;}
+  const match=PRODUTOS.find(p=>normCusto(p.nome)===q);
+  if(!match){hiddenEl.value='';}
+}
+
+function onProdutoSelect(){} // compat — não mais usado
 
 function populateProdutoDropdown(selectedId){
   const sel=document.getElementById('lf-produto');
