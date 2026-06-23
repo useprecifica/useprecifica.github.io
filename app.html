@@ -2481,9 +2481,103 @@ function normCusto(str){
 // CSV — importar/exportar catálogo de custos
 // ══════════════════════════════════════════════
 
+// ══════════════════════════════════════════════
+// CATÁLOGO DE PRODUTOS (Supabase)
+// ══════════════════════════════════════════════
+
+function renderProdutosList(){
+  const div=document.getElementById('produtos-list');
+  const sub=document.getElementById('custo-sub');
+  if(sub)sub.textContent=`${PRODUTOS.length} produto${PRODUTOS.length!==1?'s':''} no catálogo`;
+  if(!div)return;
+  if(!PRODUTOS.length){
+    div.innerHTML=`<div class="empty" style="padding:20px 0">
+      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      Catálogo vazio — adicione um produto ou importe uma planilha CSV
+    </div>`;
+    return;
+  }
+  div.innerHTML=`<div class="tbl-wrap"><table class="tbl">
+    <thead><tr><th>Produto</th><th>Custo</th><th style="width:80px"></th></tr></thead>
+    <tbody>
+    ${PRODUTOS.map(p=>`<tr>
+      <td style="font-size:13px;font-weight:500">${sanitize(p.nome)}</td>
+      <td style="font-family:var(--mono)">${fmt(p.custo)}</td>
+      <td style="display:flex;gap:6px">
+        <button class="btn btn-sm" onclick="editProduto('${p.id}')">Editar</button>
+        <button class="btn btn-sm" onclick="deleteProduto('${p.id}')" style="color:var(--rd);border-color:var(--rd)">×</button>
+      </td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+async function addProduto(){
+  if(!isPro()&&PRODUTOS.length>=PLAN_LIMITS.produtosCatalogo){
+    openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos no catálogo. Faça upgrade para Pro.`);
+    return;
+  }
+  const nome=prompt('Nome do produto:');
+  if(!nome?.trim())return;
+  const custoStr=prompt(`Custo de "${nome.trim()}" (R$):`);
+  const custo=parseFloat((custoStr||'').replace(',','.'));
+  if(isNaN(custo)||custo<0){alert('Custo inválido.');return;}
+  try{
+    const{data,error}=await SB.from('produtos_custo').insert({user_id:USER.id,nome:nome.trim(),custo}).select().single();
+    if(error)throw error;
+    PRODUTOS.push(data);
+    PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
+    renderProdutosList();
+  }catch(e){alert('Erro ao salvar: '+e.message);}
+}
+
+async function editProduto(id){
+  const p=PRODUTOS.find(x=>x.id===id);
+  if(!p)return;
+  const nome=prompt('Nome do produto:',p.nome);
+  if(!nome?.trim())return;
+  const custoStr=prompt(`Custo de "${nome.trim()}" (R$):`,p.custo);
+  const custo=parseFloat((custoStr||'').replace(',','.'));
+  if(isNaN(custo)||custo<0){alert('Custo inválido.');return;}
+  try{
+    const{error}=await SB.from('produtos_custo').update({nome:nome.trim(),custo}).eq('id',id);
+    if(error)throw error;
+    const idx=PRODUTOS.findIndex(x=>x.id===id);
+    if(idx>=0)PRODUTOS[idx]={...PRODUTOS[idx],nome:nome.trim(),custo};
+    PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
+    renderProdutosList();
+  }catch(e){alert('Erro ao salvar: '+e.message);}
+}
+
+async function deleteProduto(id){
+  if(!confirm('Remover este produto do catálogo?'))return;
+  try{
+    const{error}=await SB.from('produtos_custo').delete().eq('id',id);
+    if(error)throw error;
+    PRODUTOS=PRODUTOS.filter(p=>p.id!==id);
+    renderProdutosList();
+  }catch(e){alert('Erro ao remover: '+e.message);}
+}
+
 function downloadCustoTemplate(){
-  const csv='Nome do produto,Custo (R$)\nCinto de segurança nylon,4.13\nOrganizador de cabos,8.50\n';
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const linhas=[
+    '# MODELO DE IMPORTAÇÃO DE CUSTOS — Precifica',
+    '# Instruções:',
+    '#   1. Preencha Nome do produto e Custo para cada item da sua linha',
+    '#   2. Use ponto (.) ou vírgula (,) como separador decimal no custo',
+    '#   3. Não altere o cabeçalho abaixo',
+    '#   4. Salve como CSV e importe no botão Importar CSV do Precifica',
+    '#   5. Linhas começando com # são ignoradas automaticamente',
+    '',
+    'Nome do produto,Custo (R$)',
+    'Cinto de segurança para pet,4.13',
+    'Organizador de cabos magnético,8.50',
+    'Suporte para fone de ouvido,12.90',
+    'Kit 2 ganchos multiuso,6.75',
+    'Bolsa porta-documentos,22.00',
+    '(substitua estes exemplos pelos seus produtos)',
+  ];
+  const csv=linhas.join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;a.download='modelo_custos_precifica.csv';a.click();
@@ -2510,7 +2604,7 @@ async function importCustoCSV(event){
   if(fb)fb.style.color='var(--t3)',fb.textContent='Lendo arquivo...';
 
   const text=await file.text();
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  const lines=text.split(/\r?\n/).filter(l=>l.trim()&&!l.trim().startsWith('#'));
   if(!lines.length){if(fb)fb.style.color='var(--rd)',fb.textContent='Arquivo vazio.';return;}
 
   // Detecta e pula o cabeçalho
