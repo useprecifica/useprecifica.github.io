@@ -1049,11 +1049,19 @@ select.tbl-inp{cursor:pointer}
       <div class="field"><label>Preço c/ desc (R$)</label><input type="number" id="lf-precoD" step=".01" oninput="listingCalcLive()"></div>
       <div class="field"><label>Custo (R$)</label><input type="number" id="lf-custo" step=".01" oninput="listingCalcLive()"></div>
     </div>
-    <div class="field" style="margin-bottom:14px">
+    <div class="field" style="margin-bottom:14px;position:relative">
       <label>Produto do catálogo <span style="font-weight:400;color:var(--t3)">(opcional — vincula o custo)</span></label>
-      <select id="lf-produto" class="tbl-inp" style="padding:9px 12px" onchange="onProdutoSelect()">
-        <option value="">— Sem vínculo (custo manual) —</option>
-      </select>
+      <input type="text" id="lf-produto-search" placeholder="Buscar produto..." autocomplete="off"
+        oninput="pfyProdutoFilter()"
+        onfocus="pfyProdutoOpen()"
+        onkeydown="pfyProdutoKey(event)"
+        style="cursor:pointer">
+      <input type="hidden" id="lf-produto">
+      <div id="lf-produto-list" style="
+        display:none;position:absolute;left:0;right:0;top:100%;z-index:200;
+        background:var(--sur2);border:1px solid var(--pu);border-radius:var(--rs);
+        max-height:200px;overflow-y:auto;box-shadow:0 8px 24px -4px rgba(0,0,0,.4);
+      "></div>
       <div style="font-size:11px;color:var(--t3);margin-top:4px">Ao selecionar, o custo é preenchido automaticamente. Se o custo do produto mudar, este anúncio acompanha.</div>
     </div>
 
@@ -2314,8 +2322,38 @@ function onProdutoSelect(){
 function populateProdutoDropdown(selectedId){
   const sel=document.getElementById('lf-produto');
   if(!sel)return;
+
+  // Se não tem vínculo salvo, tenta sugerir o produto mais parecido com o nome do anúncio
+  let autoId=selectedId;
+  if(!autoId){
+    const nomeAnuncio=normCusto(s('lf-nome'));
+    if(nomeAnuncio&&PRODUTOS.length){
+      // Pontua cada produto: quantas palavras do produto aparecem no nome do anúncio
+      let bestScore=0,bestId='';
+      PRODUTOS.forEach(p=>{
+        const palavras=normCusto(p.nome).split(' ').filter(Boolean);
+        const score=palavras.filter(w=>nomeAnuncio.includes(w)).length;
+        // Exige pelo menos 50% das palavras do produto batendo
+        if(score>bestScore&&score/palavras.length>=0.5){
+          bestScore=score;bestId=p.id;
+        }
+      });
+      autoId=bestId;
+    }
+  }
+
   sel.innerHTML='<option value="">— Sem vínculo (custo manual) —</option>'+
-    PRODUTOS.map(p=>`<option value="${p.id}"${p.id===selectedId?' selected':''}>${sanitize(p.nome)} — ${fmt(p.custo)}</option>`).join('');
+    PRODUTOS.map(p=>`<option value="${p.id}"${p.id===autoId?' selected':''}>${sanitize(p.nome)} — ${fmt(p.custo)}</option>`).join('');
+
+  // Se auto-selecionou um produto, preenche o custo automaticamente
+  if(autoId&&!selectedId){
+    const prod=PRODUTOS.find(p=>p.id===autoId);
+    if(prod){
+      const custoEl=document.getElementById('lf-custo');
+      if(custoEl&&!+custoEl.value)custoEl.value=prod.custo;
+      listingCalcLive();
+    }
+  }
 }
 
 function listingAutoFill(){
