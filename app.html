@@ -219,8 +219,16 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .modal{background:var(--sur);border:1px solid var(--bd);border-radius:var(--rs2);width:100%;max-width:520px;margin:auto;padding:20px;transform:scale(.96) translateY(8px);opacity:0;transition:transform .22s var(--ease-spring),opacity .18s var(--ease)}
 .overlay.show .modal{transform:scale(1) translateY(0);opacity:1}
 .modal-title{font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px}
+.fg1{display:grid;grid-template-columns:1fr;gap:10px}
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.adv-toggle{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;margin-bottom:10px;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rs);cursor:pointer;font-size:12.5px;font-weight:600;color:var(--t2);transition:border-color .15s,color .15s;user-select:none}
+.adv-toggle:hover{border-color:var(--bd2);color:var(--t)}
+.adv-toggle.open{border-color:var(--pu);color:var(--pu)}
+.adv-chev{width:14px;height:14px;transition:transform .2s;flex-shrink:0}
+.adv-toggle.open .adv-chev{transform:rotate(180deg)}
+.adv-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .28s var(--ease),opacity .2s var(--ease)}
+.adv-body.open{max-height:600px;opacity:1}
 
 /* ── RESULT BOX ── */
 .rbox{background:var(--sur2);border-radius:var(--rs);padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
@@ -605,6 +613,7 @@ select.tbl-inp{cursor:pointer}
                 <option value="ok">Saudáveis ≥16%</option>
                 <option value="nok">Abaixo 16%</option>
                 <option value="crit">Críticos &lt;10%</option>
+                <option value="inativo">Inativos</option>
               </select>
               <select id="ch-fsort" class="tbl-inp" onchange="renderChannel()">
                 <option value="">Padrão</option>
@@ -870,6 +879,22 @@ select.tbl-inp{cursor:pointer}
             <button class="btn btn-sm" onclick="openAddChannel()" style="margin-top:10px">+ Novo canal</button>
           </div>
 
+          <div class="card" style="border-color:rgba(130,87,245,.3);background:rgba(130,87,245,.04)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--pu-grad);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="17" height="17" viewBox="0 0 24 24" stroke="#fff" fill="none" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px;font-weight:700">Extensão Chrome</div>
+                <div style="font-size:12px;color:var(--t3)">Importe anúncios e calcule margem sem sair do ML</div>
+              </div>
+            </div>
+            <a href="https://chromewebstore.google.com/detail/precifica-%E2%80%94-margem-para-m/ebnofbepoeljhpmfpjamalnnegnihhdk" target="_blank" class="btn btn-p btn-sm" style="display:flex;align-items:center;gap:7px;justify-content:center;text-decoration:none">
+              <svg width="13" height="13" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+              Instalar no Chrome — grátis
+            </a>
+          </div>
+
           <div class="card">
             <div class="card-title">Catálogo de custos</div>
             <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Custo padrão por produto — preenchido automaticamente ao cadastrar anúncios</div>
@@ -1004,6 +1029,7 @@ select.tbl-inp{cursor:pointer}
       <div class="bd-detail prv" id="listing-breakdown"></div>
     </div>
 
+    <!-- CAMPOS ESSENCIAIS -->
     <div class="fg2" style="margin-bottom:10px">
       <div class="field"><label>Nome do produto</label><input type="text" id="lf-nome" placeholder="Ex: Coluna Áustria" oninput="listingAutoFill();listingCalcLive()"></div>
       <div class="field"><label>Código do anúncio</label><input type="text" id="lf-cod" placeholder="ID do anúncio" inputmode="numeric"></div>
@@ -1013,25 +1039,11 @@ select.tbl-inp{cursor:pointer}
       <div class="field"><label>Preço c/ desc (R$)</label><input type="number" id="lf-precoD" step=".01" oninput="listingCalcLive()"></div>
       <div class="field"><label>Custo (R$)</label><input type="number" id="lf-custo" step=".01" oninput="listingCalcLive()"></div>
     </div>
+
+    <!-- ML FIELDS -->
     <div id="lf-ml-fields">
-      <div class="fg3" style="margin-bottom:10px">
-        <div class="field"><label>Comissão (%)</label><input type="number" id="lf-com" step=".1" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Antecipação (%)</label><input type="number" id="lf-ant" step=".1" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Ajuste ML (R$)</label><input type="number" id="lf-ajml" step=".01" oninput="listingCalcLive()"></div>
-      </div>
-      <div class="fg3" style="margin-bottom:10px">
-        <div class="field"><label>Frete (R$)</label><input type="number" id="lf-frete" step=".01" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Desconto (%)</label><input type="number" id="lf-descpct" step=".1" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Desc máx (R$)</label><input type="number" id="lf-descmax" step=".01" oninput="listingCalcLive()"></div>
-      </div>
-      <div class="fg3" style="margin-bottom:10px">
-        <div class="field"><label>Imposto (%)</label><input type="number" id="lf-imp" step=".1" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Tipo</label>
-          <select id="lf-tipo" class="tbl-inp" style="padding:9px 12px" onchange="listingCalcLive()">
-            <option value="classico">Clássico (11,5%)</option>
-            <option value="premium">Premium (16,5%)</option>
-          </select>
-        </div>
+      <!-- Status + Tipo no topo — decisões rápidas -->
+      <div class="fg2" style="margin-bottom:10px">
         <div class="field"><label>Status</label>
           <select id="lf-status" class="tbl-inp" style="padding:9px 12px">
             <option value="ativo">Ativo</option>
@@ -1039,28 +1051,65 @@ select.tbl-inp{cursor:pointer}
             <option value="inativo">Inativo</option>
           </select>
         </div>
+        <div class="field"><label>Tipo</label>
+          <select id="lf-tipo" class="tbl-inp" style="padding:9px 12px" onchange="listingCalcLive()">
+            <option value="classico">Clássico (11,5%)</option>
+            <option value="premium">Premium (16,5%)</option>
+          </select>
+        </div>
+      </div>
+      <!-- Avançado colapsável -->
+      <div class="adv-toggle" id="lf-ml-adv-toggle" onclick="toggleAdvanced('ml')">
+        <span>Configurações avançadas</span>
+        <svg class="adv-chev" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="adv-body" id="lf-ml-adv-body">
+        <div class="fg3" style="margin-bottom:10px">
+          <div class="field"><label>Comissão (%)</label><input type="number" id="lf-com" step=".1" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Antecipação (%)</label><input type="number" id="lf-ant" step=".1" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Ajuste ML (R$)</label><input type="number" id="lf-ajml" step=".01" oninput="listingCalcLive()"></div>
+        </div>
+        <div class="fg3" style="margin-bottom:10px">
+          <div class="field"><label>Frete (R$)</label><input type="number" id="lf-frete" step=".01" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Desconto (%)</label><input type="number" id="lf-descpct" step=".1" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Desc máx (R$)</label><input type="number" id="lf-descmax" step=".01" oninput="listingCalcLive()"></div>
+        </div>
+        <div class="fg1" style="margin-bottom:10px">
+          <div class="field"><label>Imposto (%)</label><input type="number" id="lf-imp" step=".1" oninput="listingCalcLive()"></div>
+        </div>
       </div>
     </div>
+
+    <!-- SHOPEE FIELDS -->
     <div id="lf-sh-fields">
-      <div class="fg3" style="margin-bottom:10px">
-        <div class="field"><label>Antecipação (%)</label><input type="number" id="lf-sh-ant" step=".1" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Frete (R$)</label><input type="number" id="lf-sh-frete" step=".01" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Outros (R$)</label><input type="number" id="lf-sh-outros" step=".01" oninput="listingCalcLive()"></div>
+      <div class="fg1" style="margin-bottom:10px">
+        <div class="field"><label>Status</label>
+          <select id="lf-sh-status" class="tbl-inp" style="padding:9px 12px">
+            <option value="ativo">Ativo</option>
+            <option value="pausado">Pausado</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
       </div>
-      <div class="fg3" style="margin-bottom:10px">
-        <div class="field"><label>Desconto (%)</label><input type="number" id="lf-sh-descpct" step=".1" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Desc máx (R$)</label><input type="number" id="lf-sh-descmax" step=".01" oninput="listingCalcLive()"></div>
-        <div class="field"><label>Imposto (%)</label><input type="number" id="lf-sh-imp" step=".1" oninput="listingCalcLive()"></div>
+      <div class="adv-toggle" id="lf-sh-adv-toggle" onclick="toggleAdvanced('sh')">
+        <span>Configurações avançadas</span>
+        <svg class="adv-chev" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <div class="field" style="margin-bottom:10px">
-        <label>Status</label>
-        <select id="lf-sh-status" class="tbl-inp" style="padding:9px 12px">
-          <option value="ativo">Ativo</option>
-          <option value="pausado">Pausado</option>
-          <option value="inativo">Inativo</option>
-        </select>
+      <div class="adv-body" id="lf-sh-adv-body">
+        <div class="fg3" style="margin-bottom:10px">
+          <div class="field"><label>Antecipação (%)</label><input type="number" id="lf-sh-ant" step=".1" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Frete (R$)</label><input type="number" id="lf-sh-frete" step=".01" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Outros (R$)</label><input type="number" id="lf-sh-outros" step=".01" oninput="listingCalcLive()"></div>
+        </div>
+        <div class="fg3" style="margin-bottom:10px">
+          <div class="field"><label>Desconto (%)</label><input type="number" id="lf-sh-descpct" step=".1" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Desc máx (R$)</label><input type="number" id="lf-sh-descmax" step=".01" oninput="listingCalcLive()"></div>
+          <div class="field"><label>Imposto (%)</label><input type="number" id="lf-sh-imp" step=".1" oninput="listingCalcLive()"></div>
+        </div>
       </div>
     </div>
+
+    <!-- TAGS + OBS -->
     <div style="margin-bottom:14px">
       <div style="font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Tags</div>
       <div id="lf-tags" style="display:flex;gap:8px;flex-wrap:wrap"></div>
@@ -1579,9 +1628,16 @@ function renderOnboarding(){
             ${!s.done?'<svg class="onb-arrow" width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>':''}
           </div>`).join('')}
       </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)">
-        <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--t3)" fill="none" stroke-width="1.8" style="flex-shrink:0"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        <div style="font-size:12px;color:var(--t3)">Dica: instale a extensão Chrome pra importar anúncios e calcular margem direto no Mercado Livre/Shopee</div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)">
+        <div style="font-size:12px;color:var(--t2);margin-bottom:10px;display:flex;align-items:center;gap:7px">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--pu)" fill="none" stroke-width="1.8" style="flex-shrink:0"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>A extensão Chrome é o jeito mais rápido de importar seus anúncios e calcular margem sem sair do Mercado Livre.</span>
+        </div>
+        <a href="https://chromewebstore.google.com/detail/precifica-%E2%80%94-margem-para-m/ebnofbepoeljhpmfpjamalnnegnihhdk" target="_blank" style="display:inline-flex;align-items:center;gap:8px;width:100%;justify-content:center;padding:10px 16px;border-radius:10px;background:rgba(130,87,245,.1);border:1px solid rgba(130,87,245,.3);color:var(--pu);font-size:13px;font-weight:700;text-decoration:none;transition:background .15s" onmouseover="this.style.background='rgba(130,87,245,.18)'" onmouseout="this.style.background='rgba(130,87,245,.1)'">
+          <svg width="15" height="15" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+          Instalar extensão Chrome — grátis
+          <svg width="13" height="13" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" style="margin-left:auto;opacity:.6"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
       </div>
     </div>`;
 }
@@ -1733,12 +1789,20 @@ async function renderChannel(){
   if(st==='ok')listings=listings.filter(l=>l.margem>=16);
   else if(st==='nok')listings=listings.filter(l=>l.margem<16&&l.margem>=10);
   else if(st==='crit')listings=listings.filter(l=>l.margem<10);
+  else if(st==='inativo'){
+    // Modo inativo: mostra só os inativos, sem trancados
+    listings=[...inactiveRows.filter(l=>!q||l.nome.toLowerCase().includes(q)||(l.cod+'').includes(q))];
+  }
 
   if(sort==='margem_desc')listings.sort((a,b)=>b.margem-a.margem);
   else if(sort==='margem_asc')listings.sort((a,b)=>a.margem-b.margem);
   else if(sort==='nome_asc')listings.sort((a,b)=>a.nome.localeCompare(b.nome));
 
-  listings=[...listings,...inactiveRows,...lockedRows]; // inativos e trancados sempre no fim
+  if(st==='inativo'){
+    // Já só tem inativos — não adiciona trancados nem mistura com ativos
+  } else {
+    listings=[...listings,...inactiveRows,...lockedRows]; // inativos e trancados sempre no fim
+  }
 
   const avg=activeRows.length?activeRows.reduce((s,l)=>s+l.margem,0)/activeRows.length:0;
   const ok=activeRows.filter(l=>l.margem>=16).length;
@@ -2203,11 +2267,22 @@ function openListing(id){
       g('lf-sh-descpct',l.desc_pct??5);g('lf-sh-descmax',l.desc_max??10);g('lf-sh-imp',l.imp||10);g('lf-sh-status',l.status||'ativo');
     }
     renderTagBtns({full:l.tag_full,oferta:l.tag_oferta,pub:l.tag_pub});
+    // Editando: abre bloco avançado automaticamente pra mostrar valores preenchidos
+    setTimeout(()=>{
+      const ch=isML?'ml':'sh';
+      document.getElementById(`lf-${ch}-adv-body`)?.classList.add('open');
+      document.getElementById(`lf-${ch}-adv-toggle`)?.classList.add('open');
+    },50);
   } else {
     g('lf-nome','');g('lf-cod','');g('lf-preco','');g('lf-precoD','');g('lf-custo','');
     if(isML){g('lf-com',11.5);g('lf-ant',4.2);g('lf-ajml',0);g('lf-frete',0);g('lf-descpct',5);g('lf-descmax',10);g('lf-imp',10);g('lf-tipo','classico');g('lf-status','ativo');}
     else{g('lf-sh-ant',2.5);g('lf-sh-frete',0);g('lf-sh-outros',0);g('lf-sh-descpct',5);g('lf-sh-descmax',10);g('lf-sh-imp',10);g('lf-sh-status','ativo');}
     renderTagBtns({full:false,oferta:false,pub:false});
+    // Novo anúncio: fecha bloco avançado
+    ['ml','sh'].forEach(c=>{
+      document.getElementById(`lf-${c}-adv-body`)?.classList.remove('open');
+      document.getElementById(`lf-${c}-adv-toggle`)?.classList.remove('open');
+    });
   }
   openModal('modal-listing');
   setTimeout(()=>document.getElementById('lf-nome').focus(),100);
@@ -2326,6 +2401,13 @@ function renderBreakdownDetail(r,isML){
   div.innerHTML=rows;
 }
 
+function toggleAdvanced(ch){
+  const toggle=document.getElementById(`lf-${ch}-adv-toggle`);
+  const body=document.getElementById(`lf-${ch}-adv-body`);
+  if(!toggle||!body)return;
+  const open=body.classList.toggle('open');
+  toggle.classList.toggle('open',open);
+}
 function toggleBreakdown(){
   const det=document.getElementById('listing-breakdown');
   const tog=document.getElementById('bd-toggle');
