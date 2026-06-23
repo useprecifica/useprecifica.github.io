@@ -1712,7 +1712,7 @@ async function renderChannel(){
   else if(st==='nok')listings=listings.filter(l=>l.margem<16&&l.margem>=10);
   else if(st==='crit')listings=listings.filter(l=>l.margem<10);
   else if(st==='inativo'){
-    // Modo inativo: mostra só os inativos, sem trancados
+    // Modo inativo: mostra só os inativos, com filtro de busca aplicado
     listings=[...inactiveRows.filter(l=>!q||l.nome.toLowerCase().includes(q)||(l.cod+'').includes(q))];
   }
 
@@ -1723,7 +1723,11 @@ async function renderChannel(){
   if(st==='inativo'){
     // Já só tem inativos — não adiciona trancados nem mistura com ativos
   } else {
-    listings=[...listings,...inactiveRows,...lockedRows]; // inativos e trancados sempre no fim
+    // Inativos e trancados no fim — inativos também filtrados pela busca
+    const filteredInactive=q
+      ? inactiveRows.filter(l=>l.nome.toLowerCase().includes(q)||(l.cod+'').includes(q))
+      : inactiveRows;
+    listings=[...listings,...filteredInactive,...lockedRows];
   }
 
   const avg=activeRows.length?activeRows.reduce((s,l)=>s+l.margem,0)/activeRows.length:0;
