@@ -675,31 +675,20 @@ select.tbl-inp{cursor:pointer}
 
           <div class="card">
             <div class="card-title">Catálogo de Produtos</div>
-            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Custo base de cada produto. Ao alterar o custo aqui, todos os anúncios vinculados a ele são atualizados automaticamente — em qualquer canal.</div>
+            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Cadastre o custo de cada produto aqui. Ao editar um anúncio, você escolhe qual produto ele usa — e o custo é aplicado automaticamente.</div>
             <div id="produtos-list"></div>
-            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-              <button class="btn btn-sm" onclick="addProduto()">+ Novo produto</button>
-              <button class="btn btn-sm" onclick="seedProdutosPadrao()">Carregar tabela padrão</button>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center">
+              <button class="btn btn-sm btn-p" onclick="addProduto()">+ Novo produto</button>
+              <button class="btn btn-sm" onclick="exportCustoCSV()" title="Exportar catálogo atual como CSV">↓ Exportar CSV</button>
+              <label class="btn btn-sm" style="cursor:pointer;margin:0" title="Importar produtos de um arquivo CSV">
+                ↑ Importar CSV
+                <input type="file" accept=".csv" style="display:none" onchange="importCustoCSV(event)">
+              </label>
+              <a id="csv-template-link" style="font-size:12px;color:var(--pu);cursor:pointer;text-decoration:underline" onclick="downloadCustoTemplate()">Baixar modelo</a>
             </div>
+            <div id="custo-import-feedback" style="margin-top:8px;font-size:12.5px"></div>
           </div>
 
-          <div class="card">
-            <div class="card-title">Regras de sugestão</div>
-            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Usadas só para sugerir o vínculo entre anúncios e produtos, com base em palavras do nome do anúncio. A primeira regra que bater (de cima pra baixo) é sugerida. "Contém"/"Não contém" aceitam várias palavras separadas por vírgula — acentos e maiúsculas não importam.</div>
-            <div id="custo-rules-list"></div>
-            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-              <button class="btn btn-sm" onclick="addCustoRule()">+ Nova regra</button>
-              <button class="btn btn-sm" onclick="loadDefaultCustoRules()">Carregar regras padrão</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Vincular Anúncios</div>
-            <div style="font-size:12px;color:var(--t3);margin-bottom:12px">Vincule cada anúncio a um produto do catálogo. Ao vincular, o custo do anúncio é sincronizado agora — e fica sincronizado para sempre, mesmo que o custo do produto mude depois.</div>
-            <div class="metrics" id="vinculo-metrics"></div>
-            <div id="vinculo-sugestoes"></div>
-            <div id="vinculo-manual"></div>
-          </div>
         </div>
 
         <!-- SIMULADORA -->
@@ -1228,73 +1217,6 @@ let _activeTab='dash', _activeCh=null;
 let _editListingId=null, _editChannelId=null;
 let _privacyOn=false;
 
-// Catálogo de custos (localStorage apenas)
-const CUSTO_KEY='pfy2_custos';
-function getCustos(){try{return JSON.parse(localStorage.getItem(CUSTO_KEY)||'{}')}catch{return{}}}
-function saveCustos(obj){localStorage.setItem(CUSTO_KEY,JSON.stringify(obj))}
-
-// Mapeamento de custos por regra (aba "Custos") — armazenado no Supabase
-const CUSTO_RULES_KEY='pfy2_custo_rules'; // só usado pra migração one-time do localStorage
-let _custoRules=[];
-let _custoRulesLoaded=false;
-
-async function loadCustoRules(){
-  try{
-    const{data,error}=await SB.from('custo_rules').select('*').order('position');
-    if(error)throw error;
-    if(data&&data.length){
-      _custoRules=data.map(r=>({_id:r.id,produto:r.produto,inc:r.inc||[],exc:r.exc||[],custo:r.custo}));
-      localStorage.removeItem(CUSTO_RULES_KEY);
-      return;
-    }
-    // Migração one-time: tenta localStorage antigo
-    const raw=localStorage.getItem(CUSTO_RULES_KEY);
-    if(raw){
-      const arr=JSON.parse(raw);
-      if(Array.isArray(arr)&&arr.length){
-        _custoRules=arr;
-        await bulkSaveCustoRules();
-        localStorage.removeItem(CUSTO_RULES_KEY);
-        return;
-      }
-    }
-    // Sem dados: carrega padrão e salva no banco
-    _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
-    await bulkSaveCustoRules();
-  }catch(e){
-    // Supabase indisponível (tabela ainda não criada) — opera localmente
-    console.warn('[Precifica] custo_rules: usando padrão local —',e.message);
-    try{
-      const raw=localStorage.getItem(CUSTO_RULES_KEY);
-      const arr=raw?JSON.parse(raw):[];
-      _custoRules=Array.isArray(arr)&&arr.length?arr:DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
-    }catch{
-      _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
-    }
-  }
-}
-
-async function bulkSaveCustoRules(){
-  if(!USER?.id)return;
-  await SB.from('custo_rules').delete().eq('user_id',USER.id);
-  if(!_custoRules.length)return;
-  const rows=_custoRules.map((r,i)=>({user_id:USER.id,position:i,produto:r.produto||'',inc:r.inc||[],exc:r.exc||[],custo:+(r.custo)||0}));
-  const{data,error}=await SB.from('custo_rules').insert(rows).select('id');
-  if(error)throw error;
-  (data||[]).forEach((d,i)=>{if(_custoRules[i])_custoRules[i]._id=d.id;});
-}
-
-async function saveCustoRules(){
-  setSyncStatus('syncing');
-  try{await bulkSaveCustoRules();setSyncStatus('ok');}
-  catch(e){
-    setSyncStatus('err');
-    // Fallback gracioso: salva no localStorage
-    try{localStorage.setItem(CUSTO_RULES_KEY,JSON.stringify(_custoRules));}catch{}
-    console.error('[Precifica] saveCustoRules:',e.message);
-  }
-}
-
 // ══════════════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════════════
@@ -1432,7 +1354,7 @@ async function doLogout(){
   _loggingOut=true;
   await SB.auth.signOut();
   USER=null;PROFILE=null;CHANNELS=[];LISTINGS=[];PRODUTOS=[];
-  _custoRules=[];_custoRulesLoaded=false;_simCache=null;
+  _simCache=null;
   document.getElementById('app').classList.remove('ready');
   document.getElementById('auth-screen').style.display='flex';
   showLogin();
@@ -1531,7 +1453,7 @@ function goTab(tab,chId){
   else if(tab==='channel'){_activeCh=chId||_activeCh;renderChannel();}
   else if(tab==='tags')renderTags();
   else if(tab==='insights')renderInsights();
-  else if(tab==='custos')renderCustoMap();
+  else if(tab==='custos')renderProdutosList();
   else if(tab==='sim')renderSim();
   else if(tab==='config')updateConfig();
   document.querySelector('.content').scrollTop=0;
@@ -2343,14 +2265,13 @@ function getListingForm(){
 }
 
 function listingAutoFill(){
+  // Auto-fill simples: se o nome bater exatamente com um produto do catálogo, sugere o custo
   const nome=s('lf-nome');
   const custoEl=document.getElementById('lf-custo');
   if(!custoEl||+custoEl.value>0)return;
-  const custos=getCustos();
-  const u=nome.toUpperCase().trim();
-  let found=custos[u];
-  if(!found){for(const k of Object.keys(custos)){if(u.includes(k)||k.includes(u)){found=custos[k];break;}}}
-  if(found!=null){custoEl.value=found;listingCalcLive();}
+  const nomeNorm=normCusto(nome);
+  const match=PRODUTOS.find(p=>normCusto(p.nome)===nomeNorm);
+  if(match){custoEl.value=match.custo;listingCalcLive();}
 }
 
 function listingCalcLive(){
@@ -2430,12 +2351,6 @@ async function saveListing(){
       const {data,error}=await SB.from('listings').insert(f).select().single();
       if(error)throw error;
       LISTINGS.push(data);
-    }
-    // Save to custo catalog
-    if(f.custo>0){
-      const c=getCustos();
-      c[f.nome.toUpperCase().trim()]=f.custo;
-      saveCustos(c);
     }
     setSyncStatus('ok');
     closeModal('modal-listing');
@@ -2538,7 +2453,7 @@ function updateConfig(){
     }).join(''):'<div style="color:var(--t3);font-size:13px">Nenhum canal cadastrado</div>';
   }
 
-  renderCustos();
+  renderProdutosList();
 }
 
 function editChannel(id){
@@ -2552,280 +2467,111 @@ function editChannel(id){
 }
 
 // ══════════════════════════════════════════════
-// CUSTOS CATALOG
-// ══════════════════════════════════════════════
-function renderCustos(){
-  const div=document.getElementById('custos-list');
-  if(!div)return;
-  const c=getCustos();
-  const keys=Object.keys(c).sort();
-  if(!keys.length){div.innerHTML='<div style="color:var(--t3);font-size:12px">Nenhum custo cadastrado</div>';return;}
-  div.innerHTML=`<div class="tbl-wrap" style="margin-bottom:8px"><table class="tbl"><thead><tr><th>Produto</th><th>Custo</th><th></th></tr></thead><tbody>`+
-    keys.map(k=>`<tr><td style="font-size:13px">${sanitize(k)}</td><td style="font-family:var(--mono)">${fmt(c[k])}</td><td><button class="btn btn-sm" onclick="removeCusto('${k}')" style="color:var(--rd);border-color:var(--rd)">×</button></td></tr>`).join('')+
-    '</tbody></table></div>';
-}
-
-function addCusto(){
-  const nome=prompt('Nome do produto (ex: COLUNA ÁUSTRIA):');
-  if(!nome)return;
-  const val=parseFloat(prompt('Custo (R$):'));
-  if(isNaN(val))return;
-  const c=getCustos();
-  c[nome.toUpperCase().trim()]=val;
-  saveCustos(c);
-  renderCustos();
-}
-
-function removeCusto(key){
-  if(!confirm(`Remover custo de "${key}"?`))return;
-  const c=getCustos();
-  delete c[key];
-  saveCustos(c);
-  renderCustos();
-}
-
 // ══════════════════════════════════════════════
 // MAPEAR CUSTOS (regras de correspondência)
 // ══════════════════════════════════════════════
-const DEFAULT_CUSTO_RULES=[
-  {produto:'KIT 2 LUMINÁRIA ÁUSTRIA',inc:['KIT','2','AUSTRIA','LUMINARIA'],exc:[],custo:243.80},
-  {produto:'KIT 2 ABAJUR AUSTRIA',inc:['KIT','2','AUSTRIA','ABAJUR'],exc:[],custo:128.30},
-  {produto:'KIT ÁUSTRIA ABAJUR + LUMINÁRIA',inc:['KIT','AUSTRIA','ABAJUR','LUMINARIA'],exc:['2'],custo:186.05},
-  {produto:'LUMINÁRIA ÁUSTRIA C/ 2 CÚPULAS',inc:['AUSTRIA','LUMINARIA','CUPULA'],exc:['KIT'],custo:153.90},
-  {produto:'ABAJUR AUSTRIA',inc:['ABAJUR','AUSTRIA'],exc:['KIT'],custo:64.15},
-  {produto:'LUMINÁRIA ÁUSTRIA',inc:['LUMINARIA','AUSTRIA'],exc:['KIT','CUPULA'],custo:121.90},
-  {produto:'KIT 2 WOOD',inc:['KIT','2','WOOD'],exc:[],custo:213.00},
-  {produto:'ABAJUR WOOD',inc:['ABAJUR','WOOD'],exc:['KIT'],custo:106.41},
-  {produto:'KIT 2 MINE',inc:['KIT','2','MINE'],exc:[],custo:74.58},
-  {produto:'ABAJUR MINE',inc:['ABAJUR','MINE'],exc:['KIT'],custo:37.29},
-  {produto:'ABAJUR SKY',inc:['ABAJUR','SKY'],exc:[],custo:106.41},
-  {produto:'KIT 2 SLIM',inc:['KIT','2','SLIM'],exc:[],custo:86.50},
-  {produto:'ABAJUR SLIM',inc:['ABAJUR','SLIM'],exc:['KIT'],custo:43.25},
-  {produto:'KIT 2 MONÂCOS',inc:['KIT','2','MONACO'],exc:[],custo:211.74},
-  {produto:'CÚPULA MONÂCO',inc:['CUPULA','MONACO'],exc:[],custo:30.00},
-  {produto:'LUMINÁRIA MONÂCO',inc:['MONACO'],exc:['KIT','CUPULA'],custo:105.87},
-  {produto:'LUMINÁRIA RIPADA',inc:['RIPADA'],exc:[],custo:133.21},
-  {produto:'LUMINÁRIA IPANEMA',inc:['IPANEMA'],exc:[],custo:106.78},
-  {produto:'ABAJUR WELLS',inc:['ABAJUR','WELLS'],exc:[],custo:52.86},
-  {produto:'LUMINÁRIA WELLS',inc:['WELLS'],exc:['ABAJUR'],custo:108.33},
-  {produto:'LUMINÁRIA VIENA',inc:['VIENA'],exc:[],custo:112.09},
-  {produto:'LUMINÁRIA FLORIPA',inc:['FLORIPA'],exc:[],custo:117.02},
-  {produto:'CÚPULA 40',inc:['CUPULA','40'],exc:[],custo:32.00},
-  {produto:'PENDENTE CONE SISAL',inc:['PENDENTE','CONE','SISAL'],exc:[],custo:52.50},
-  {produto:'PENDENTE CÚPULA CONE',inc:['PENDENTE','CUPULA','CONE'],exc:['SISAL'],custo:48.00},
-  {produto:'PENDENTE CÚPULA CILINDRICA',inc:['PENDENTE','CUPULA','CILINDRICA'],exc:[],custo:49.00},
-  {produto:'VASO ROMA 80CM',inc:['VASO','ROMA'],exc:[],custo:340.00},
-  {produto:'VASO VIETNAMITA 60CM',inc:['VASO','VIETNAMITA'],exc:[],custo:350.00},
-  {produto:'VASO XINA 65',inc:['VASO','XINA'],exc:[],custo:219.00},
-  {produto:'BACIA M FIBRA DE VIDRO',inc:['BACIA'],exc:[],custo:220.00},
-  {produto:'SUPORTE PORTA GUARDANAPO',inc:['SUPORTE','GUARDANAPO'],exc:[],custo:6.00},
-  {produto:'ADEGA MINIMALISTA',inc:['ADEGA'],exc:[],custo:15.00},
-];
+const DEFAULT_CUSTO_RULES=[]; // zerando — produtos da Ilumini não devem aparecer pra novos usuários
 
-// Normaliza: remove acentos, maiúsculas, e troca qualquer separador por espaço único
+// Mantém normCusto pois ainda é usada em produtos_custo
 function normCusto(str){
   return (str||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9]+/g,' ').trim();
 }
 
-function loadCustoRules(){
-  try{
-    const raw=localStorage.getItem(CUSTO_RULES_KEY);
-    if(!raw)return[];
-    const arr=JSON.parse(raw);
-    return Array.isArray(arr)?arr:[];
-  }catch{return[]}
-}
-function saveCustoRules(){
-  localStorage.setItem(CUSTO_RULES_KEY,JSON.stringify(_custoRules));
-}
-
-// Retorna a primeira regra (na ordem) cujo "contém" bate e "não contém" não bate
-function matchCustoRule(nomeNorm){
-  for(const r of _custoRules){
-    const inc=(r.inc||[]).map(normCusto).filter(Boolean);
-    if(!inc.length)continue;
-    const exc=(r.exc||[]).map(normCusto).filter(Boolean);
-    if(inc.every(k=>nomeNorm.includes(k))&&exc.every(k=>!nomeNorm.includes(k)))return r;
-  }
-  return null;
-}
-
-async function renderCustoMap(){
-  if(!_custoRulesLoaded){
-    _custoRulesLoaded=true;
-    await loadCustoRules();
-  }
-  renderCustoRulesEditor();
-  renderProdutosList();
-  renderVinculoSection();
-}
-
-function renderCustoRulesEditor(){
-  const div=document.getElementById('custo-rules-list');
-  if(!div)return;
-  if(!_custoRules.length){
-    div.innerHTML='<div class="empty">Nenhuma regra ainda. Clique em "Carregar regras padrão" ou "+ Nova regra".</div>';
-    return;
-  }
-  div.innerHTML=_custoRules.map((r,i)=>`
-    <div class="rule-row">
-      <div class="rule-order">
-        <button class="btn btn-sm" onclick="moveCustoRule(${i},-1)" ${i===0?'disabled':''} title="Subir prioridade">↑</button>
-        <button class="btn btn-sm" onclick="moveCustoRule(${i},1)" ${i===_custoRules.length-1?'disabled':''} title="Baixar prioridade">↓</button>
-      </div>
-      <input class="tbl-inp rule-produto" placeholder="Produto (referência)" value="${sanitize(r.produto||'')}" onchange="updateCustoRule(${i},'produto',this.value)">
-      <input class="tbl-inp rule-inc" placeholder="Contém: ex. KIT, 2, AUSTRIA" value="${sanitize((r.inc||[]).join(', '))}" onchange="updateCustoRule(${i},'inc',this.value)">
-      <input class="tbl-inp rule-exc" placeholder="Não contém (opcional)" value="${sanitize((r.exc||[]).join(', '))}" onchange="updateCustoRule(${i},'exc',this.value)">
-      <input class="tbl-inp rule-custo" type="number" step=".01" min="0" placeholder="0,00" value="${r.custo||''}" onchange="updateCustoRule(${i},'custo',this.value)">
-      <button class="btn btn-sm rule-del" onclick="removeCustoRule(${i})" title="Remover regra">×</button>
-    </div>`).join('');
-}
-
-function updateCustoRule(i,field,val){
-  if(!_custoRules[i])return;
-  if(field==='inc'||field==='exc'){
-    _custoRules[i][field]=val.split(',').map(x=>x.trim()).filter(Boolean);
-  }else if(field==='custo'){
-    _custoRules[i][field]=parseFloat(val)||0;
-  }else{
-    _custoRules[i][field]=val;
-  }
-  saveCustoRules();
-  renderVinculoSection();
-}
-
-function addCustoRule(){
-  _custoRules.push({produto:'',inc:[],exc:[],custo:0});
-  saveCustoRules();
-  renderCustoMap();
-}
-
-function removeCustoRule(i){
-  _custoRules.splice(i,1);
-  saveCustoRules();
-  renderCustoMap();
-}
-
-function moveCustoRule(i,dir){
-  const j=i+dir;
-  if(j<0||j>=_custoRules.length)return;
-  const tmp=_custoRules[i];_custoRules[i]=_custoRules[j];_custoRules[j]=tmp;
-  saveCustoRules();
-  renderCustoMap();
-}
-
-function loadDefaultCustoRules(){
-  if(_custoRules.length&&!confirm('Isso vai substituir as regras atuais pelas regras padrão (ÁUSTRIA, WOOD, MINE, MONÂCO, SLIM, CÚPULA, etc). As regras atuais serão perdidas. Continuar?'))return;
-  _custoRules=DEFAULT_CUSTO_RULES.map(r=>({produto:r.produto,inc:[...r.inc],exc:[...r.exc],custo:r.custo}));
-  saveCustoRules();
-  renderCustoMap();
-}
-
 // ══════════════════════════════════════════════
-// CATÁLOGO DE PRODUTOS (produtos_custo)
+// CSV — importar/exportar catálogo de custos
 // ══════════════════════════════════════════════
-function renderProdutosList(){
-  const div=document.getElementById('produtos-list');
-  if(!div)return;
-  if(!PRODUTOS.length){
-    div.innerHTML='<div class="empty">Nenhum produto no catálogo ainda. Clique em "Carregar tabela padrão" ou "+ Novo produto".</div>';
+
+function downloadCustoTemplate(){
+  const csv='Nome do produto,Custo (R$)\nCinto de segurança nylon,4.13\nOrganizador de cabos,8.50\n';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='modelo_custos_precifica.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCustoCSV(){
+  if(!PRODUTOS.length){alert('Catálogo vazio — nada para exportar.');return;}
+  const header='Nome do produto,Custo (R$)';
+  const rows=PRODUTOS.map(p=>`${p.nome.replace(/,/g,';')},${(p.custo||0).toFixed(2)}`);
+  const csv=[header,...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='meus_custos_precifica.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function importCustoCSV(event){
+  const file=event.target.files[0];
+  event.target.value=''; // permite reimportar o mesmo arquivo
+  if(!file)return;
+  const fb=document.getElementById('custo-import-feedback');
+  if(fb)fb.style.color='var(--t3)',fb.textContent='Lendo arquivo...';
+
+  const text=await file.text();
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  if(!lines.length){if(fb)fb.style.color='var(--rd)',fb.textContent='Arquivo vazio.';return;}
+
+  // Detecta e pula o cabeçalho
+  const isHeader=l=>isNaN(parseFloat(l.split(/[,;]/).slice(-1)[0]));
+  const dataLines=isHeader(lines[0])?lines.slice(1):lines;
+
+  const novos=[];
+  const erros=[];
+  dataLines.forEach((line,i)=>{
+    const parts=line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+    if(parts.length<2){erros.push(`Linha ${i+2}: formato inválido`);return;}
+    const nome=parts[0].replace(/^["']|["']$/g,'').trim();
+    const custo=parseFloat(parts[1].replace(',','.').replace(/[^0-9.]/g,''));
+    if(!nome||isNaN(custo)||custo<0){erros.push(`Linha ${i+2}: custo inválido`);return;}
+    novos.push({nome,custo});
+  });
+
+  if(!novos.length){
+    if(fb)fb.style.color='var(--rd)',fb.textContent='Nenhum produto válido encontrado. Verifique o formato: Nome do produto, Custo (R$)';
     return;
   }
-  div.innerHTML=PRODUTOS.map(p=>{
-    const cnt=LISTINGS.filter(l=>l.produto_id===p.id).length;
-    return `<div class="ri" style="cursor:default">
-      <div style="flex:1;min-width:0;display:flex;align-items:center;gap:8px">
-        <input class="tbl-inp" style="flex:1;min-width:120px" value="${sanitize(p.nome)}" onchange="updateProdutoNome('${p.id}',this.value)">
-        <span style="font-size:11px;color:var(--t3);flex-shrink:0;white-space:nowrap">${cnt} anúncio${cnt!==1?'s':''}</span>
-      </div>
-      <div class="ri-right" style="flex-direction:row;align-items:center;gap:6px">
-        <input class="tbl-inp" type="number" step=".01" min="0" style="width:90px;text-align:right" value="${p.custo}" onchange="updateProdutoCusto('${p.id}',this.value)">
-        <button class="btn btn-sm rule-del" onclick="removeProduto('${p.id}')" title="Remover do catálogo">×</button>
-      </div>
-    </div>`;
-  }).join('');
-}
 
-async function addProduto(){
-  if(!isPro()&&PRODUTOS.length>=PLAN_LIMITS.produtosCatalogo){
-    openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos no catálogo de custos. Faça upgrade para Pro e cadastre quantos precisar.`);
-    return;
-  }
-  const nome=prompt('Nome do produto:');
-  if(!nome||!nome.trim())return;
-  const custoStr=prompt('Custo (R$):','0');
-  const custo=parseFloat((custoStr||'0').replace(',','.'))||0;
-  try{
-    const{data,error}=await SB.from('produtos_custo').insert({user_id:USER.id,nome:nome.trim(),custo}).select().single();
-    if(error)throw error;
-    PRODUTOS.push(data);
-    PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
-    renderCustoMap();
-  }catch(e){alert('Erro ao criar produto: '+e.message+'\n\nVerifique se a tabela "produtos_custo" já foi criada no Supabase (veja o SQL de setup).');}
-}
-
-async function updateProdutoNome(id,val){
-  const nome=val.trim();
-  if(!nome)return;
-  try{
-    const{error}=await SB.from('produtos_custo').update({nome,updated_at:new Date().toISOString()}).eq('id',id);
-    if(error)throw error;
-    const p=PRODUTOS.find(x=>x.id===id);
-    if(p)p.nome=nome;
-    renderVinculoSection();
-  }catch(e){alert('Erro ao salvar: '+e.message);}
-}
-
-async function updateProdutoCusto(id,val){
-  const custo=parseFloat(String(val).replace(',','.'))||0;
-  try{
-    const{error}=await SB.from('produtos_custo').update({custo,updated_at:new Date().toISOString()}).eq('id',id);
-    if(error)throw error;
-    const p=PRODUTOS.find(x=>x.id===id);
-    if(p)p.custo=custo;
-    // A trigger no Supabase já propagou esse custo para os anúncios vinculados — espelha localmente
-    LISTINGS.forEach(l=>{if(l.produto_id===id)l.custo=custo;});
-    renderCustoMap();
-    renderDash();
-    if(_activeCh)renderChannel();
-  }catch(e){alert('Erro ao salvar: '+e.message+'\n\nVerifique se a tabela "produtos_custo" e a trigger de sincronização já foram criadas no Supabase (veja o SQL de setup).');}
-}
-
-async function removeProduto(id){
-  const cnt=LISTINGS.filter(l=>l.produto_id===id).length;
-  if(!confirm(`Remover este produto do catálogo?${cnt?` ${cnt} anúncio(s) vinculado(s) ficarão sem vínculo (o custo atual deles é mantido).`:''}`))return;
-  try{
-    const{error}=await SB.from('produtos_custo').delete().eq('id',id);
-    if(error)throw error;
-    PRODUTOS=PRODUTOS.filter(p=>p.id!==id);
-    LISTINGS.forEach(l=>{if(l.produto_id===id)l.produto_id=null;});
-    renderCustoMap();
-  }catch(e){alert('Erro ao remover: '+e.message);}
-}
-
-async function seedProdutosPadrao(){
-  const existing=new Set(PRODUTOS.map(p=>normCusto(p.nome)));
-  let novos=DEFAULT_CUSTO_RULES.filter(r=>!existing.has(normCusto(r.produto))).map(r=>({user_id:USER.id,nome:r.produto,custo:r.custo}));
-  if(!novos.length){alert('Todos os produtos da tabela padrão já estão no catálogo.');return;}
+  // Verifica limite de plano
   if(!isPro()){
     const vagas=PLAN_LIMITS.produtosCatalogo-PRODUTOS.length;
-    if(vagas<=0){
-      openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos no catálogo de custos. Faça upgrade para Pro e cadastre quantos precisar.`);
-      return;
-    }
+    if(vagas<=0){openUpgradeModal('Limite do catálogo atingido',`No plano Free você pode ter até ${PLAN_LIMITS.produtosCatalogo} produtos. Faça upgrade para Pro.`);return;}
     if(novos.length>vagas){
-      novos=novos.slice(0,vagas);
-      alert(`Plano Free: só dá pra adicionar mais ${vagas} produto(s) agora (limite de ${PLAN_LIMITS.produtosCatalogo} no catálogo). Os ${vagas} primeiros da tabela padrão serão adicionados.`);
+      if(!confirm(`Plano Free: só há ${vagas} vaga${vagas!==1?'s':''} disponíve${vagas!==1?'is':'l'} no catálogo. Importar apenas os primeiros ${vagas}?`))return;
+      novos.splice(vagas);
     }
   }
-  if(!confirm(`Adicionar ${novos.length} produto(s) ao catálogo?`))return;
+
+  // Evita duplicatas por nome
+  const existingNames=new Set(PRODUTOS.map(p=>normCusto(p.nome)));
+  const toInsert=novos.filter(p=>!existingNames.has(normCusto(p.nome)));
+  const duplicados=novos.length-toInsert.length;
+
+  if(!toInsert.length){
+    if(fb)fb.style.color='var(--am)',fb.textContent=`Todos os ${duplicados} produto${duplicados!==1?'s':''} já existem no catálogo.`;
+    return;
+  }
+
+  if(fb)fb.style.color='var(--t3)',fb.textContent=`Importando ${toInsert.length} produto${toInsert.length!==1?'s':''}...`;
+
   try{
-    const{data,error}=await SB.from('produtos_custo').insert(novos).select();
+    const rows=toInsert.map(p=>({user_id:USER.id,nome:p.nome,custo:p.custo}));
+    const{data,error}=await SB.from('produtos_custo').insert(rows).select();
     if(error)throw error;
     PRODUTOS.push(...(data||[]));
     PRODUTOS.sort((a,b)=>a.nome.localeCompare(b.nome));
-    renderCustoMap();
-  }catch(e){alert('Erro ao carregar tabela padrão: '+e.message+'\n\nVerifique se a tabela "produtos_custo" já foi criada no Supabase (veja o SQL de setup).');}
+    renderProdutosList();
+    const msg=[
+      `${toInsert.length} produto${toInsert.length!==1?'s':''} importado${toInsert.length!==1?'s':''}`,
+      duplicados?`${duplicados} ignorado${duplicados!==1?'s':''} (já existiam)`:null,
+      erros.length?`${erros.length} linha${erros.length!==1?'s':''} com erro`:null,
+    ].filter(Boolean).join(' · ');
+    if(fb)fb.style.color='var(--gr)',fb.textContent=msg;
+    setTimeout(()=>{if(fb)fb.textContent='';},5000);
+  }catch(e){
+    if(fb)fb.style.color='var(--rd)',fb.textContent='Erro ao salvar: '+e.message;
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -2833,131 +2579,6 @@ async function seedProdutosPadrao(){
 // ══════════════════════════════════════════════
 
 // Agrupa anúncios sem vínculo por sugestão (1ª regra que bater -> produto correspondente no catálogo)
-function computeVinculoSugestoes(){
-  const unlinked=LISTINGS.filter(l=>!l.produto_id);
-  const groupsMap={};
-  const semSugestao=[];
-  unlinked.forEach(l=>{
-    const nomeNorm=normCusto(l.nome);
-    const rule=matchCustoRule(nomeNorm);
-    const produto=rule?PRODUTOS.find(p=>normCusto(p.nome)===normCusto(rule.produto)):null;
-    if(produto){
-      if(!groupsMap[produto.id])groupsMap[produto.id]={produto,listings:[]};
-      groupsMap[produto.id].listings.push(l);
-    }else{
-      semSugestao.push(l);
-    }
-  });
-  return{groups:Object.values(groupsMap),semSugestao};
-}
-
-function renderVinculoSection(){
-  const{groups,semSugestao}=computeVinculoSugestoes();
-  const total=LISTINGS.length;
-  const linked=LISTINGS.filter(l=>l.produto_id).length;
-  const sugTotal=groups.reduce((s,g)=>s+g.listings.length,0);
-
-  const met=document.getElementById('vinculo-metrics');
-  if(met)met.innerHTML=`
-    <div class="met"><div class="met-label">Total</div><div class="met-val">${total}</div><div class="met-sub">anúncios</div></div>
-    <div class="met"><div class="met-label" style="color:var(--gr)">Vinculados</div><div class="met-val" style="color:var(--gr)">${linked}</div><div class="met-sub">com produto</div></div>
-    <div class="met"><div class="met-label" style="color:var(--am)">Sugestões</div><div class="met-val" style="color:${sugTotal?'var(--am)':'var(--t)'}">${sugTotal}</div><div class="met-sub">${groups.length} grupo${groups.length!==1?'s':''}</div></div>
-    <div class="met"><div class="met-label" style="color:var(--rd)">Sem sugestão</div><div class="met-val" style="color:${semSugestao.length?'var(--rd)':'var(--t)'}">${semSugestao.length}</div><div class="met-sub">vincular manual</div></div>`;
-
-  const sub=document.getElementById('custo-sub');
-  if(sub)sub.textContent=`${PRODUTOS.length} produto${PRODUTOS.length!==1?'s':''} no catálogo · ${linked}/${total} anúncios vinculados`;
-
-  const sug=document.getElementById('vinculo-sugestoes');
-  if(sug){
-    if(!groups.length){
-      sug.innerHTML='';
-    }else{
-      sug.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">Sugestões de vínculo</div>'+
-        groups.map(g=>`
-          <div class="card" style="margin-bottom:10px;background:var(--sur2)">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-              <div style="font-size:13px"><strong>${sanitize(g.produto.nome)}</strong> · ${fmt(g.produto.custo)} · ${g.listings.length} anúncio${g.listings.length!==1?'s':''}</div>
-              <button class="btn btn-sm btn-p" onclick="vincularGrupo('${g.produto.id}')">Vincular todos</button>
-            </div>
-            <div style="font-size:12px;color:var(--t2);line-height:1.6">${g.listings.slice(0,6).map(l=>sanitize(l.nome)).join('<br>')}${g.listings.length>6?`<br>… e mais ${g.listings.length-6}`:''}</div>
-          </div>`).join('');
-    }
-  }
-
-  const man=document.getElementById('vinculo-manual');
-  if(man){
-    if(!semSugestao.length){
-      man.innerHTML='';
-    }else{
-      const opts='<option value="">Selecione um produto...</option>'+PRODUTOS.map(p=>`<option value="${p.id}">${sanitize(p.nome)} — ${fmt(p.custo)}</option>`).join('');
-      man.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">Sem sugestão — vincular manualmente</div>'+
-        semSugestao.map(l=>{
-          const ch=CHANNELS.find(c=>c.id===l.channel_id);
-          return `<div class="ri" style="cursor:default">
-            <div style="min-width:0;flex:1">
-              <div class="ri-name">${sanitize(l.nome)}</div>
-              <div style="font-size:11px;color:var(--t3)">${sanitize(ch?.name||'')} · Custo atual ${fmt(l.custo)}</div>
-            </div>
-            <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap">
-              <select class="tbl-inp" id="manual-sel-${l.id}" style="max-width:220px">${opts}</select>
-              <button class="btn btn-sm" onclick="vincularManual('${l.id}')">Vincular</button>
-            </div>
-          </div>`;
-        }).join('');
-    }
-  }
-}
-
-async function vincularGrupo(produtoId){
-  const{groups}=computeVinculoSugestoes();
-  const grp=groups.find(g=>g.produto.id===produtoId);
-  if(!grp)return;
-  if(!confirm(`Vincular ${grp.listings.length} anúncio(s) ao produto "${grp.produto.nome}" (custo ${fmt(grp.produto.custo)})? O custo desses anúncios será atualizado agora e ficará sincronizado com este produto a partir de hoje.`))return;
-  setSyncStatus('syncing');
-  let ok=0,err=0;
-  for(const l of grp.listings){
-    try{
-      const{error}=await SB.from('listings').update({produto_id:produtoId,custo:grp.produto.custo,updated_at:new Date().toISOString()}).eq('id',l.id);
-      if(error)throw error;
-      l.produto_id=produtoId;l.custo=grp.produto.custo;
-      ok++;
-    }catch(e){err++;}
-  }
-  setSyncStatus(err?'err':'ok');
-  if(err)alert(`${ok} vinculado(s), ${err} com erro.`);
-  renderCustoMap();
-  renderDash();
-  if(_activeCh)renderChannel();
-}
-
-async function vincularManual(listingId){
-  const sel=document.getElementById('manual-sel-'+listingId);
-  const produtoId=sel?.value;
-  if(!produtoId)return;
-  const produto=PRODUTOS.find(p=>p.id===produtoId);
-  if(!produto)return;
-  try{
-    const{error}=await SB.from('listings').update({produto_id:produtoId,custo:produto.custo,updated_at:new Date().toISOString()}).eq('id',listingId);
-    if(error)throw error;
-    const l=LISTINGS.find(x=>x.id===listingId);
-    if(l){l.produto_id=produtoId;l.custo=produto.custo;}
-    renderCustoMap();
-    renderDash();
-    if(_activeCh)renderChannel();
-  }catch(e){alert('Erro ao vincular: '+e.message);}
-}
-
-
-// ══════════════════════════════════════════════
-// PRIVACY
-// ══════════════════════════════════════════════
-
-// ══════════════════════════════════════════════
-// SIMULADORA — armazenamento no Supabase
-// ══════════════════════════════════════════════
-// SIMULADORA — armazenamento no Supabase
-// ══════════════════════════════════════════════
-let _simCache=null;
 let _simFilter='all';
 let _simTipo='classico';
 let _simIMCusto=0;
