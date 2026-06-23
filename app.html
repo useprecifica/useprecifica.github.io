@@ -1049,6 +1049,13 @@ select.tbl-inp{cursor:pointer}
       <div class="field"><label>Preço c/ desc (R$)</label><input type="number" id="lf-precoD" step=".01" oninput="listingCalcLive()"></div>
       <div class="field"><label>Custo (R$)</label><input type="number" id="lf-custo" step=".01" oninput="listingCalcLive()"></div>
     </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Produto do catálogo <span style="font-weight:400;color:var(--t3)">(opcional — vincula o custo)</span></label>
+      <select id="lf-produto" class="tbl-inp" style="padding:9px 12px" onchange="onProdutoSelect()">
+        <option value="">— Sem vínculo (custo manual) —</option>
+      </select>
+      <div style="font-size:11px;color:var(--t3);margin-top:4px">Ao selecionar, o custo é preenchido automaticamente. Se o custo do produto mudar, este anúncio acompanha.</div>
+    </div>
 
     <!-- ML FIELDS -->
     <div id="lf-ml-fields">
@@ -2214,6 +2221,7 @@ function openListing(id){
       g('lf-sh-descpct',l.desc_pct??5);g('lf-sh-descmax',l.desc_max??10);g('lf-sh-imp',l.imp||10);g('lf-sh-status',l.status||'ativo');
     }
     renderTagBtns({full:l.tag_full,oferta:l.tag_oferta,pub:l.tag_pub});
+    populateProdutoDropdown(l.produto_id||'');
     // Editando: abre bloco avançado automaticamente pra mostrar valores preenchidos
     setTimeout(()=>{
       const ch=isML?'ml':'sh';
@@ -2225,6 +2233,7 @@ function openListing(id){
     if(isML){g('lf-com',11.5);g('lf-ant',4.2);g('lf-ajml',0);g('lf-frete',0);g('lf-descpct',5);g('lf-descmax',10);g('lf-imp',10);g('lf-tipo','classico');g('lf-status','ativo');}
     else{g('lf-sh-ant',2.5);g('lf-sh-frete',0);g('lf-sh-outros',0);g('lf-sh-descpct',5);g('lf-sh-descmax',10);g('lf-sh-imp',10);g('lf-sh-status','ativo');}
     renderTagBtns({full:false,oferta:false,pub:false});
+    populateProdutoDropdown('');
     // Novo anúncio: fecha bloco avançado
     ['ml','sh'].forEach(c=>{
       document.getElementById(`lf-${c}-adv-body`)?.classList.remove('open');
@@ -2265,6 +2274,7 @@ function getListingForm(){
   const ch=CHANNELS.find(c=>c.id===_activeCh);
   const isML=ch?.type==='ml';
   const tags=getTagsFromBtns();
+  const produtoId=document.getElementById('lf-produto')?.value||null;
   if(isML){
     return{
       channel_id:_activeCh,user_id:USER.id,
@@ -2273,6 +2283,7 @@ function getListingForm(){
       com:n('lf-com'),ant:n('lf-ant'),aj_ml:n('lf-ajml'),
       frete:n('lf-frete'),desc_pct:n('lf-descpct'),desc_max:n('lf-descmax'),imp:n('lf-imp'),
       tipo:s('lf-tipo'),obs:s('lf-obs'),
+      produto_id:produtoId||null,
       tag_full:tags.full,tag_oferta:tags.oferta,tag_pub:tags.pub,
       updated_at:new Date().toISOString()
     };
@@ -2283,10 +2294,28 @@ function getListingForm(){
       preco:n('lf-preco'),preco_d:n('lf-precoD'),custo:n('lf-custo'),
       ant:n('lf-sh-ant'),frete:n('lf-sh-frete'),outros:n('lf-sh-outros'),
       desc_pct:n('lf-sh-descpct'),desc_max:n('lf-sh-descmax'),imp:n('lf-sh-imp'),obs:s('lf-obs'),
+      produto_id:produtoId||null,
       tag_full:tags.full,tag_oferta:tags.oferta,tag_pub:tags.pub,
       updated_at:new Date().toISOString()
     };
   }
+}
+
+function onProdutoSelect(){
+  const sel=document.getElementById('lf-produto');
+  const custoEl=document.getElementById('lf-custo');
+  if(!sel||!custoEl)return;
+  const prodId=sel.value;
+  if(!prodId){return;} // custo manual, não toca
+  const prod=PRODUTOS.find(p=>p.id===prodId);
+  if(prod){custoEl.value=prod.custo;listingCalcLive();}
+}
+
+function populateProdutoDropdown(selectedId){
+  const sel=document.getElementById('lf-produto');
+  if(!sel)return;
+  sel.innerHTML='<option value="">— Sem vínculo (custo manual) —</option>'+
+    PRODUTOS.map(p=>`<option value="${p.id}"${p.id===selectedId?' selected':''}>${sanitize(p.nome)} — ${fmt(p.custo)}</option>`).join('');
 }
 
 function listingAutoFill(){
