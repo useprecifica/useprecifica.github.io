@@ -114,7 +114,7 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 #app.ready{display:flex}
 
 /* ── TOPBAR ── */
-.topbar{height:52px;background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0}
+.topbar{height:calc(52px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding-left:16px;padding-right:16px;gap:12px;flex-shrink:0;box-sizing:border-box}
 .brand{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;transition:opacity .15s}
 .brand:active{opacity:.7}
 .brand-dot{width:24px;height:24px;border-radius:6px;background:var(--pu-grad);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -451,14 +451,14 @@ tr.locked-row:hover,.an-card.locked-row:hover{background:rgba(130,87,245,.06)}
 #offline-bar{display:none;background:#78350f;color:#fcd34d;font-size:12px;font-weight:500;text-align:center;padding:6px;flex-shrink:0}
 
 /* ── BOTTOM NAV (mobile) ── */
-.bnav{display:none;height:60px;background:var(--sur);border-top:1px solid var(--bd);flex-shrink:0;align-items:stretch}
+.bnav{display:none;height:calc(60px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--sur);border-top:1px solid var(--bd);flex-shrink:0;align-items:stretch;box-sizing:border-box}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--t3);font-family:var(--font);font-size:10px;font-weight:500;transition:color .15s;position:relative}
 .nb:hover,.nb.active{color:var(--pu)}
 .nb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nb-more-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
 
 /* ── DRAWER (mobile) ── */
-.bnav-drawer{position:fixed;bottom:60px;left:0;right:0;z-index:99;background:var(--sur);border-radius:18px 18px 0 0;padding:8px 0 20px;box-shadow:0 -4px 24px rgba(0,0,0,.3);transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:none}
+.bnav-drawer{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px));left:0;right:0;z-index:99;background:var(--sur);border-radius:18px 18px 0 0;padding:8px 0 20px;box-shadow:0 -4px 24px rgba(0,0,0,.3);transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:none}
 .bnav-drawer.open{transform:translateY(0);display:block}
 .drawer-handle{width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:6px auto 14px}
 .drawer-title{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;padding:0 20px 8px}
@@ -479,11 +479,32 @@ tr.locked-row:hover,.an-card.locked-row:hover{background:rgba(130,87,245,.06)}
 .ch-type{font-size:11px;color:var(--t3);margin-top:1px}
 .ch-actions{display:flex;gap:6px}
 
+/* ── HERO DE VENDAS (Bling) ── */
+.sales-hero{background:linear-gradient(135deg,rgba(130,87,245,.16),rgba(130,87,245,.04));border:1px solid var(--pu);border-radius:var(--rs2);padding:18px;margin-bottom:16px}
+.sh-top{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.sh-ico{width:30px;height:30px;border-radius:8px;background:rgba(34,197,94,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sh-ico svg{width:16px;height:16px;stroke:var(--gr);fill:none;stroke-width:2}
+.sh-label{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.sh-val{font-size:30px;font-weight:800;letter-spacing:-1.2px;line-height:1.1}
+.sh-meta{display:flex;gap:14px;margin-top:7px;font-size:12.5px;color:var(--t2);flex-wrap:wrap}
+.sh-meta b{color:var(--t)}
+.sh-link{margin-left:auto;font-size:12px;color:var(--pu2);font-weight:600;background:none;border:none;cursor:pointer;font-family:var(--font)}
+.sh-skel{height:30px;width:60%;border-radius:8px;background:linear-gradient(90deg,var(--sur2),#2a2a36,var(--sur2));background-size:200% 100%;animation:shimmer 1.2s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sh-refreshing{font-size:10.5px;color:var(--t3);margin-top:6px;display:flex;align-items:center;gap:5px}
+.sh-refreshing::before{content:'';width:8px;height:8px;border:1.5px solid var(--bd2);border-top-color:var(--pu);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+/* ── GRÁFICO POR DIA ── */
+.rchart{display:flex;align-items:flex-end;gap:3px;height:96px;padding-top:8px}
+.rchart .rc{flex:1;background:var(--pu-grad);border-radius:3px 3px 0 0;min-height:4px;opacity:.85;transition:height .3s var(--ease)}
+.rchart .rc:hover{opacity:1}
+.sec-h{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin:18px 2px 10px;display:flex;align-items:center;gap:7px}
+.sec-h svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
 /* ── MOBILE ── */
 @media(max-width:860px){
   .sidebar{display:none}
   .bnav{display:flex}
-  .content{padding:12px;padding-bottom:72px}
+  .content{padding:14px;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
   .metrics{grid-template-columns:1fr 1fr}
   .two-col{grid-template-columns:1fr}
   .tbl-wrap table{display:none}
@@ -652,6 +673,8 @@ select.tbl-inp{cursor:pointer}
           </div>
           <div id="onb-container"></div>
           <div class="dash-lojas" id="dash-lojas"></div>
+          <div id="dash-sales-hero"></div>
+          <div class="sec-h"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Saúde das margens</div>
           <div class="metrics" id="dash-metrics"></div>
           <div class="two-col">
             <div class="card"><div class="card-title"><svg class="ct-ico" viewBox="0 0 24 24" style="color:#f59e0b"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Melhores margens</div><div id="dash-top"></div></div>
@@ -1841,14 +1864,16 @@ async function deleteListing_db(id){
 // ══════════════════════════════════════════════
 // ─── RELATÓRIO BLING ───
 const BLING_LOJAS = {
-  "205043629": { nome: "Shopee",         cor: "#f97316" },
-  "205311904": { nome: "Mercado Livre",  cor: "#f59e0b" },
-  "204611251": { nome: "Loja Virtual",   cor: "#8257f5" },
+  "205043629": { nome: "Shopee",          cor: "#f97316" },
+  "205311904": { nome: "Mercado Livre",   cor: "#f59e0b" },
+  "204611251": { nome: "Loja Virtual",    cor: "#8257f5" },
   "205906439": { nome: "Madeira Madeira", cor: "#22c55e" },
-  "204603997": { nome: "Shein",          cor: "#9ca3af" },
-  "206092306": { nome: "Full ML",        cor: "#3b82f6" },
+  "204603997": { nome: "Shein",           cor: "#9ca3af" },
+  "206092306": { nome: "Full ML",         cor: "#3b82f6" },
 };
 let _relPeriodo = 'mes';
+const relFmt = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const relFmtK = v => { v=Number(v||0); return v>=1000 ? 'R$ '+(v/1000).toFixed(1).replace('.',',')+'k' : relFmt(v); };
 
 function relDatas(p){
   const hj = new Date();
@@ -1860,14 +1885,60 @@ function relDatas(p){
     const last =new Date(hj.getFullYear(), hj.getMonth(), 0);
     return { di: fmt(first), df: fmt(last) };
   }
-  // mês atual (padrão)
   return { di: `${hj.getFullYear()}-${String(hj.getMonth()+1).padStart(2,'0')}-01`, df: fmt(hj) };
 }
 
-const relFmt = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+// Busca do Bling com cache: mostra o último dado na hora, atualiza em segundo plano.
+function fetchBling(di, df, cb){
+  const key = 'blingcache_' + di + '_' + df;
+  let hadCache = false;
+  try { const c = JSON.parse(localStorage.getItem(key) || 'null'); if(c){ hadCache = true; cb(c, true); } } catch(e){}
+  SB.functions.invoke('bling-sales', { body: { dataInicial: di, dataFinal: df } }).then(res=>{
+    const d = res && res.data;
+    if(d && !d.error){
+      try { localStorage.setItem(key, JSON.stringify(d)); } catch(e){}
+      cb(d, false);
+    } else {
+      cb(d || { error: 'erro' }, false, hadCache);
+    }
+  }).catch(()=> cb({ error: 'erro' }, false, hadCache));
+}
+
+const ICO_MONEY = '<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
+
+// Hero de vendas do mês no Dash inicial
+function renderSalesHero(){
+  const el = document.getElementById('dash-sales-hero');
+  if(!el) return;
+  const { di, df } = relDatas('mes');
+  const mes = new Date().toLocaleDateString('pt-BR',{month:'long'});
+  el.innerHTML = `<div class="sales-hero"><div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Vendas de ${mes}</div></div><div class="sh-skel"></div></div>`;
+  fetchBling(di, df, (data, cached)=>{
+    if(!data || data.error){ el.innerHTML=''; return; } // sem Bling conectado: não mostra o hero
+    const fat = data.faturamento||0;
+    el.innerHTML = `<div class="sales-hero">
+      <div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Vendas de ${mes}</div>
+        <button class="sh-link" onclick="goTab('relatorio')">ver tudo ›</button></div>
+      <div class="sh-val prv">${relFmt(fat)}</div>
+      <div class="sh-meta"><span><b>${data.pedidos||0}</b> pedidos</span><span>ticket <b class="prv">${relFmt(data.ticket_medio)}</b></span></div>
+      ${cached ? '<div class="sh-refreshing">atualizando…</div>' : ''}
+    </div>`;
+  });
+}
+
+// Monta o gráfico de barras por dia
+function relChart(por_dia, di, df){
+  const start=new Date(di+'T12:00'), end=new Date(df+'T12:00');
+  const vals=[]; let max=0;
+  for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const v=(por_dia&&por_dia[k])||0; vals.push(v); if(v>max)max=v;
+  }
+  if(!vals.length || max===0) return '<div style="text-align:center;color:var(--t3);font-size:12px;padding:24px 0">Sem vendas no período</div>';
+  return `<div class="rchart">${vals.map(v=>`<div class="rc" style="height:${Math.max(4, v/max*100)}%"></div>`).join('')}</div>`;
+}
 
 async function renderRelatorio(){
-  // pills de período
   const pr = document.getElementById('rel-periodo');
   if(pr){
     const opts = [['hoje','Hoje'],['7d','7 dias'],['mes','Este mês'],['mespassado','Mês passado']];
@@ -1875,81 +1946,67 @@ async function renderRelatorio(){
   }
   const content = document.getElementById('rel-content');
   if(!content) return;
-  content.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--t3);font-size:13px">Carregando vendas do Bling…</div>`;
 
   const { di, df } = relDatas(_relPeriodo);
   const subEl = document.getElementById('rel-sub');
   if(subEl) subEl.textContent = `${di.split('-').reverse().join('/')} a ${df.split('-').reverse().join('/')}`;
 
-  let data=null, error=null;
-  try {
-    const res = await SB.functions.invoke('bling-sales', { body: { dataInicial: di, dataFinal: df } });
-    data = res.data; error = res.error;
-  } catch(e){ error = e; }
+  // skeleton inicial
+  content.innerHTML = `<div class="sales-hero"><div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Faturamento · vendas reais</div></div><div class="sh-skel"></div></div>
+    <div style="text-align:center;padding:30px 0;color:var(--t3);font-size:13px">Carregando vendas do Bling…</div>`;
 
-  // erros / não conectado
-  if(error || !data || data.error){
-    const code = data && data.error;
-    if(code === 'bling_nao_conectado'){
-      content.innerHTML = `<div class="card" style="text-align:center;padding:36px 24px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--pu)" stroke-width="1.5" style="width:40px;height:40px;margin:0 auto 14px;display:block"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-        <div style="font-size:16px;font-weight:700;margin-bottom:6px">Conecte seu Bling</div>
-        <p style="color:var(--t3);font-size:13px;line-height:1.5">Para ver suas vendas aqui, conecte sua conta do Bling ao Precifica.</p>
-      </div>`;
+  fetchBling(di, df, (data, cached)=>{
+    if(!data || data.error){
+      const code = data && data.error;
+      if(code === 'bling_nao_conectado'){
+        content.innerHTML = `<div class="card" style="text-align:center;padding:36px 24px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--pu)" stroke-width="1.5" style="width:40px;height:40px;margin:0 auto 14px;display:block"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">Conecte seu Bling</div>
+          <p style="color:var(--t3);font-size:13px;line-height:1.5">Para ver suas vendas aqui, conecte sua conta do Bling ao Precifica.</p></div>`;
+        return;
+      }
+      content.innerHTML = `<div class="card" style="text-align:center;padding:30px;color:var(--rd);font-size:13px">Não consegui buscar as vendas${code?` (${code})`:''}. Tenta de novo em instantes.</div>`;
       return;
     }
-    content.innerHTML = `<div class="card" style="text-align:center;padding:30px;color:var(--rd);font-size:13px">Não consegui buscar as vendas${code?` (${code})`:''}. Tenta de novo em instantes.</div>`;
-    return;
-  }
 
-  // canais ordenados por faturamento
-  const canais = Object.entries(data.por_loja||{}).map(([id,v])=>({
-    id, nome: (BLING_LOJAS[id]&&BLING_LOJAS[id].nome)||('Loja '+id),
-    cor: (BLING_LOJAS[id]&&BLING_LOJAS[id].cor)||'#8257f5',
-    pedidos: v.pedidos, total: v.total,
-  })).sort((a,b)=>b.total-a.total);
-  const maxTotal = canais.length ? canais[0].total : 1;
-  const fat = data.faturamento||0;
+    const canais = Object.entries(data.por_loja||{}).map(([id,v])=>({
+      id, nome: (BLING_LOJAS[id]&&BLING_LOJAS[id].nome)||('Loja '+id),
+      cor: (BLING_LOJAS[id]&&BLING_LOJAS[id].cor)||'#8257f5',
+      pedidos: v.pedidos, total: v.total,
+    })).sort((a,b)=>b.total-a.total);
+    const maxTotal = canais.length ? canais[0].total : 1;
+    const fat = data.faturamento||0;
 
-  content.innerHTML = `
-    <div class="metrics" style="grid-template-columns:repeat(3,1fr)">
-      <div class="met">
-        <div class="met-ico" style="background:rgba(34,197,94,.12);color:#22c55e"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-        <div class="met-label">Faturamento</div>
-        <div class="met-val" style="font-size:21px">${relFmt(fat)}</div>
-        <div class="met-sub">vendas reais</div>
+    content.innerHTML = `
+      <div class="sales-hero">
+        <div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Faturamento · vendas reais</div></div>
+        <div class="sh-val prv">${relFmt(fat)}</div>
+        <div class="sh-meta"><span><b>${data.bruto?data.bruto.pedidos:'—'}</b> no Bling · <b>${data.pedidos||0}</b> reais</span>${cached?'':''}</div>
+        ${cached ? '<div class="sh-refreshing">atualizando…</div>' : ''}
       </div>
-      <div class="met">
-        <div class="met-ico" style="background:rgba(130,87,245,.14);color:#a78bfa"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
-        <div class="met-label">Pedidos</div>
-        <div class="met-val">${data.pedidos||0}</div>
-        <div class="met-sub">no período</div>
+      <div class="metrics" style="grid-template-columns:1fr 1fr">
+        <div class="met"><div class="met-label">Pedidos</div><div class="met-val">${data.pedidos||0}</div><div class="met-sub">no período</div></div>
+        <div class="met"><div class="met-label">Ticket médio</div><div class="met-val prv" style="font-size:20px">${relFmt(data.ticket_medio)}</div><div class="met-sub">por pedido</div></div>
       </div>
-      <div class="met">
-        <div class="met-ico" style="background:rgba(245,158,11,.14);color:#f59e0b"><svg viewBox="0 0 24 24"><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
-        <div class="met-label">Ticket médio</div>
-        <div class="met-val" style="font-size:21px">${relFmt(data.ticket_medio)}</div>
-        <div class="met-sub">por pedido</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Por canal</div>
-      ${canais.length ? canais.map(c=>`
-        <div class="ri" style="cursor:default">
-          <div style="width:11px;height:11px;border-radius:50%;background:${c.cor};flex-shrink:0;margin-right:11px"></div>
-          <div style="flex:1;min-width:0">
-            <div class="ri-name">${c.nome}</div>
-            <div style="font-size:11px;color:var(--t3)">${c.pedidos} pedido${c.pedidos!==1?'s':''}</div>
-            <div style="height:5px;border-radius:3px;background:var(--sur2);margin-top:7px;overflow:hidden"><div style="height:100%;width:${(c.total/maxTotal*100).toFixed(0)}%;background:${c.cor};border-radius:3px;transition:width .3s"></div></div>
-          </div>
-          <div style="text-align:right;margin-left:12px;flex-shrink:0">
-            <div style="font-weight:700;font-family:var(--mono);font-size:13px">${relFmt(c.total)}</div>
-            <div style="font-size:11px;color:var(--t3)">${fat?(c.total/fat*100).toFixed(0):0}%</div>
-          </div>
-        </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Nenhuma venda no período.</div>'}
-    </div>
-    ${data.bruto ? `<div style="text-align:center;font-size:11px;color:var(--t3);margin-top:4px">${data.bruto.pedidos} pedidos no total no Bling (incluindo cancelados e em aberto)</div>` : ''}
-  `;
+      <div class="sec-h"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Vendas por dia</div>
+      <div class="card" style="margin-top:0">${relChart(data.por_dia, di, df)}</div>
+      <div class="card">
+        <div class="card-title"><svg class="ct-ico" viewBox="0 0 24 24" style="color:var(--t2)"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Por canal</div>
+        ${canais.length ? canais.map(c=>`
+          <div class="ri" style="cursor:default">
+            <div style="width:11px;height:11px;border-radius:50%;background:${c.cor};flex-shrink:0;margin-right:11px"></div>
+            <div style="flex:1;min-width:0">
+              <div class="ri-name">${c.nome}</div>
+              <div style="font-size:11px;color:var(--t3)">${c.pedidos} pedido${c.pedidos!==1?'s':''}</div>
+              <div style="height:5px;border-radius:3px;background:var(--sur2);margin-top:7px;overflow:hidden"><div style="height:100%;width:${(c.total/maxTotal*100).toFixed(0)}%;background:${c.cor};border-radius:3px"></div></div>
+            </div>
+            <div style="text-align:right;margin-left:12px;flex-shrink:0">
+              <div class="prv" style="font-weight:700;font-family:var(--mono);font-size:13px">${relFmt(c.total)}</div>
+              <div style="font-size:11px;color:var(--t3)">${fat?(c.total/fat*100).toFixed(0):0}%</div>
+            </div>
+          </div>`).join('') : '<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">Nenhuma venda no período.</div>'}
+      </div>`;
+  });
 }
 
 function goTab(tab,chId){
@@ -2111,6 +2168,7 @@ function dismissOnboarding(){
 // RENDER DASH
 // ══════════════════════════════════════════════
 function renderDash(){
+  renderSalesHero();
   if(!CHANNELS.length){
     goTab('setup');
     return;
