@@ -499,6 +499,26 @@ tr.locked-row:hover,.an-card.locked-row:hover{background:rgba(130,87,245,.06)}
 .rchart .rc:hover{opacity:1}
 .sec-h{font-size:12px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin:18px 2px 10px;display:flex;align-items:center;gap:7px}
 .sec-h svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+/* seletor de período do hero */
+.seg{display:flex;gap:4px;background:rgba(0,0,0,.25);border-radius:9px;padding:3px;margin-left:auto}
+.seg button{padding:5px 11px;border:none;border-radius:7px;background:none;color:var(--t2);font-size:11.5px;font-weight:700;font-family:var(--font);cursor:pointer}
+.seg button.on{background:var(--pu-grad);color:#fff}
+/* saúde das margens em barra */
+.health{background:var(--sur);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:4px}
+.health-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.health-avg{font-size:28px;font-weight:800;letter-spacing:-1px}
+.health-avg small{font-size:12px;color:var(--t3);font-weight:600;letter-spacing:0;margin-left:5px}
+.health-tot{font-size:12px;color:var(--t3)}
+.distbar{display:flex;height:12px;border-radius:7px;overflow:hidden;background:var(--sur2);margin-bottom:12px}
+.distbar>div{height:100%;transition:width .4s var(--ease)}
+.legend{display:flex;justify-content:space-between;gap:8px}
+.leg{display:flex;flex-direction:column;gap:3px;flex:1}
+.leg-top{display:flex;align-items:center;gap:6px}
+.leg-dot{width:9px;height:9px;border-radius:50%}
+.leg-n{font-size:19px;font-weight:800;letter-spacing:-.5px}
+.leg-l{font-size:10.5px;color:var(--t3)}
+.cbar{height:5px;border-radius:3px;background:var(--sur2);margin-top:7px;overflow:hidden}
+.cbar>div{height:100%;border-radius:3px}
 
 /* ── MOBILE ── */
 @media(max-width:860px){
@@ -675,12 +695,12 @@ select.tbl-inp{cursor:pointer}
           <div class="dash-lojas" id="dash-lojas"></div>
           <div id="dash-sales-hero"></div>
           <div class="sec-h"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Saúde das margens</div>
-          <div class="metrics" id="dash-metrics"></div>
-          <div class="two-col">
-            <div class="card"><div class="card-title"><svg class="ct-ico" viewBox="0 0 24 24" style="color:#f59e0b"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Melhores margens</div><div id="dash-top"></div></div>
-            <div class="card"><div class="card-title"><svg class="ct-ico" viewBox="0 0 24 24" style="color:#ef4444"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Precisam de atenção</div><div id="dash-bot"></div></div>
-          </div>
-          <div class="card" id="dash-channels-card"><div class="card-title">Por canal</div><div id="dash-channels"></div></div>
+          <div id="dash-health"></div>
+          <div id="dash-por-canal"></div>
+          <div class="sec-h" style="color:var(--rd)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Precisam de atenção</div>
+          <div class="card" style="margin-top:0"><div id="dash-aten"></div></div>
+          <div class="sec-h" style="color:#f59e0b"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Melhores margens</div>
+          <div class="card" style="margin-top:0"><div id="dash-top"></div></div>
         </div>
 
         <!-- CANAL (página dinâmica) -->
@@ -1872,6 +1892,7 @@ const BLING_LOJAS = {
   "206092306": { nome: "Full ML",         cor: "#3b82f6" },
 };
 let _relPeriodo = 'mes';
+let _heroPeriodo = 'mes';
 const relFmt = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const relFmtK = v => { v=Number(v||0); return v>=1000 ? 'R$ '+(v/1000).toFixed(1).replace('.',',')+'k' : relFmt(v); };
 
@@ -1906,23 +1927,51 @@ function fetchBling(di, df, cb){
 
 const ICO_MONEY = '<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
 
-// Hero de vendas do mês no Dash inicial
+// Hero de vendas no Dash inicial, com seletor Hoje · Semana · Mês
 function renderSalesHero(){
   const el = document.getElementById('dash-sales-hero');
   if(!el) return;
-  const { di, df } = relDatas('mes');
-  const mes = new Date().toLocaleDateString('pt-BR',{month:'long'});
-  el.innerHTML = `<div class="sales-hero"><div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Vendas de ${mes}</div></div><div class="sh-skel"></div></div>`;
+  const canalEl = document.getElementById('dash-por-canal');
+  const secHealth = document.querySelector('#p-dash .sec-h'); // "Saúde das margens" (primeira sec-h)
+  const { di, df } = relDatas(_heroPeriodo);
+  const toggle = `<div class="seg">
+    <button class="${_heroPeriodo==='hoje'?'on':''}" onclick="_heroPeriodo='hoje';renderSalesHero()">Hoje</button>
+    <button class="${_heroPeriodo==='7d'?'on':''}" onclick="_heroPeriodo='7d';renderSalesHero()">Semana</button>
+    <button class="${_heroPeriodo==='mes'?'on':''}" onclick="_heroPeriodo='mes';renderSalesHero()">Mês</button>
+  </div>`;
+  const head = `<div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Vendas</div>${toggle}</div>`;
+  el.innerHTML = `<div class="sales-hero">${head}<div class="sh-skel"></div></div>`;
   fetchBling(di, df, (data, cached)=>{
-    if(!data || data.error){ el.innerHTML=''; return; } // sem Bling conectado: não mostra o hero
+    if(!data || data.error){ el.innerHTML=''; if(canalEl)canalEl.innerHTML=''; return; } // sem Bling: não mostra
     const fat = data.faturamento||0;
-    el.innerHTML = `<div class="sales-hero">
-      <div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Vendas de ${mes}</div>
-        <button class="sh-link" onclick="goTab('relatorio')">ver tudo ›</button></div>
+    el.innerHTML = `<div class="sales-hero">${head}
       <div class="sh-val prv">${relFmt(fat)}</div>
       <div class="sh-meta"><span><b>${data.pedidos||0}</b> pedidos</span><span>ticket <b class="prv">${relFmt(data.ticket_medio)}</b></span></div>
       ${cached ? '<div class="sh-refreshing">atualizando…</div>' : ''}
     </div>`;
+    // Vendas por canal (dados reais do Bling, mesmo período)
+    if(canalEl){
+      const canais = Object.entries(data.por_loja||{}).map(([id,v])=>({
+        nome: (BLING_LOJAS[id]&&BLING_LOJAS[id].nome)||('Loja '+id),
+        cor:  (BLING_LOJAS[id]&&BLING_LOJAS[id].cor)||'#8257f5',
+        total: v.total, pedidos: v.pedidos,
+      })).sort((a,b)=>b.total-a.total);
+      const maxT = canais.length ? canais[0].total : 1;
+      canalEl.innerHTML = canais.length ? `<div class="card">
+        <div class="card-title"><svg class="ct-ico" viewBox="0 0 24 24" style="color:var(--t2)"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Vendas por canal</div>
+        ${canais.map(c=>`<div class="ri" style="cursor:default">
+          <div style="width:11px;height:11px;border-radius:50%;background:${c.cor};flex-shrink:0;margin-right:11px"></div>
+          <div style="flex:1;min-width:0">
+            <div class="ri-name">${c.nome}</div>
+            <div class="cbar"><div style="width:${(c.total/maxT*100).toFixed(0)}%;background:${c.cor}"></div></div>
+          </div>
+          <div style="text-align:right;margin-left:12px;flex-shrink:0">
+            <div class="prv" style="font-weight:700;font-family:var(--mono);font-size:13px">${relFmtK(c.total)}</div>
+            <div style="font-size:11px;color:var(--t3)">${fat?(c.total/fat*100).toFixed(0):0}%</div>
+          </div>
+        </div>`).join('')}
+      </div>` : '';
+    }
   });
 }
 
@@ -2201,59 +2250,58 @@ function renderDash(){
   // Aplica o filtro de loja ao conjunto exibido
   const scope=_dashLoja?all.filter(a=>lojaDe(a._chName)===_dashLoja):all;
 
-  // Metrics — Total, Margem média, Saudáveis (>15%), Atenção (0-15%), Prejuízo (≤0%)
+  // ── Saúde das margens em barra única (verde >15% · âmbar 0-15% · vermelho ≤0%)
   const avgMarg=scope.length?scope.reduce((s,a)=>s+a.margem,0)/scope.length:0;
   const ok=scope.filter(a=>a.margem>15);
   const aten=scope.filter(a=>a.margem>0&&a.margem<=15);
   const prej=scope.filter(a=>a.margem<=0);
-  const met=document.getElementById('dash-metrics');
-  if(met)met.innerHTML=`
-    <div class="met"><div class="met-ico" style="background:rgba(159,160,170,.12);color:#c5c5cc"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div class="met-label">Total</div><div class="met-val" data-final="${scope.length}" data-fmt="int">0</div><div class="met-sub">anúncios ativos</div></div>
-    <div class="met"><div class="met-ico" style="background:rgba(130,87,245,.14);color:#a78bfa"><svg viewBox="0 0 24 24"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div><div class="met-label">Margem média</div><div class="met-val prv" data-final="${avgMarg}" data-fmt="pct1" style="color:${avgMarg>15?'var(--gr)':avgMarg>0?'var(--am)':'var(--rd)'}">0%</div><div class="met-sub">${_dashLoja||'geral'}</div></div>
-    <div class="met"><div class="met-ico" style="background:rgba(34,197,94,.12);color:#22c55e"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="met-label">Saudáveis</div><div class="met-val" data-final="${ok.length}" data-fmt="int" style="color:var(--gr)">0</div><div class="met-sub">margem &gt;15%</div></div>
-    <div class="met ${aten.length?'met-warn':''}"><div class="met-ico" style="background:rgba(245,158,11,.14);color:#f59e0b"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="met-label">Atenção</div><div class="met-val" data-final="${aten.length}" data-fmt="int" style="color:${aten.length?'var(--am)':'var(--t)'}">0</div><div class="met-sub">0–15%</div></div>
-    <div class="met ${prej.length?'met-alert':''}"><div class="met-ico" style="background:rgba(239,68,68,.14);color:#ef4444"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="met-label">Prejuízo</div><div class="met-val" data-final="${prej.length}" data-fmt="int" style="color:${prej.length?'var(--rd)':'var(--gr)'}">0</div><div class="met-sub">margem &le;0%</div></div>`;
-  animateMetrics(met);
+  const tot=scope.length||1;
+  const pct=n=>(n/tot*100).toFixed(1);
+  const avgColor=avgMarg>15?'var(--gr)':avgMarg>0?'var(--am)':'var(--rd)';
+  const health=document.getElementById('dash-health');
+  if(health)health.innerHTML=`<div class="health">
+    <div class="health-top">
+      <div class="health-avg prv" style="color:${avgColor}">${avgMarg.toFixed(1).replace('.',',')}%<small>margem média</small></div>
+      <div class="health-tot">${scope.length} anúncio${scope.length!==1?'s':''}</div>
+    </div>
+    <div class="distbar">
+      <div style="width:${pct(ok.length)}%;background:var(--gr)"></div>
+      <div style="width:${pct(aten.length)}%;background:var(--am)"></div>
+      <div style="width:${pct(prej.length)}%;background:var(--rd)"></div>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-top"><span class="leg-dot" style="background:var(--gr)"></span><span class="leg-n" style="color:var(--gr)">${ok.length}</span></div><div class="leg-l">Saudáveis &gt;15%</div></div>
+      <div class="leg"><div class="leg-top"><span class="leg-dot" style="background:var(--am)"></span><span class="leg-n" style="color:${aten.length?'var(--am)':'var(--t3)'}">${aten.length}</span></div><div class="leg-l">Atenção 0–15%</div></div>
+      <div class="leg"><div class="leg-top"><span class="leg-dot" style="background:var(--rd)"></span><span class="leg-n" style="color:${prej.length?'var(--rd)':'var(--gr)'}">${prej.length}</span></div><div class="leg-l">Prejuízo ≤0%</div></div>
+    </div>
+  </div>`;
 
   const sub=document.getElementById('dash-sub');
   if(sub)sub.textContent=`${scope.length} anúncio${scope.length!==1?'s':''} ativos${inactiveTotal&&!_dashLoja?` · ${inactiveTotal} inativo${inactiveTotal!==1?'s':''}`:''} · ${CHANNELS.length} canal${CHANNELS.length!==1?'is':''}`;
 
-  // Top/bot
-  const sorted=[...scope].sort((a,b)=>b.margem-a.margem);
+  // Linha de anúncio (nome · cod · canal → badge margem)
   const mkRI=(a)=>`<div class="ri privacy-item" onclick="goChannel('${a.channel_id}')">
     <div style="min-width:0;flex:1">
       <div class="ri-name prv">${sanitize(a.nome)}</div>
-      <div class="ri-cod" onclick="event.stopPropagation();copyCod('${a.cod}')" title="Copiar">${a.cod}</div>
-      <div style="font-size:11px;color:var(--t3)">${sanitize(a._chName)}</div>
+      <div style="font-size:11px;color:var(--t3)"><span class="ri-cod" onclick="event.stopPropagation();copyCod('${a.cod}')" title="Copiar">${a.cod}</span> · ${sanitize(a._chName)}</div>
     </div>
     <div class="ri-right"><span class="badge ${a.margem>15?'b-ok':'b-nok'} prv">${a.margem.toFixed(1)}%</span><div class="ri-sub prv">${fmt(a.lucro)}</div></div>
   </div>`;
 
+  // Precisam de atenção: margem ≤15%, piores primeiro
+  const atenList=[...scope].filter(a=>a.margem<=15).sort((a,b)=>a.margem-b.margem).slice(0,5);
+  // Melhores margens: maiores primeiro
+  const topList=[...scope].sort((a,b)=>b.margem-a.margem).slice(0,5);
+
+  const atenEl=document.getElementById('dash-aten');
   const top=document.getElementById('dash-top');
-  const bot=document.getElementById('dash-bot');
   const emptyMsg=`<div class="empty" style="padding:30px 16px">
     <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     Nenhum anúncio ainda<br><span style="font-size:11px;opacity:.75">Importe pela extensão ou cadastre manualmente no canal</span>
   </div>`;
-  if(top)top.innerHTML=sorted.slice(0,5).map(mkRI).join('')||emptyMsg;
-  if(bot)bot.innerHTML=sorted.slice(-5).reverse().map(mkRI).join('')||emptyMsg;
-  const chDiv=document.getElementById('dash-channels');
-  const chScope=_dashLoja?CHANNELS.filter(ch=>lojaDe(ch.name)===_dashLoja):CHANNELS;
-  if(chDiv)chDiv.innerHTML=chScope.map(ch=>{
-    const chL=all.filter(a=>a.channel_id===ch.id);
-    const chAvg=chL.length?chL.reduce((s,a)=>s+a.margem,0)/chL.length:0;
-    const color=chColor(ch.type);
-    return`<div class="ri" onclick="goChannel('${ch.id}')">
-      <div style="min-width:0;flex:1">
-        <div class="ri-name">${sanitize(ch.name)}</div>
-        <div style="font-size:11px;color:var(--t3)">${chL.length} anúncios</div>
-      </div>
-      <div class="ri-right">
-        <span class="badge ${chAvg>15?'b-ok':'b-nok'} prv">${chAvg.toFixed(1)}%</span>
-        <div class="ri-sub prv">${fmt(chL.length?chL.reduce((s,a)=>s+(a.pv||0),0)/chL.length:0)} preço médio</div>
-      </div>
-    </div>`;
-  }).join('');
+  const okMsg=`<div style="padding:22px 16px;text-align:center;color:var(--t3);font-size:12.5px">✓ Nenhum anúncio abaixo de 15% — tudo saudável.</div>`;
+  if(atenEl)atenEl.innerHTML=scope.length?(atenList.length?atenList.map(mkRI).join(''):okMsg):emptyMsg;
+  if(top)top.innerHTML=topList.map(mkRI).join('')||emptyMsg;
 }
 
 // ══════════════════════════════════════════════
