@@ -1022,6 +1022,7 @@ select.tbl-inp{cursor:pointer}
             <button class="btn btn-sm" id="ml-fin-btn" onclick="conectarMLFinanceiro()" style="display:flex;align-items:center;gap:7px;justify-content:center;width:100%">Conectar Mercado Livre</button>
             <button class="btn btn-sm" onclick="testarMLSales()" style="display:flex;align-items:center;gap:7px;justify-content:center;width:100%;margin-top:8px">Testar puxada (mês)</button>
             <div id="ml-fin-status" style="font-size:12px;color:var(--t3);margin-top:8px;text-align:center;line-height:1.5"></div>
+            <textarea id="ml-dump" readonly style="display:none;width:100%;height:220px;margin-top:10px;font-size:10.5px;font-family:var(--mono,monospace);background:var(--sur2);color:var(--t);border:1px solid var(--bd);border-radius:8px;padding:8px;box-sizing:border-box"></textarea>
           </div>
 
           <div class="card">
@@ -1986,7 +1987,12 @@ async function testarMLSales(){
     if(error){ if(st)st.textContent='Erro: ' + error.message; return; }
     if(data && data.error){ if(st)st.textContent='Erro: ' + data.error + (data.status?' ('+data.status+')':''); return; }
     const money = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-    if(st)st.innerHTML = `✓ Pedidos pagos: <b>${data.pedidos}</b> (de ${data.pedidos_total_periodo} no período)<br>Faturamento: <b>${money(data.faturamento)}</b> · Comissão: <b>${money(data.comissao)}</b><br><span style="color:var(--t3)">Detalhes e amostra do pedido no console (F12 → Console)</span>`;
+    if(st)st.innerHTML = `✓ Pedidos pagos: <b>${data.pedidos}</b> (de ${data.pedidos_total_periodo} no período)<br>Faturamento: <b>${money(data.faturamento)}</b> · Comissão: <b>${money(data.comissao)}</b><br><span style="color:var(--t3)">Copie o conteúdo da caixa abaixo e cole no chat ↓</span>`;
+    // Monta o JSON (sem dados do cliente) numa caixa pra copiar
+    const strip = (o)=>{ if(!o||typeof o!=='object') return o; const a=JSON.parse(JSON.stringify(o)); delete a.buyer; delete a.payer; if(a.shipping){ delete a.shipping.receiver_address; } if(Array.isArray(a.payments)) a.payments.forEach(p=>{ delete p.payer_id; delete p.collector; }); return a; };
+    const dump = { por_status: data.por_status, amostra: strip(data.amostra) };
+    const ta = document.getElementById('ml-dump');
+    if(ta){ ta.style.display='block'; ta.value = JSON.stringify(dump, null, 2); ta.focus(); ta.select(); }
   }catch(e){ if(st)st.textContent='Erro: ' + (e && e.message ? e.message : e); }
 }
 
