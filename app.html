@@ -1964,6 +1964,7 @@ async function conectarMLFinanceiro(){
       + '&client_id=' + ML_APP_ID
       + '&redirect_uri=' + encodeURIComponent(ML_REDIRECT)
       + '&state=' + encodeURIComponent(state)
+      + '&scope=' + encodeURIComponent('offline_access read')
       + '&code_challenge=' + challenge
       + '&code_challenge_method=S256';
     window.location.href = url;
