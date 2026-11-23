@@ -18,12 +18,54 @@
   <p>Pode fechar esta aba e voltar para a extensão.</p>
 </div>
 <script>
-  // Passa o código para a extensão via storage
   const params = new URLSearchParams(window.location.search);
-  const code = params.get('code');
-  if (code) {
-    // A extensão detecta a URL e troca o código pelo token
-    document.querySelector('h2').textContent = 'Autorizando...';
+  const code  = params.get('code');
+  const state = params.get('state') || '';
+
+  // Config do financeiro (fluxo do app, do lado do servidor)
+  const ML_OAUTH_FN = 'https://ckqrahgkkzglqoptrvqg.supabase.co/functions/v1/ml-oauth';
+  const SB_ANON     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrcXJhaGdra3pnbHFvcHRydnFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTA0NDUsImV4cCI6MjA5MjQ2NjQ0NX0.zUmMQLRGa-wU2rHd9bJ7JVwL9-32awo1VgCatY8-Qr8';
+  const REDIRECT    = 'https://useprecifica.github.io/ml-callback.html';
+
+  const iconEl = document.querySelector('.icon');
+  const h2El   = document.querySelector('h2');
+  const pEl    = document.querySelector('p');
+
+  if (code && state.indexOf('fin_') === 0) {
+    // ---- Fluxo FINANCEIRO: troca e salva no servidor ----
+    iconEl.textContent = '⏳';
+    h2El.textContent = 'Conectando ao financeiro...';
+    pEl.textContent = 'Só um instante.';
+    let verifier = '';
+    try { verifier = localStorage.getItem('ml_fin_verifier') || ''; } catch (e) {}
+
+    fetch(ML_OAUTH_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON },
+      body: JSON.stringify({ code: code, code_verifier: verifier, redirect_uri: REDIRECT, state: state })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d && d.ok) {
+        iconEl.textContent = '✓';
+        h2El.textContent = 'Mercado Livre conectado ao financeiro!';
+        pEl.textContent = 'Pode fechar esta aba e voltar ao Precifica.';
+        try { localStorage.removeItem('ml_fin_verifier'); } catch (e) {}
+      } else {
+        iconEl.textContent = '⚠️';
+        h2El.textContent = 'Não consegui conectar';
+        pEl.textContent = (d && d.error) ? ('Erro: ' + d.error) : 'Tenta de novo em instantes.';
+      }
+    })
+    .catch(function (e) {
+      iconEl.textContent = '⚠️';
+      h2El.textContent = 'Erro de conexão';
+      pEl.textContent = String(e);
+    });
+
+  } else if (code) {
+    // ---- Fluxo da EXTENSÃO (inalterado): a extensão detecta a URL e troca o código ----
+    h2El.textContent = 'Autorizando...';
   }
 </script>
 </body>
