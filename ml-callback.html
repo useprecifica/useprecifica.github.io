@@ -54,7 +54,9 @@
       } else {
         iconEl.textContent = '⚠️';
         h2El.textContent = 'Não consegui conectar';
-        pEl.textContent = (d && d.error) ? ('Erro: ' + d.error) : 'Tenta de novo em instantes.';
+        var extra = '';
+        if (d && d.scope_recebido !== undefined) extra = ' — scope recebido: [' + d.scope_recebido + ']';
+        pEl.textContent = (d && d.error) ? ('Erro: ' + d.error + extra) : 'Tenta de novo em instantes.';
       }
     })
     .catch(function (e) {
