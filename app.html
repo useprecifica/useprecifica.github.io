@@ -1960,7 +1960,7 @@ async function conectarMLFinanceiro(){
     const challenge = _b64url(digest);
     try{ localStorage.setItem('ml_fin_verifier', verifier); }catch(e){}
     const state = 'fin_' + user.id;
-    const url = 'https://auth.mercadolibre.com.br/authorization?response_type=code'
+    const url = 'https://auth.mercadolivre.com.br/authorization?response_type=code'
       + '&client_id=' + ML_APP_ID
       + '&redirect_uri=' + encodeURIComponent(ML_REDIRECT)
       + '&state=' + encodeURIComponent(state)
