@@ -1020,7 +1020,8 @@ select.tbl-inp{cursor:pointer}
               </div>
             </div>
             <button class="btn btn-sm" id="ml-fin-btn" onclick="conectarMLFinanceiro()" style="display:flex;align-items:center;gap:7px;justify-content:center;width:100%">Conectar Mercado Livre</button>
-            <div id="ml-fin-status" style="font-size:12px;color:var(--t3);margin-top:8px;text-align:center"></div>
+            <button class="btn btn-sm" onclick="testarMLSales()" style="display:flex;align-items:center;gap:7px;justify-content:center;width:100%;margin-top:8px">Testar puxada (mês)</button>
+            <div id="ml-fin-status" style="font-size:12px;color:var(--t3);margin-top:8px;text-align:center;line-height:1.5"></div>
           </div>
 
           <div class="card">
@@ -1972,6 +1973,21 @@ async function conectarMLFinanceiro(){
     if(st)st.textContent='Erro: ' + (e && e.message ? e.message : e);
     if(btn){ btn.disabled=false; btn.textContent='Conectar Mercado Livre'; }
   }
+}
+async function testarMLSales(){
+  const st = document.getElementById('ml-fin-status');
+  if(st)st.textContent='Puxando do ML...';
+  const hj = new Date();
+  const di = `${hj.getFullYear()}-${String(hj.getMonth()+1).padStart(2,'0')}-01`;
+  const df = `${hj.getFullYear()}-${String(hj.getMonth()+1).padStart(2,'0')}-${String(hj.getDate()).padStart(2,'0')}`;
+  try{
+    const { data, error } = await SB.functions.invoke('ml-sales', { body: { dataInicial: di, dataFinal: df } });
+    console.log('ml-sales resposta:', data, error);
+    if(error){ if(st)st.textContent='Erro: ' + error.message; return; }
+    if(data && data.error){ if(st)st.textContent='Erro: ' + data.error + (data.status?' ('+data.status+')':''); return; }
+    const money = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    if(st)st.innerHTML = `✓ Pedidos pagos: <b>${data.pedidos}</b> (de ${data.pedidos_total_periodo} no período)<br>Faturamento: <b>${money(data.faturamento)}</b> · Comissão: <b>${money(data.comissao)}</b><br><span style="color:var(--t3)">Detalhes e amostra do pedido no console (F12 → Console)</span>`;
+  }catch(e){ if(st)st.textContent='Erro: ' + (e && e.message ? e.message : e); }
 }
 
 // Hero de vendas no Dash inicial, com seletor Hoje · Semana · Mês
