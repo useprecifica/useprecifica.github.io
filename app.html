@@ -491,6 +491,8 @@ tr.locked-row:hover,.an-card.locked-row:hover{background:rgba(130,87,245,.06)}
 .sh-link{margin-left:auto;font-size:12px;color:var(--pu2);font-weight:600;background:none;border:none;cursor:pointer;font-family:var(--font)}
 .sh-skel{height:30px;width:60%;border-radius:8px;background:linear-gradient(90deg,var(--sur2),#2a2a36,var(--sur2));background-size:200% 100%;animation:shimmer 1.2s infinite}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sh-aberto{font-size:11.5px;color:var(--am);margin-top:7px;font-weight:600;display:flex;align-items:center;gap:6px}
+.sh-aberto::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--am);flex-shrink:0}
 .sh-refreshing{font-size:10.5px;color:var(--t3);margin-top:6px;display:flex;align-items:center;gap:5px}
 .sh-refreshing::before{content:'';width:8px;height:8px;border:1.5px solid var(--bd2);border-top-color:var(--pu);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 /* ── GRÁFICO POR DIA ── */
@@ -1944,9 +1946,11 @@ function renderSalesHero(){
   fetchBling(di, df, (data, cached)=>{
     if(!data || data.error){ el.innerHTML=''; if(canalEl)canalEl.innerHTML=''; return; } // sem Bling: não mostra
     const fat = data.faturamento||0;
+    const ab=(data.em_aberto&&data.em_aberto.total)||0, abn=(data.em_aberto&&data.em_aberto.pedidos)||0;
     el.innerHTML = `<div class="sales-hero">${head}
       <div class="sh-val prv">${relFmt(fat)}</div>
       <div class="sh-meta"><span><b>${data.pedidos||0}</b> pedidos</span><span>ticket <b class="prv">${relFmt(data.ticket_medio)}</b></span></div>
+      ${ab>0 ? `<div class="sh-aberto prv">+ ${relFmt(ab)} a faturar · ${abn} pedido${abn!==1?'s':''} em aberto</div>` : ''}
       ${cached ? '<div class="sh-refreshing">atualizando…</div>' : ''}
     </div>`;
     // Vendas por canal (dados reais do Bling, mesmo período)
@@ -2031,6 +2035,7 @@ async function renderRelatorio(){
         <div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Faturamento · vendas reais</div></div>
         <div class="sh-val prv">${relFmt(fat)}</div>
         <div class="sh-meta"><span><b>${data.bruto?data.bruto.pedidos:'—'}</b> no Bling · <b>${data.pedidos||0}</b> reais</span>${cached?'':''}</div>
+        ${(data.em_aberto&&data.em_aberto.total>0) ? `<div class="sh-aberto prv">+ ${relFmt(data.em_aberto.total)} a faturar · ${data.em_aberto.pedidos} em aberto (site/outros)</div>` : ''}
         ${cached ? '<div class="sh-refreshing">atualizando…</div>' : ''}
       </div>
       <div class="metrics" style="grid-template-columns:1fr 1fr">
