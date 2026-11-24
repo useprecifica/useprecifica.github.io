@@ -1987,10 +1987,16 @@ async function testarMLSales(){
     if(error){ if(st)st.textContent='Erro: ' + error.message; return; }
     if(data && data.error){ if(st)st.textContent='Erro: ' + data.error + (data.status?' ('+data.status+')':''); return; }
     const money = v => 'R$ ' + Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-    if(st)st.innerHTML = `✓ Pedidos pagos: <b>${data.pedidos}</b> (de ${data.pedidos_total_periodo} no período)<br>Faturamento: <b>${money(data.faturamento)}</b> · Comissão: <b>${money(data.comissao)}</b><br><span style="color:var(--t3)">Copie o conteúdo da caixa abaixo e cole no chat ↓</span>`;
-    // Monta o JSON (sem dados do cliente) numa caixa pra copiar
-    const strip = (o)=>{ if(!o||typeof o!=='object') return o; const a=JSON.parse(JSON.stringify(o)); delete a.buyer; delete a.payer; if(a.shipping){ delete a.shipping.receiver_address; } if(Array.isArray(a.payments)) a.payments.forEach(p=>{ delete p.payer_id; delete p.collector; }); return a; };
-    const dump = { por_status: data.por_status, amostra: strip(data.amostra) };
+    const mm = data.material_match || {};
+    if(st)st.innerHTML = `✓ <b>${data.pedidos}</b> pedidos pagos (de ${data.pedidos_total_periodo})<br>
+      Faturamento: <b>${money(data.faturamento)}</b><br>
+      − Comissão: ${money(data.comissao)}<br>
+      − Frete: ${money(data.frete)}<br>
+      − Material: ${money(data.material)} <span style="color:var(--t3)">(${mm.casou||0} SKUs ok, ${mm.sem_custo||0} sem custo)</span><br>
+      − Reembolso: ${money(data.reembolso)}<br>
+      = <b style="color:var(--gr)">Resultado variável: ${money(data.resultado_variavel)}</b><br>
+      <span style="color:var(--t3)">Copie a caixa abaixo e cole no chat ↓</span>`;
+    const dump = { pedidos: data.pedidos, faturamento: data.faturamento, comissao: data.comissao, frete: data.frete, material: data.material, reembolso: data.reembolso, resultado_variavel: data.resultado_variavel, material_match: data.material_match, amostra_frete: data.amostra_frete };
     const ta = document.getElementById('ml-dump');
     if(ta){ ta.style.display='block'; ta.value = JSON.stringify(dump, null, 2); ta.focus(); ta.select(); }
   }catch(e){ if(st)st.textContent='Erro: ' + (e && e.message ? e.message : e); }
