@@ -521,6 +521,19 @@ tr.locked-row:hover,.an-card.locked-row:hover{background:rgba(130,87,245,.06)}
 .leg-l{font-size:10.5px;color:var(--t3)}
 .cbar{height:5px;border-radius:3px;background:var(--sur2);margin-top:7px;overflow:hidden}
 .cbar>div{height:100%;border-radius:3px}
+/* DRE / Financeiro */
+.cl{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)}
+.cl:last-child{border-bottom:none}
+.cl-label{font-size:13.5px;color:var(--t2)}
+.cl-val{font-family:var(--mono);font-size:13.5px;font-weight:600}
+.cl-sub{background:rgba(130,87,245,.08);margin:0 -16px;padding:12px 16px;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.cl-sub .cl-label{font-weight:800;color:var(--t);font-size:14px}
+.cl-sub .cl-val{font-size:16px;font-weight:800}
+.das-inp{display:inline-block;background:var(--sur2);border:1px solid var(--bd);border-radius:6px;padding:1px 7px;font-size:12px;color:#a78bfa;font-weight:700;margin-left:4px;cursor:pointer}
+.addfix{width:100%;margin-top:10px;border:1px dashed var(--bd);background:none;color:var(--t2);border-radius:10px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)}
+.fixrow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bd)}
+.fixrow:last-of-type{border-bottom:none}
+.fix-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 4px}
 
 /* ── MOBILE ── */
 @media(max-width:860px){
@@ -649,6 +662,10 @@ select.tbl-inp{cursor:pointer}
       <button class="ni" data-tab="relatorio" onclick="goTab('relatorio')">
         <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
         Relatório
+      </button>
+      <button class="ni" data-tab="financeiro" onclick="goTab('financeiro')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Financeiro
       </button>
       <button class="ni" data-tab="tags" onclick="goTab('tags')">
         <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -1042,6 +1059,14 @@ select.tbl-inp{cursor:pointer}
           <div id="rel-content"></div>
         </div>
 
+        <div id="p-financeiro" style="display:none">
+          <div class="ph">
+            <div class="ph-left"><div class="ph-title">Financeiro</div><div class="ph-sub">Resultado real · Mercado Livre · <span id="fin-sub">—</span></div></div>
+          </div>
+          <div class="dash-lojas" id="fin-periodo"></div>
+          <div id="fin-content"></div>
+        </div>
+
         <!-- SETUP (sem canais) -->
         <div id="p-setup" style="display:none">
           <div style="max-width:480px;margin:60px auto;text-align:center">
@@ -1094,6 +1119,10 @@ select.tbl-inp{cursor:pointer}
     <button class="drawer-item" data-tab="relatorio" onclick="closeDrawers();goTab('relatorio')">
       <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
       <div class="drawer-item-text"><strong>Relatório</strong><span>Vendas do Bling por canal</span></div>
+    </button>
+    <button class="drawer-item" data-tab="financeiro" onclick="closeDrawers();goTab('financeiro')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <div class="drawer-item-text"><strong>Financeiro</strong><span>Resultado real do mês (ML)</span></div>
     </button>
     <button class="drawer-item" data-tab="insights" onclick="closeDrawers();goTab('insights')">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -1862,6 +1891,11 @@ async function loadAll(){
     PRODUTOS=e3?[]:(prods||[]);
     if(e3)console.warn('produtos_custo indisponível:',e3.message);
 
+    // Load custos fixos (aba Financeiro) — tolera tabela ainda não criada
+    const {data:cfx,error:ecf}=await SB.from('custos_fixos').select('*').order('created_at');
+    CUSTOS_FIXOS=ecf?[]:(cfx||[]);
+    if(ecf)console.warn('custos_fixos indisponível:',ecf.message);
+
     // Load profile
     const {data:prof,error:e4}=await SB.from('profiles').select('*').eq('id',USER.id).single();
     if(e4)throw Object.assign(new Error(e4.message||'profile error'), {step:'profile', detail:e4});
@@ -2064,6 +2098,134 @@ function relChart(por_dia, di, df){
   return `<div class="rchart">${vals.map(v=>`<div class="rc" style="height:${Math.max(4, v/max*100)}%"></div>`).join('')}</div>`;
 }
 
+// ─── FINANCEIRO (DRE do mês · Mercado Livre) ───
+let CUSTOS_FIXOS = [];
+let _finPeriodo = 'mes';
+function finDasPct(){ try{ const v=Number(localStorage.getItem('fin_das_pct')); return isFinite(v)&&v>=0?v:10; }catch(e){ return 10; } }
+
+function fetchMlSales(di,df,cb){
+  const key='mlsalescache_'+di+'_'+df;
+  let had=false;
+  try{ const c=JSON.parse(localStorage.getItem(key)||'null'); if(c){had=true;cb(c,true);} }catch(e){}
+  SB.functions.invoke('ml-sales',{body:{dataInicial:di,dataFinal:df}}).then(res=>{
+    const d=res&&res.data;
+    if(d&&!d.error){ try{localStorage.setItem(key,JSON.stringify(d));}catch(e){} cb(d,false); }
+    else cb(d||{error:'erro'},false,had);
+  }).catch(()=>cb({error:'erro'},false,had));
+}
+
+function editDas(){
+  const atual=finDasPct();
+  const v=prompt('Alíquota do DAS (% sobre o faturamento):', String(atual).replace('.',','));
+  if(v===null)return;
+  const n=Number(String(v).replace(',','.').replace('%','').trim());
+  if(!isFinite(n)||n<0){ alert('Valor inválido'); return; }
+  try{ localStorage.setItem('fin_das_pct', String(n)); }catch(e){}
+  renderFinanceiro();
+}
+
+async function addCustoFixo(){
+  const nome=prompt('Nome do custo fixo (ex.: Barracão, Pró-labore, Contador):');
+  if(!nome||!nome.trim())return;
+  const vs=prompt('Valor mensal (R$):');
+  if(vs===null)return;
+  const valor=Number(String(vs).replace(/\./g,'').replace(',','.').replace(/[^\d.]/g,''));
+  if(!isFinite(valor)){ alert('Valor inválido'); return; }
+  const {data,error}=await SB.from('custos_fixos').insert({user_id:USER.id,nome:nome.trim(),valor}).select().single();
+  if(error){ alert('Erro: '+error.message); return; }
+  CUSTOS_FIXOS.push(data);
+  renderFinanceiro();
+}
+
+async function delCustoFixo(id){
+  const {error}=await SB.from('custos_fixos').delete().eq('id',id);
+  if(error){ alert('Erro: '+error.message); return; }
+  CUSTOS_FIXOS=CUSTOS_FIXOS.filter(c=>c.id!==id);
+  renderFinanceiro();
+}
+
+function renderFinanceiro(){
+  const pr=document.getElementById('fin-periodo');
+  if(pr){
+    const opts=[['hoje','Hoje'],['7d','Semana'],['mes','Este mês'],['mespassado','Mês passado']];
+    pr.innerHTML=opts.map(([k,l])=>`<button class="dash-loja${_finPeriodo===k?' active':''}" onclick="_finPeriodo='${k}';renderFinanceiro()">${l}</button>`).join('');
+  }
+  const content=document.getElementById('fin-content');
+  if(!content)return;
+  const {di,df}=relDatas(_finPeriodo);
+  const subEl=document.getElementById('fin-sub');
+  if(subEl)subEl.textContent=`${di.split('-').reverse().join('/')} a ${df.split('-').reverse().join('/')}`;
+
+  content.innerHTML=`<div class="sales-hero"><div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Resultado do mês</div></div><div class="sh-skel"></div></div>
+    <div style="text-align:center;padding:26px 0;color:var(--t3);font-size:13px">Puxando do Mercado Livre e calculando o frete real… pode levar alguns segundos.</div>`;
+
+  fetchMlSales(di,df,(data,cached)=>{
+    if(!data||data.error){
+      if(data&&data.error==='ml_nao_conectado'){
+        content.innerHTML=`<div class="card" style="text-align:center;padding:36px 24px">
+          <div class="sh-ico" style="margin:0 auto 14px">${ICO_MONEY}</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">Conecte seu Mercado Livre</div>
+          <p style="color:var(--t3);font-size:13px;line-height:1.5">Vá em <b>Configurações → Mercado Livre — Financeiro → Conectar</b> e volte aqui.</p></div>`;
+        return;
+      }
+      content.innerHTML=`<div class="card" style="text-align:center;padding:30px;color:var(--rd);font-size:13px">Não consegui puxar os dados${data&&data.error?` (${data.error})`:''}. Tenta de novo em instantes.</div>`;
+      return;
+    }
+    const fat=data.faturamento||0, com=data.comissao||0, frete=data.frete||0, mat=data.material||0, reemb=data.reembolso||0;
+    const dasPct=finDasPct();
+    const das=fat*dasPct/100;
+    const mc=fat-com-frete-mat-reemb-das;
+    const fixosTot=CUSTOS_FIXOS.reduce((s,c)=>s+Number(c.valor||0),0);
+    const result=mc-fixosTot;
+    const money=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const pctf=v=>fat>0?(v/fat*100).toFixed(1).replace('.',','):'0';
+    const rcolor=result>=0?'var(--gr)':'var(--rd)';
+
+    const segs=[['Resultado',result,'#22c55e'],['Material',mat,'#8257f5'],['Frete',frete,'#f59e0b'],['Imposto',das,'#ef4444'],['Comissão',com,'#3b82f6'],['Reembolso',reemb,'#f472b6'],['Fixos',fixosTot,'#9ca3af']].filter(s=>s[1]>0.005);
+    const segbar=segs.map(([n,v,c])=>`<div style="width:${(v/fat*100).toFixed(2)}%;background:${c}" title="${n}"></div>`).join('');
+    const legend=segs.map(([n,v,c])=>`<div class="leg"><div class="leg-top"><span class="leg-dot" style="background:${c}"></span><span style="font-size:12px;font-weight:700">${pctf(v)}%</span></div><div class="leg-l">${n}</div></div>`).join('');
+
+    const fixHtml=CUSTOS_FIXOS.length ? CUSTOS_FIXOS.map(c=>`<div class="fixrow"><div style="font-size:13px">${sanitize(c.nome)}</div><div style="display:flex;align-items:center;gap:8px"><span class="prv" style="font-family:var(--mono);font-size:13px;color:var(--rd)">−${money(c.valor)}</span><button class="fix-del" onclick="delCustoFixo('${c.id}')" title="Remover">✕</button></div></div>`).join('')
+      : '<div style="font-size:12px;color:var(--t3);padding:2px 0 6px">Nenhum custo fixo cadastrado ainda.</div>';
+
+    content.innerHTML=`
+      <div class="sales-hero" style="margin-bottom:16px">
+        <div class="sh-top"><div class="sh-ico">${ICO_MONEY}</div><div class="sh-label">Resultado do mês</div>${cached?'<span class="sh-refreshing" style="margin:0 0 0 auto">atualizando…</span>':''}</div>
+        <div class="sh-val prv" style="color:${rcolor}">${money(result)}</div>
+        <div class="sh-meta"><span>margem líquida <b class="prv" style="color:${rcolor}">${pctf(result)}%</b></span><span><b>${data.pedidos||0}</b> pedidos</span></div>
+      </div>
+
+      <div class="sec-h"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Pra onde vai cada real vendido</div>
+      <div class="card" style="margin-top:0">
+        <div class="distbar" style="height:16px;margin-bottom:14px">${segbar}</div>
+        <div class="legend" style="flex-wrap:wrap;gap:10px 4px">${legend}</div>
+      </div>
+
+      <div class="sec-h">${ICO_MONEY}De onde veio o resultado</div>
+      <div class="card" style="margin-top:0">
+        <div class="cl"><div class="cl-label">Faturamento</div><div class="cl-val prv" style="color:var(--gr)">${money(fat)}</div></div>
+        <div class="cl"><div class="cl-label">− Comissão ML</div><div class="cl-val prv" style="color:var(--rd)">−${money(com)}</div></div>
+        <div class="cl"><div class="cl-label">− Frete</div><div class="cl-val prv" style="color:var(--rd)">−${money(frete)}</div></div>
+        <div class="cl"><div class="cl-label">− Material</div><div class="cl-val prv" style="color:var(--rd)">−${money(mat)}</div></div>
+        <div class="cl"><div class="cl-label">− Reembolso</div><div class="cl-val prv" style="color:${reemb>0?'var(--rd)':'var(--t3)'}">−${money(reemb)}</div></div>
+        <div class="cl"><div class="cl-label">− Imposto <span class="das-inp" onclick="editDas()">DAS ${String(dasPct).replace('.',',')}% ✎</span></div><div class="cl-val prv" style="color:var(--rd)">−${money(das)}</div></div>
+        <div class="cl cl-sub"><div class="cl-label">= Margem de contribuição</div><div class="cl-val prv" style="color:var(--gr)">${money(mc)} <span style="font-size:11px;color:var(--t3)">(${pctf(mc)}%)</span></div></div>
+        <div class="cl"><div class="cl-label">− Custos fixos</div><div class="cl-val prv" style="color:${fixosTot>0?'var(--rd)':'var(--t3)'}">−${money(fixosTot)}</div></div>
+        <div class="cl cl-sub"><div class="cl-label">= Resultado do mês</div><div class="cl-val prv" style="color:${rcolor}">${money(result)}</div></div>
+      </div>
+
+      <div class="sec-h"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Custos fixos do mês</div>
+      <div class="card" style="margin-top:0">
+        ${fixHtml}
+        <button class="addfix" onclick="addCustoFixo()">+ Adicionar custo fixo</button>
+      </div>
+
+      <div class="card" style="background:rgba(130,87,245,.05);border-color:rgba(130,87,245,.25);margin-top:14px">
+        <div style="font-size:12.5px;color:var(--t2);line-height:1.5"><b style="color:#a78bfa">Em breve:</b> Ads e parcelamento (do billing do ML) entram automático; depois Shopee e site somam aqui pro resultado do negócio inteiro.</div>
+      </div>`;
+  });
+}
+
 async function renderRelatorio(){
   const pr = document.getElementById('rel-periodo');
   if(pr){
@@ -2142,7 +2304,7 @@ function goTab(tab,chId){
   document.querySelectorAll('[data-tab]').forEach(el=>{
     el.classList.toggle('active',el.dataset.tab===tab);
   });
-  const pages=['dash','relatorio','channel','tags','insights','custos','sim','config','setup'];
+  const pages=['dash','relatorio','financeiro','channel','tags','insights','custos','sim','config','setup'];
   pages.forEach(p=>{
     const el=document.getElementById('p-'+p);
     if(el)el.style.display='none';
@@ -2156,6 +2318,7 @@ function goTab(tab,chId){
   }
   if(tab==='dash')renderDash();
   else if(tab==='relatorio')renderRelatorio();
+  else if(tab==='financeiro')renderFinanceiro();
   else if(tab==='channel'){_activeCh=chId||_activeCh;renderChannel();}
   else if(tab==='tags')renderTags();
   else if(tab==='insights')renderInsights();
